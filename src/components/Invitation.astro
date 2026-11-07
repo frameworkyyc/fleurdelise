@@ -1,0 +1,25 @@
+---
+import Button from './Button.astro';
+import Moons from './Moons.astro';
+import { site } from '../data/site';
+---
+<section class="section tex-ivory on-light invite" aria-labelledby="invite-title">
+  <div class="wrap">
+    <Moons class="moons reveal" />
+    <h2 id="invite-title" class="display reveal" style="--d:1">Your story is welcome here.</h2>
+    <p class="lead reveal" style="--d:2">When you’re ready, book a first conversation — or send a message with any questions. There’s no rush.</p>
+    <div class="actions reveal" style="--d:3">
+      <Button href={site.book.href} variant="plum">{site.book.cta}</Button>
+      <a class="link-arrow" href="/contact">Get in touch</a>
+    </div>
+  </div>
+</section>
+<style>
+  .invite { text-align: center; }
+  .wrap { display: flex; flex-direction: column; align-items: center; }
+  .invite :global(.moons) { color: var(--bronze); opacity: .8; margin-bottom: 36px; width: 128px; }
+  h2 { max-width: 16ch; text-wrap: balance; }
+  .lead { max-width: 44ch; margin: 28px auto 0; color: var(--plum-text-soft); }
+  .actions { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 20px 32px; margin-top: 40px; }
+  @media (max-width: 767px) { .actions .btn { width: 100%; } }
+</style>

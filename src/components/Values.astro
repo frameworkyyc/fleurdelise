@@ -1,0 +1,31 @@
+---
+const values = [
+  { n: '01', name: 'Safe', text: 'Your pace, your privacy, your choice — always.' },
+  { n: '02', name: 'Nurturing', text: 'Gentle support for whatever you’re carrying.' },
+  { n: '03', name: 'Authentic', text: 'Plain words and real presence. No performance, no judgment.' },
+];
+---
+<section class="section tex-linen on-light values" aria-labelledby="values-title">
+  <div class="wrap">
+    <p class="eyebrow reveal">Core values</p>
+    <h2 id="values-title" class="reveal" style="--d:1">A safe space to bloom.</h2>
+    <ol class="list">
+      {values.map((v, i) => (
+        <li class="reveal" style={`--d:${i + 1}`}>
+          <span class="num" aria-hidden="true">{v.n}</span>
+          <h3 class="serif">{v.name}</h3>
+          <p>{v.text}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+<style>
+  h2 { margin: 12px 0 clamp(40px, 6vw, 72px); }
+  .list { display: grid; gap: 0; list-style: none; margin: 0; padding: 0; }
+  .list li { padding: 32px 0; border-top: 1px solid rgb(151 92 43 / .35); display: grid; gap: 8px; }
+  .num { font-size: .75rem; letter-spacing: .2em; font-weight: 500; color: var(--bronze-text); }
+  .list h3 { font-style: italic; font-weight: 400; font-size: clamp(1.875rem, 1.5rem + 1.5vw, 2.5rem); line-height: 1.15; }
+  .list p { color: var(--plum-text-soft); max-width: 30ch; }
+  @media (min-width: 900px) { .list { grid-template-columns: repeat(3, 1fr); gap: 56px; } .list li { padding-top: 36px; } }
+</style>

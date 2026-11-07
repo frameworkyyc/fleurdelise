@@ -1,0 +1,64 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+const social = Object.entries(site.social).filter(([, v]) => v) as [string, string][];
+const year = new Date().getFullYear();
+---
+<footer class="site-footer tex-midnight on-dark" id="contact-footer">
+  <div class="wrap">
+    <div class="f-grid">
+      <div class="f-brand">
+        <img src="/brand/submark-plum-256.webp" srcset="/brand/submark-plum-256.webp 1x, /brand/submark-plum-512.webp 2x" width="120" height="120" alt="Fleur de Lise Healing sub-mark" loading="lazy" decoding="async" />
+        <p class="serif f-tag">Come as you are.<br />Bloom at your own pace.</p>
+      </div>
+      <nav class="f-col" aria-label="Footer">
+        <h2 class="f-h">Explore</h2>
+        <ul>
+          <li><a href="/">Home</a></li>
+          {site.nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+          <li><a href={site.book.href}>Book a first conversation</a></li>
+        </ul>
+      </nav>
+      <div class="f-col">
+        <h2 class="f-h">Get in touch</h2>
+        <ul class="f-contact">
+          <li><Icon name="mail" size={24} /><a href={`mailto:${site.email}`}>{site.email}</a></li>
+          <li><Icon name="phone" size={24} /><a href={site.phoneHref}>{site.phone}</a></li>
+          <li><Icon name="pin" size={24} /><span>{site.location}<br /><span class="f-sub">In person &amp; virtual sessions</span></span></li>
+        </ul>
+        {social.length > 0 && (
+          <ul class="f-social">{social.map(([k, v]) => <li><a href={v} rel="noopener" target="_blank" class="cap">{k}</a></li>)}</ul>
+        )}
+      </div>
+    </div>
+    <div class="f-base">
+      <p class="f-disclaimer">{site.disclaimer}</p>
+      <p class="f-legal">© {year} {site.name} · <a href="/privacy">Privacy</a> · <a href="/disclaimer">Disclaimer</a></p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer { padding-block: clamp(56px, 7vw, 96px) 32px; border-top: 1px solid rgb(201 148 76 / 0.25); }
+  .f-grid { display: grid; gap: 48px; }
+  .f-brand img { border-radius: 14px; box-shadow: 0 0 0 1px rgb(201 148 76 / 0.5); margin-bottom: 24px; }
+  .f-tag { font-style: italic; font-size: 1.375rem; line-height: 1.4; color: var(--ivory-80); }
+  .f-h { font-family: var(--font-sans); font-style: normal; font-size: 0.75rem; letter-spacing: .2em; text-transform: uppercase; font-weight: 500; color: var(--gold); margin-bottom: 20px; }
+  .f-col ul { display: grid; gap: 0; }
+  .f-col a { display: inline-block; padding-block: 10px; text-decoration: none; transition: color .3s; }
+  .f-contact li { align-items: center; }
+  .f-contact li > :global(svg) { margin-top: 0; }
+  .f-col a:hover { color: var(--gold); }
+  .f-contact li { display: flex; gap: 14px; align-items: flex-start; }
+  .f-contact :global(svg) { color: var(--gold); flex: none; margin-top: 2px; }
+  .f-sub { color: var(--ivory-60); font-size: .875rem; }
+  .f-social { display: flex !important; gap: 20px; margin-top: 20px; }
+  .cap { text-transform: capitalize; }
+  .f-base { margin-top: 56px; padding-top: 28px; border-top: 1px solid rgb(242 228 217 / 0.12); display: grid; gap: 12px; font-size: .875rem; color: var(--ivory-60); }
+  .f-disclaimer { font-family: var(--font-serif); font-style: italic; font-size: 1rem; color: var(--ivory-80); }
+  .f-legal a { display: inline-block; padding-block: 12px; text-decoration: none; } .f-legal a:hover { color: var(--gold); }
+  @media (min-width: 900px) {
+    .f-grid { grid-template-columns: 1.3fr 1fr 1.3fr; gap: 64px; }
+    .f-base { grid-template-columns: 1fr auto; align-items: end; }
+  }
+</style>

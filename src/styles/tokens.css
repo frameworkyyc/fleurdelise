@@ -1,0 +1,46 @@
+/* Fleur de Lise Healing — design tokens (Brand Kit v5) */
+:root {
+  /* Primary */
+  --plum: #4c1f31;          /* Velvet Plum */
+  --midnight: #1f0913;      /* Midnight Plum */
+  --gold: #c9944c;          /* Antique Gold — on plum only for text */
+  /* Secondary */
+  --ivory: #f2e4d9;         /* Warm Ivory */
+  --linen: #e5d5cb;         /* Linen */
+  --bronze: #975c2b;        /* Bronze — eyebrows on light */
+  --sage: #7d7850;          /* Sage Leaf — botanical accents */
+
+  /* Derived (tints only — never new brand colours) */
+  --ivory-80: rgb(242 228 217 / 0.82);
+  --ivory-60: rgb(242 228 217 / 0.66);
+  --plum-text-soft: rgb(76 31 49 / 0.82);
+  --gold-line: rgb(201 148 76 / 0.45);
+  --bronze-text: #85501f;   /* bronze nudged darker for small text on linen/ivory (AA) */
+
+  /* Type */
+  --font-serif: 'Lora Variable', 'Lora', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --fs-display: clamp(2.25rem, 1.55rem + 3.1vw, 3.5rem);   /* 36 → 56 */
+  --fs-h1: clamp(2rem, 1.6rem + 1.8vw, 2.75rem);           /* 32 → 44 */
+  --fs-h2: clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem);         /* 28 → 40 */
+  --fs-h3: 1.125rem;
+  --fs-lead: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);    /* 17 → 19 */
+  --fs-body: 1rem;
+  --fs-small: 0.875rem;
+  --fs-eyebrow: 0.75rem;
+
+  /* Spacing — 8px base */
+  --s1: 8px; --s2: 16px; --s3: 24px; --s4: 40px; --s5: 64px; --s6: 120px;
+  --section-y: clamp(72px, 9vw, 144px);
+
+  /* Layout */
+  --maxw: 1200px;
+  --gutter: 24px;
+  --header-h: 72px;
+  --radius: 4px;
+
+  /* Motion */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-slow: cubic-bezier(0.16, 0.7, 0.2, 1);
+}
+@media (min-width: 768px) { :root { --gutter: 40px; --header-h: 88px; } }

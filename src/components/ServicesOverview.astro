@@ -1,0 +1,51 @@
+---
+import Icon from './Icon.astro';
+import { services } from '../data/site';
+---
+<section class="section tex-midnight on-dark services" aria-labelledby="services-title">
+  <div class="wrap">
+    <header class="head">
+      <p class="eyebrow reveal">Services</p>
+      <h2 id="services-title" class="reveal" style="--d:1">Gentle support for whatever you’re carrying.</h2>
+      <p class="modes reveal" style="--d:2">
+        <span><Icon name="inperson" size={24} /> In person</span>
+        <span><Icon name="virtual" size={24} /> Virtual</span>
+        <span class="note">Offered in person and virtually, depending on the service.</span>
+      </p>
+    </header>
+    <ul class="cards">
+      {services.map((s, i) => (
+        <li class="card reveal" style={`--d:${i}`}>
+          <Icon name={s.icon} size={60} class="ico" />
+          <h3><a href={s.href}>{s.name}</a></h3>
+          <p>{s.blurb}</p>
+          <span class="more" aria-hidden="true">Learn more <Icon name="arrow" size={18} /></span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .head { max-width: 640px; margin-bottom: clamp(40px, 6vw, 72px); }
+  .head h2 { margin: 12px 0 28px; }
+  .modes { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; color: var(--ivory-80); font-size: .9375rem; }
+  .modes span { display: inline-flex; align-items: center; gap: 10px; }
+  .modes :global(svg) { color: var(--gold); }
+  .modes .note { flex-basis: 100%; color: var(--ivory-60); font-size: .875rem; }
+  .cards { display: grid; gap: 24px; }
+  .card { position: relative; background: var(--plum); padding: 40px 32px 36px; border-top: 2px solid var(--gold); display: flex; flex-direction: column; gap: 14px; transition: transform .6s var(--ease), box-shadow .6s var(--ease), background-color .6s var(--ease); }
+  .card :global(.ico) { color: var(--gold); margin-bottom: 12px; transition: transform .6s var(--ease), filter .6s; }
+  .card h3 a { text-decoration: none; display: inline-block; padding-block: 10px; margin-block: -10px; }
+  .card h3 a::after { content: ''; position: absolute; inset: 0; } /* whole card is the link */
+  .card h3 { font-size: 1.1875rem; }
+  .card p { color: var(--ivory-80); flex: 1; }
+  .more { display: inline-flex; align-items: center; gap: 10px; margin-top: 16px; font-size: .8125rem; letter-spacing: .16em; text-transform: uppercase; font-weight: 500; color: var(--gold); }
+  .more :global(svg) { transition: transform .4s var(--ease); }
+  .card:hover { transform: translateY(-6px); background: #55233a; box-shadow: 0 30px 50px -30px rgb(0 0 0 / .7); }
+  .card:hover :global(.ico) { transform: translateY(-2px); filter: drop-shadow(0 0 10px rgb(201 148 76 / .45)); }
+  .card:hover .more :global(svg) { transform: translateX(5px); }
+  .card:focus-within { outline: 2px solid var(--gold); outline-offset: 4px; }
+  .card h3 a:focus-visible { outline: none; }
+  @media (min-width: 900px) { .cards { grid-template-columns: repeat(3, 1fr); gap: 28px; } .card { padding: 48px 36px 40px; } }
+</style>

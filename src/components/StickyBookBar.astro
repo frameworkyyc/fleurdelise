@@ -1,0 +1,12 @@
+---
+import { site } from '../data/site';
+---
+<div class="book-bar" data-book-bar aria-hidden="true">
+  <a class="btn" href={site.book.href} tabindex="-1">{site.book.cta}</a>
+</div>
+<style>
+  .book-bar { position: fixed; inset: auto 0 0 0; z-index: 40; padding: 12px var(--gutter) calc(12px + env(safe-area-inset-bottom)); background: rgb(31 9 19 / 0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 -1px 0 rgb(201 148 76 / 0.25); transform: translateY(110%); transition: transform .6s var(--ease); visibility: hidden; }
+  .book-bar.is-visible { transform: none; visibility: visible; }
+  .book-bar .btn { width: 100%; min-height: 48px; }
+  @media (min-width: 900px) { .book-bar { display: none; } }
+</style>

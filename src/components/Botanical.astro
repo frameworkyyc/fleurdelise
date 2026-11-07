@@ -1,0 +1,20 @@
+---
+// Botanical sprig. variant="line": fine-line illustration. variant="shadow": soft leaf-shadow silhouette (Brand Kit §05).
+interface Props { variant?: 'line' | 'shadow'; class?: string }
+const { variant = 'line', class: cls } = Astro.props;
+const leaves = [
+  { x: 27, y: 164.6, r: -25, s: 0.9 }, { x: 42.5, y: 136, r: -155, s: 1 },
+  { x: 57.5, y: 102.9, r: -22, s: 1 }, { x: 73, y: 64.6, r: -158, s: 0.95 },
+  { x: 90, y: 20, r: -70, s: 0.85 }, { x: 36, y: 150, r: -150, s: 0.75 },
+];
+const shadow = variant === 'shadow';
+---
+<svg class={cls} viewBox="-30 0 170 200" fill={shadow ? 'currentColor' : 'none'} stroke={shadow ? 'none' : 'currentColor'} stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+  <path d="M10 190C40 150 60 100 90 20" fill="none" stroke="currentColor" stroke-width={shadow ? 2 : 1} />
+  {leaves.map((l) => (
+    <g transform={`translate(${l.x} ${l.y}) rotate(${l.r}) scale(${l.s})`}>
+      <path d="M0 0C8-10 24-10 34 0 24 10 8 10 0 0z" />
+      {!shadow && <path d="M2 0H30" opacity=".7" />}
+    </g>
+  ))}
+</svg>

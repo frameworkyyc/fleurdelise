@@ -1,0 +1,14 @@
+---
+// Quiet moon-phase ornament — fine line, one weight (Brand Kit §05 illustration). Decorative.
+interface Props { class?: string }
+const { class: cls } = Astro.props;
+---
+<svg class={cls} viewBox="0 0 160 24" width="160" height="24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" aria-hidden="true" focusable="false">
+  <path d="M30 4a8 8 0 1 0 0 16 6.2 6.2 0 0 1 0-16z" />
+  <circle cx="80" cy="12" r="8" />
+  <path d="M130 4a8 8 0 1 1 0 16 6.2 6.2 0 0 0 0-16z" />
+  <circle cx="52" cy="12" r="1" fill="currentColor" stroke="none" />
+  <circle cx="108" cy="12" r="1" fill="currentColor" stroke="none" />
+  <circle cx="8" cy="12" r="1" fill="currentColor" stroke="none" />
+  <circle cx="152" cy="12" r="1" fill="currentColor" stroke="none" />
+</svg>

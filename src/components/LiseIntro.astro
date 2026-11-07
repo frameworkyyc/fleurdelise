@@ -1,0 +1,49 @@
+---
+import { Image } from 'astro:assets';
+import Botanical from './Botanical.astro';
+import Moons from './Moons.astro';
+import { site } from '../data/site';
+const { photo, photoAlt } = site.lise;
+---
+<section id="welcome" class="section tex-linen on-light intro" aria-labelledby="intro-title">
+  <div class="wrap grid">
+    <div class="portrait reveal" aria-hidden={photo ? undefined : 'true'}>
+      {photo ? (
+        <Image src={photo} alt={photoAlt ?? 'Lise Pinard-Wolf'} widths={[480, 720, 960]} sizes="(max-width: 899px) 90vw, 460px" class="photo" />
+      ) : (
+        <>
+          <Botanical variant="shadow" class="leaf-shadow" />
+          <Botanical variant="shadow" class="leaf-shadow two" />
+          <Moons class="moons" />
+        </>
+      )}
+    </div>
+    <div class="copy">
+      <p class="eyebrow reveal">Meet Lise</p>
+      <h2 id="intro-title" class="reveal" style="--d:1">A practitioner who understands.</h2>
+      <div class="body reveal" style="--d:2">
+        <p class="lead">I offer gentle, personal support for people who are carrying something they haven’t been able to put down.</p>
+        <p>My own life experience means I meet everyone with understanding, not judgment. You decide what to share, and we move at the pace that feels right for you.</p>
+      </div>
+      <p class="reveal" style="--d:3"><a class="link-arrow" href="/about">More about Lise <svg width="18" height="18" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 24h34M28 12l12 12-12 12"/></svg></a></p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .grid { display: grid; gap: 56px; align-items: center; }
+  .portrait { position: relative; aspect-ratio: 4 / 5; width: min(100%, 440px); margin-inline: auto; overflow: hidden; border-radius: 999px 999px 6px 6px;
+    background: radial-gradient(120% 90% at 25% 15%, rgb(242 228 217 / .95), rgb(229 213 203 / .7) 60%, rgb(215 196 183 / .9));
+    box-shadow: 0 0 0 1px rgb(151 92 43 / .28), 0 40px 80px -40px rgb(76 31 49 / .45); }
+  .photo { width: 100%; height: 100%; object-fit: cover; }
+  .portrait :global(.leaf-shadow) { position: absolute; width: 78%; right: -8%; bottom: -6%; color: rgb(76 31 49 / .16); filter: blur(1.2px); transform-origin: 20% 100%; animation: sway 14s ease-in-out infinite; }
+  .portrait :global(.leaf-shadow.two) { width: 56%; left: -10%; right: auto; top: 22%; bottom: auto; transform: scaleX(-1) rotate(8deg); color: rgb(76 31 49 / .09); animation-duration: 18s; animation-delay: -6s; }
+  .portrait :global(.moons) { position: absolute; left: 50%; top: 13%; translate: -50% 0; width: 46%; color: var(--bronze); opacity: .75; }
+  .copy { max-width: 560px; }
+  .copy h2 { margin: 12px 0 28px; }
+  .body { display: grid; gap: 18px; color: var(--plum-text-soft); margin-bottom: 32px; }
+  .body .lead { color: var(--plum); }
+  @keyframes sway { 0%, 100% { rotate: -1.6deg; } 50% { rotate: 2deg; } }
+  @media (min-width: 900px) { .grid { grid-template-columns: 5fr 6fr; gap: 96px; } .portrait { margin-inline: 0; width: 100%; } }
+  @media (prefers-reduced-motion: reduce) { .portrait :global(.leaf-shadow) { animation: none; } }
+</style>

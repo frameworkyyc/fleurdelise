@@ -1,0 +1,80 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+interface Props { home?: boolean }
+const { home = false } = Astro.props;
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const current = (href: string) => (path === href || path.startsWith(href + '/') ? 'page' : undefined);
+---
+<header class="site-header on-dark" data-home={home ? '' : undefined}>
+  <div class="wrap header-in">
+    <a class="brand" href="/" aria-label={`${site.name} — home`}>
+      <img src="/brand/submark-plum-128.webp" srcset="/brand/submark-plum-128.webp 1x, /brand/submark-plum-256.webp 2x" width="56" height="56" alt="" />
+    </a>
+    <nav class="primary" aria-label="Primary">
+      <ul>
+        {site.nav.map((n) => <li><a href={n.href} aria-current={current(n.href)}>{n.label}</a></li>)}
+      </ul>
+    </nav>
+    <a class="btn btn-sm header-book" href={site.book.href}>{site.book.label}</a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="mobile-menu" data-menu-toggle>
+      <span class="sr-only">Menu</span>
+      <Icon name="menu" size={28} class="i-open" /><Icon name="close" size={28} class="i-close" />
+    </button>
+  </div>
+</header>
+
+<div id="mobile-menu" class="mobile-menu tex-plum on-dark" hidden>
+  <nav aria-label="Mobile">
+    <ul>
+      {[{ label: 'Home', href: '/' }, ...site.nav].map((n, i) => (
+        <li style={`--i:${i}`}><a href={n.href} class="serif">{n.label}</a></li>
+      ))}
+    </ul>
+  </nav>
+  <div class="mm-foot">
+    <a class="btn" href={site.book.href}>{site.book.cta}</a>
+    <p class="mm-contact"><a href={site.phoneHref}>{site.phone}</a><br /><a href={`mailto:${site.email}`}>{site.email}</a></p>
+  </div>
+</div>
+
+<style>
+  .site-header { position: fixed; inset: 0 0 auto 0; z-index: 50; height: var(--header-h); transition: background-color .5s var(--ease), box-shadow .5s var(--ease), backdrop-filter .5s; }
+  .site-header.is-scrolled, .site-header:not([data-home]) { background: rgb(31 9 19 / 0.82); backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2); box-shadow: 0 1px 0 rgb(201 148 76 / 0.18); }
+  .header-in { height: 100%; display: flex; align-items: center; gap: 24px; }
+  .brand { display: block; width: 52px; height: 52px; border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 1px rgb(201 148 76 / 0.55); margin-right: auto; transition: opacity .6s var(--ease), transform .6s var(--ease), visibility .6s; }
+  .brand img { width: 100%; height: 100%; }
+  /* On the home page the hero carries the full logo; the sub-mark appears once it scrolls away. */
+  :global(.js) .site-header[data-home]:not(.show-brand) .brand { opacity: 0; visibility: hidden; transform: translateY(-6px); }
+  .primary ul { display: none; gap: 36px; }
+  .primary a { position: relative; display: block; padding: 12px 0; font-size: 0.8125rem; letter-spacing: 0.18em; text-transform: uppercase; text-decoration: none; font-weight: 400; color: var(--ivory); transition: color .3s; }
+  .primary a::after { content: ''; position: absolute; left: 0; right: 100%; bottom: 8px; height: 1px; background: var(--gold); transition: right .45s var(--ease); }
+  .primary a:hover { color: var(--gold); }
+  .primary a:hover::after, .primary a[aria-current]::after { right: 0; }
+  .header-book { display: none; }
+  .menu-btn { margin-left: auto; display: grid; place-items: center; width: 48px; height: 48px; background: none; border: 0; cursor: pointer; color: var(--ivory); }
+  .menu-btn :global(.i-close) { display: none; }
+  .menu-btn[aria-expanded='true'] :global(.i-open) { display: none; }
+  .menu-btn[aria-expanded='true'] :global(.i-close) { display: block; }
+  .site-header .brand + .primary { margin-left: 0; }
+
+  .mobile-menu { position: fixed; inset: 0; z-index: 45; padding: calc(var(--header-h) + 24px) var(--gutter) 40px; display: flex; flex-direction: column; justify-content: space-between; overflow-y: auto; }
+  .mobile-menu[hidden] { display: none; }
+  .mobile-menu li { border-bottom: 1px solid rgb(201 148 76 / 0.22); }
+  .mobile-menu li a { display: block; padding: 20px 0; font-style: italic; font-size: 2rem; line-height: 1.2; text-decoration: none; color: var(--ivory); }
+  .mobile-menu li { animation: mm-in .7s var(--ease-slow) both; animation-delay: calc(var(--i) * 70ms + 80ms); }
+  .mm-foot { display: grid; gap: 24px; margin-top: 40px; }
+  .mm-foot .btn { width: 100%; }
+  .mm-contact { color: var(--ivory-80); font-size: 0.9375rem; line-height: 1.9; }
+  .mm-contact a { text-decoration: none; }
+  @keyframes mm-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+  @media (min-width: 900px) {
+    .primary ul { display: flex; }
+    .primary { margin-left: auto; }
+    .brand { margin-right: 0; }
+    .header-book { display: inline-flex; }
+    .menu-btn { display: none; }
+    .site-header .brand + .primary { margin-left: auto; }
+  }
+</style>

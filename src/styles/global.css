@@ -1,0 +1,104 @@
+@import './tokens.css';
+
+/* ---------- Reset & base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: calc(var(--header-h) + 16px); }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+body {
+  margin: 0; background: var(--midnight); color: var(--plum);
+  font-family: var(--font-sans); font-weight: 300; font-size: var(--fs-body); line-height: 1.7;
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+}
+img, svg { display: block; max-width: 100%; }
+img { height: auto; }
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+ul { margin: 0; padding: 0; list-style: none; }
+h1, h2, h3, h4, p, figure, blockquote { margin: 0; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 2px; }
+.on-light :focus-visible { outline-color: var(--plum); }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.skip-link { position: fixed; left: 16px; top: -80px; z-index: 100; background: var(--gold); color: var(--midnight); padding: 12px 20px; font-weight: 500; text-decoration: none; transition: top .2s var(--ease); }
+.skip-link:focus { top: 16px; }
+.wrap { width: 100%; max-width: calc(var(--maxw) + var(--gutter) * 2); margin-inline: auto; padding-inline: var(--gutter); }
+
+/* ---------- Type ---------- */
+.serif { font-family: var(--font-serif); }
+.display { font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: var(--fs-display); line-height: 1.1; letter-spacing: -0.005em; }
+h1, .h1 { font-family: var(--font-serif); font-weight: 400; font-size: var(--fs-h1); line-height: 1.15; }
+h2, .h2 { font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: var(--fs-h2); line-height: 1.2; text-wrap: balance; }
+h3, .h3 { font-family: var(--font-sans); font-weight: 500; font-size: var(--fs-h3); line-height: 1.35; }
+.lead { font-size: var(--fs-lead); line-height: 1.7; text-wrap: pretty; }
+.eyebrow { font-family: var(--font-sans); font-weight: 500; font-size: var(--fs-eyebrow); letter-spacing: 0.2em; text-transform: uppercase; line-height: 1.5; color: var(--bronze-text); }
+.on-dark .eyebrow { color: var(--gold); }
+p { text-wrap: pretty; }
+
+/* ---------- Sections & textures (Brand Kit §07: one texture per surface) ---------- */
+.section { position: relative; padding-block: var(--section-y); isolation: isolate; }
+.on-dark { color: var(--ivory); }
+.on-light { color: var(--plum); }
+
+.tex-plum {
+  background-color: var(--plum);
+  background-image:
+    repeating-linear-gradient(0deg, rgb(242 228 217 / 0.05) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(90deg, rgb(242 228 217 / 0.05) 0 1px, transparent 1px 4px);
+}
+.tex-midnight { background-color: var(--midnight); }
+.tex-ivory {
+  background-color: var(--ivory);
+  background-image:
+    repeating-linear-gradient(0deg, rgb(151 92 43 / 0.045) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(90deg, rgb(151 92 43 / 0.045) 0 1px, transparent 1px 4px);
+}
+.tex-linen {
+  background-color: var(--linen);
+  background-image: linear-gradient(115deg, rgb(242 228 217 / 0) 30%, rgb(242 228 217 / 0.55) 48%, rgb(242 228 217 / 0) 66%),
+    repeating-linear-gradient(0deg, rgb(151 92 43 / 0.04) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(90deg, rgb(151 92 43 / 0.04) 0 1px, transparent 1px 4px);
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  --btn-bg: var(--gold); --btn-fg: var(--midnight);
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: 48px; padding: 14px 30px; border: 0; border-radius: var(--radius); cursor: pointer; overflow: hidden;
+  background: var(--btn-bg); color: var(--btn-fg);
+  font-family: var(--font-sans); font-weight: 500; font-size: 0.8125rem; letter-spacing: 0.16em; text-transform: uppercase; text-decoration: none; line-height: 1.2; text-align: center;
+  transition: transform .35s var(--ease), box-shadow .35s var(--ease), background-color .35s var(--ease);
+}
+.btn::after { /* soft light sweep */
+  content: ''; position: absolute; inset: 0; transform: translateX(-120%);
+  background: linear-gradient(105deg, transparent 30%, rgb(255 244 232 / 0.35) 50%, transparent 70%);
+  transition: transform .9s var(--ease-slow);
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px -10px rgb(0 0 0 / 0.55); }
+.btn:hover::after { transform: translateX(120%); }
+.btn:active { transform: translateY(0); }
+.btn-plum { --btn-bg: var(--plum); --btn-fg: var(--ivory); }
+.btn-plum:hover { --btn-bg: #5a2539; }
+.btn-sm { min-height: 44px; padding: 10px 22px; font-size: 0.75rem; }
+
+.link-arrow {
+  display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 400; font-size: 0.9375rem;
+  min-height: 44px; padding-block: 10px; /* 44px touch target; underline sits just below the text */
+  background: linear-gradient(currentColor, currentColor) 0 calc(100% - 10px) / 100% 1px no-repeat;
+  transition: background-size .4s var(--ease), color .3s;
+}
+.link-arrow svg { transition: transform .4s var(--ease); }
+.link-arrow:hover { background-size: 40% 1px; }
+.link-arrow:hover svg { transform: translateX(4px); }
+.on-dark .link-arrow { color: var(--ivory); }
+.on-dark .link-arrow:hover { color: var(--gold); }
+
+/* gold hairline ornament */
+.rule { width: 56px; height: 1px; background: var(--gold); border: 0; margin: 0; }
+
+/* ---------- Scroll reveals (only hide content when JS is running) ---------- */
+.js .reveal { opacity: 0; transform: translateY(18px); transition: opacity 1s var(--ease-slow), transform 1s var(--ease-slow); transition-delay: calc(var(--d, 0) * 90ms); }
+.js .reveal.is-in { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+  .js .reveal { opacity: 1; transform: none; }
+}

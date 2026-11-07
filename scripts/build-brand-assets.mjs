@@ -1,0 +1,36 @@
+// Generates web-optimised brand assets from /brand-originals into /public/brand.
+// Originals are never modified — only resized/re-encoded (no crop, recolour or effects).
+import sharp from 'sharp';
+import { writeFile } from 'node:fs/promises';
+
+const O = 'brand-originals/';
+const P = 'public/brand/';
+const webp = { quality: 88, effort: 6, alphaQuality: 100 };
+
+// Primary on-plum logo: Dark Background Alternative (C, transparent)
+for (const w of [360, 768, 1024, 1536]) {
+  await sharp(O + 'C_dark-alternative-transparent.png').resize({ width: w }).webp(webp).toFile(`${P}logo-dark-${w}.webp`);
+}
+// Sub-mark (D, textured plum) — temporary until a clean transparent sub-mark is supplied
+for (const w of [128, 256, 512]) {
+  await sharp(O + 'D_submark-plum-textured.png').resize({ width: w }).webp(webp).toFile(`${P}submark-plum-${w}.webp`);
+}
+// Icons (from the sub-mark, whole image, resized only)
+const sq = (w) => sharp(O + 'D_submark-plum-textured.png').resize({ width: w, height: w });
+await sq(180).png().toFile(P + 'apple-touch-icon.png');
+await sq(192).png().toFile(P + 'icon-192.png');
+await sq(512).png().toFile(P + 'icon-512.png');
+const ico = await sq(48).png().toBuffer();
+const head = Buffer.alloc(22);
+head.writeUInt16LE(0, 0); head.writeUInt16LE(1, 2); head.writeUInt16LE(1, 4);
+head.writeUInt8(48, 6); head.writeUInt8(48, 7); head.writeUInt16LE(1, 10); head.writeUInt16LE(32, 12);
+head.writeUInt32LE(ico.length, 14); head.writeUInt32LE(22, 18);
+await writeFile('public/favicon.ico', Buffer.concat([head, ico]));
+await sq(32).png().toFile(P + 'favicon-32.png');
+
+// Open Graph card: logo C centred on Velvet Plum (#4C1F31)
+const logo = await sharp(O + 'C_dark-alternative-transparent.png').resize({ height: 500 }).png().toBuffer();
+await sharp({ create: { width: 1200, height: 630, channels: 3, background: '#4C1F31' } })
+  .composite([{ input: logo, gravity: 'center' }])
+  .jpeg({ quality: 88 }).toFile(P + 'og-image.jpg');
+console.log('brand assets built');
