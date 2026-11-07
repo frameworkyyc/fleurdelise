@@ -6,7 +6,7 @@
 export const site = {
   name: 'Fleur de Lise Healing',
   owner: 'Lise Pinard-Wolf',
-  url: 'https://fleurdelisehealing.com',
+  url: (import.meta.env.PUBLIC_SITE_URL as string | undefined) || 'https://fleurdelisehealing.com',
   tagline: ['Come as you are.', 'Bloom at your own pace.'],
   email: 'fleurdelisehealing@gmail.com',
   phone: '(226) 346-7206',

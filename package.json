@@ -5,10 +5,12 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/post-build.mjs",
     "preview": "astro preview",
     "check": "astro check",
-    "deploy:staging": "echo 'Staging deploys run via Cloudflare preview builds on the staging branch.'"
+    "deploy:staging": "npm run build:staging && wrangler deploy",
+    "build:staging": "PUBLIC_SITE_ENV=staging PUBLIC_SITE_URL=https://fleurdelise.frameworktools.ca npm run build",
+    "build:production": "PUBLIC_SITE_ENV=production npm run build"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

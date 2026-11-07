@@ -1,9 +1,13 @@
 {
   // Static Astro site served by Cloudflare Workers Static Assets.
-  // NOTE: nothing here deploys by itself. Production deploys require explicit approval.
+  // This is the EXISTING `fleurdelise` Worker. Its custom domain (fleurdelise.frameworktools.ca) is
+  // already attached in Cloudflare — it is deliberately NOT declared here, so deploys never create or
+  // change domains/routes. fleurdelisehealing.com is NOT connected (go-live needs explicit approval).
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "fleurdelise",
-  "compatibility_date": "2026-11-01",
+  "compatibility_date": "2026-11-07",
+  "workers_dev": false,
+  "preview_urls": false,
   "assets": {
     "directory": "./dist",
     "not_found_handling": "404-page"
