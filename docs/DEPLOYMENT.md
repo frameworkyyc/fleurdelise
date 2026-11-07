@@ -27,3 +27,7 @@ Work on a feature branch → merge to `staging` → Cloudflare builds and deploy
 
 ## Production (later, after approval)
 Separate decision: create the production deployment for fleurdelisehealing.com from `main` with `npm run build:production`. Not part of this setup.
+
+## Verification checklist (staging)
+After a build: `https://fleurdelise.frameworktools.ca/` serves the site (not "Hello world"); response has `X-Robots-Tag: noindex, nofollow, noarchive`; `/robots.txt` is `Disallow: /`; `/sitemap-index.xml` is a 404.
+If nothing deploys after a push to `staging`, check Cloudflare → Workers & Pages → fleurdelise → Settings → Builds (branch, commands) and the build history for errors.
