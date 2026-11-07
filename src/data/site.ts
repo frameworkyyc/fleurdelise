@@ -25,6 +25,10 @@ export const site = {
   lise: {
     photo: undefined as ImageMetadata | undefined,
     photoAlt: undefined as string | undefined,
+    /** Paragraphs of Lise's own bio — About page shows them when supplied. */
+    bio: undefined as string[] | undefined,
+    /** Certifications, exactly as Lise supplies them. */
+    credentials: undefined as string[] | undefined,
   },
 
   nav: [

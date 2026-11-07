@@ -1,0 +1,76 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Portrait from '../components/Portrait.astro';
+import Icon from '../components/Icon.astro';
+import Invitation from '../components/Invitation.astro';
+import { site } from '../data/site';
+const { bio, credentials } = site.lise;
+const principles = [
+  { icon: 'heart', title: 'Personal connection', text: 'One-to-one, unhurried, and always at your pace.' },
+  { icon: 'inperson', title: 'Compassion', text: 'Whatever you’re carrying is welcome here.' },
+  { icon: 'sit', title: 'No judgment', text: 'You’re met with understanding. Your story is yours to share.' },
+  { icon: 'tarot', title: 'Authenticity', text: 'Plain words and real presence — no performance.' },
+] as const;
+const jsonLd = [{ '@context': 'https://schema.org', '@type': 'Person', name: site.owner, jobTitle: 'Holistic wellness practitioner', worksFor: { '@id': `${site.url}/#business` }, address: { '@type': 'PostalAddress', addressLocality: 'Windsor', addressRegion: 'ON', addressCountry: 'CA' } }];
+---
+<BaseLayout title="About Lise Pinard-Wolf | Fleur de Lise Healing, Windsor, Ontario" description="Meet Lise Pinard-Wolf — a Windsor, Ontario practitioner offering Reiki, EFT and tarot with understanding, compassion and no judgment." path="/about" jsonLd={jsonLd}>
+  <PageHero eyebrow="About Lise" title="A practitioner who understands." lead="Gentle, personal support for people who are carrying something they haven’t been able to put down." />
+
+  <section class="section tex-linen on-light" aria-labelledby="who-h">
+    <div class="wrap grid">
+      <Portrait class="reveal" />
+      <div class="copy">
+        <p class="eyebrow reveal">Hello, I’m Lise</p>
+        <h2 id="who-h" class="reveal" style="--d:1">Come as you are.</h2>
+        <div class="prose reveal" style="--d:2">
+          <p class="lead">I’m Lise Pinard-Wolf, and I offer Reiki, EFT and tarot readings in Windsor, Ontario — in person and virtually, depending on the service.</p>
+          <p>My own life experience means I meet everyone with understanding, not judgment. You decide what to share, and we move at the pace that feels right for you.</p>
+          {bio?.map((p) => <p>{p}</p>)}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section tex-midnight on-dark" aria-labelledby="how-h">
+    <div class="wrap">
+      <p class="eyebrow reveal">My approach</p>
+      <h2 id="how-h" class="reveal" style="--d:1">How I hold space</h2>
+      <ul class="cards">
+        {principles.map((p, i) => (
+          <li class="card reveal" style={`--d:${i}`}><Icon name={p.icon} size={48} class="ico" /><h3>{p.title}</h3><p>{p.text}</p></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  {credentials && credentials.length > 0 && (
+    <section class="section tex-ivory on-light" aria-labelledby="cred-h">
+      <div class="wrap"><p class="eyebrow">Training &amp; certifications</p><h2 id="cred-h">Credentials</h2>
+        <ul class="creds">{credentials.map((c) => <li>{c}</li>)}</ul></div>
+    </section>
+  )}
+
+  <section class="section tex-linen on-light" aria-labelledby="wel-h">
+    <div class="wrap welcome">
+      <div><p class="eyebrow">A welcoming space</p><h2 id="wel-h">Safe. Nurturing. Authentic.</h2></div>
+      <div class="prose">
+        <p class="lead">Fleur de Lise Healing is a quiet place to arrive exactly as you are — whether we meet in person in Windsor or online.</p>
+        <p>These aren’t just words on a page: they’re the three values behind every session. You can ask questions, take your time, and change your mind. There’s no right way to begin.</p>
+      </div>
+    </div>
+  </section>
+  <Invitation />
+</BaseLayout>
+<style>
+  .grid { display: grid; gap: 56px; align-items: center; } .copy { max-width: 560px; } .copy h2 { margin: 12px 0 28px; }
+  .prose p { color: var(--plum-text-soft); } .prose .lead { color: var(--plum); }
+  @media (min-width: 900px) { .grid { grid-template-columns: 5fr 6fr; gap: 96px; } }
+  h2 { margin-top: 12px; }
+  .cards { display: grid; gap: 20px; margin-top: clamp(40px, 5vw, 64px); }
+  .card { background: var(--plum); padding: 40px 32px; border-top: 2px solid var(--gold); display: grid; gap: 12px; align-content: start; }
+  .card :global(.ico) { color: var(--gold); margin-bottom: 8px; } .card p { color: var(--ivory-80); }
+  @media (min-width: 700px) { .cards { grid-template-columns: repeat(2, 1fr); } } @media (min-width: 1100px) { .cards { grid-template-columns: repeat(4, 1fr); gap: 24px; } }
+  .creds { display: grid; gap: 0; margin-top: 32px; max-width: 640px; list-style: none; padding: 0; } .creds li { padding: 16px 0; border-top: 1px solid rgb(151 92 43 / .35); }
+  .welcome { display: grid; gap: 32px; } @media (min-width: 900px) { .welcome { grid-template-columns: 5fr 7fr; gap: 96px; } }
+</style>

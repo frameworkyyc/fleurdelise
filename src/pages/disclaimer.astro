@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import { site } from '../data/site';
+---
+<BaseLayout title="Complementary Wellness Disclaimer | Fleur de Lise Healing" description="Fleur de Lise Healing offers complementary wellness services that are not a substitute for medical or mental-health care." path="/disclaimer">
+  <PageHero eyebrow="Please read" title="Complementary wellness disclaimer" />
+  <section class="section tex-ivory on-light">
+    <div class="wrap">
+      <div class="prose">
+        <p class="lead"><strong>{site.disclaimer}</strong></p>
+        <p>Reiki, Emotional Freedom Technique (EFT), tarot readings and any other service offered by {site.name} are complementary practices intended to support relaxation, reflection and personal wellbeing.</p>
+        <h2>What this means</h2>
+        <ul>
+          <li>Services are not intended to diagnose, treat, cure or prevent any medical or psychological condition, and no particular outcome is promised or guaranteed.</li>
+          <li>Tarot readings are for reflection and perspective, not prediction, and are not professional advice of any kind.</li>
+          <li>Please keep seeing your doctor or mental-health professional, and don’t stop or change any treatment or medication because of anything discussed in a session.</li>
+          <li>Lise is not offering medical, psychological, legal or financial advice.</li>
+        </ul>
+        <h2>If you need urgent support</h2>
+        <p>If you or someone you know is in crisis or thinking about suicide, call or text <strong>9-8-8</strong> (Suicide Crisis Helpline, Canada, 24/7). In an emergency, call <strong>911</strong>.</p>
+        <h2>Questions</h2>
+        <p>If you’re unsure whether a service is right for you, you’re always welcome to <a href="/contact">get in touch</a> before booking.</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

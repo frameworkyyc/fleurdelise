@@ -1,0 +1,101 @@
+---
+import { site } from '../data/site';
+interface Props { kind: 'book' | 'contact' }
+const { kind } = Astro.props;
+const isBook = kind === 'book';
+---
+<form class="form" data-inquiry={kind} data-to={site.email} novalidate>
+  <div class="hp" aria-hidden="true"><label>Leave this empty<input type="text" name="website" tabindex="-1" autocomplete="off" /></label></div>
+
+  {isBook && (
+    <>
+      <fieldset class="fieldset" data-group="service" aria-describedby="service-err">
+        <legend class="legend"><span class="n">01</span>Which service interests you?</legend>
+        <div class="choices">
+          <label class="choice"><input type="radio" name="service" value="reiki" /><span>Reiki</span></label>
+          <label class="choice"><input type="radio" name="service" value="eft" /><span>Emotional Freedom Technique (EFT)</span></label>
+          <label class="choice"><input type="radio" name="service" value="tarot" /><span>Tarot reading</span></label>
+          <label class="choice"><input type="radio" name="service" value="unsure" /><span>Not sure yet</span></label>
+        </div>
+        <p class="error" id="service-err" role="alert"></p>
+      </fieldset>
+
+      <fieldset class="fieldset">
+        <legend class="legend"><span class="n">02</span>In person or virtual?</legend>
+        <div class="choices cols">
+          <label class="choice"><input type="radio" name="format" value="in-person" /><span>In person</span></label>
+          <label class="choice"><input type="radio" name="format" value="virtual" /><span>Virtual</span></label>
+          <label class="choice"><input type="radio" name="format" value="either" checked /><span>No preference</span></label>
+        </div>
+        <p class="hint">Which options are available depends on the service — Lise will confirm when she replies.</p>
+      </fieldset>
+
+      <fieldset class="fieldset">
+        <legend class="legend"><span class="n">03</span>When might suit you?</legend>
+        <div class="field">
+          <label for="times">Days or times that tend to work <span class="opt">(optional)</span></label>
+          <textarea class="textarea" id="times" name="times" rows="3" placeholder="e.g. weekday mornings, or Saturdays"></textarea>
+        </div>
+      </fieldset>
+    </>
+  )}
+
+  <fieldset class="fieldset">
+    <legend class="legend">{isBook && <span class="n">04</span>}{isBook ? 'A little about you' : 'Send a message'}</legend>
+    <div class="grid-2">
+      <div class="field">
+        <label for="name">Your name</label>
+        <input class="input" id="name" name="name" type="text" autocomplete="name" aria-describedby="name-err" required />
+        <p class="error" id="name-err" role="alert"></p>
+      </div>
+      <div class="field">
+        <label for="email">Email</label>
+        <input class="input" id="email" name="email" type="email" autocomplete="email" inputmode="email" aria-describedby="email-err" required />
+        <p class="error" id="email-err" role="alert"></p>
+      </div>
+    </div>
+    <div class="field">
+      <label for="phone">Phone <span class="opt">(optional)</span></label>
+      <input class="input" id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" />
+    </div>
+    {!isBook && (
+      <div class="field">
+        <label for="topic">What is this about?</label>
+        <select class="select" id="topic" name="topic">
+          <option value="general">A general question</option>
+          <option value="appointment">An appointment inquiry</option>
+          <option value="sit">SIT — let me know when sessions open</option>
+        </select>
+      </div>
+    )}
+    <div class="field">
+      <label for="message">{isBook ? 'Anything you’d like Lise to know' : 'Your message'} {isBook && <span class="opt">(optional)</span>}</label>
+      <textarea class="textarea" id="message" name="message" rows="5" aria-describedby="message-err" required={!isBook}></textarea>
+      <p class="error" id="message-err" role="alert"></p>
+    </div>
+  </fieldset>
+
+  <p class="form-note">Please keep health details out of this form — there’s plenty of time to share what feels right in your session.</p>
+
+  <div class="field">
+    <label class="check"><input type="checkbox" name="consent" aria-describedby="consent-err" />
+      <span>{isBook
+        ? 'I understand this is an appointment inquiry — nothing is booked until Lise replies to confirm a time.'
+        : 'I’m happy for Lise to reply to me at the email address above.'}</span></label>
+    <p class="error" id="consent-err" role="alert"></p>
+  </div>
+
+  <div><button class="btn btn-plum" type="submit">{isBook ? 'Send my inquiry' : 'Send message'}</button></div>
+</form>
+
+<div class="result" data-result role="status">
+  <h2 tabindex="-1">Your message is ready to send</h2>
+  <p>Your email app should open with everything filled in — just press send{isBook ? ', and Lise will reply to confirm a time and format. Nothing is booked until you hear from her' : ' and Lise will reply'}.</p>
+  <p>If nothing opened, you can copy your message below and email <a href={`mailto:${site.email}`}>{site.email}</a> directly.</p>
+  <pre class="copy-box" data-copy-text></pre>
+  <div class="actions">
+    <a class="btn" data-mailto href={`mailto:${site.email}`}>Open email again</a>
+    <button class="btn btn-ghost-light btn-sm" type="button" data-copy>Copy message</button>
+    <button class="link-arrow" type="button" data-edit style="background:none;border:0;cursor:pointer;color:inherit">Edit my message</button>
+  </div>
+</div>

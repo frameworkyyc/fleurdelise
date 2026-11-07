@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import InquiryForm from '../components/InquiryForm.astro';
+import Icon from '../components/Icon.astro';
+import Button from '../components/Button.astro';
+import { site } from '../data/site';
+const social = Object.entries(site.social).filter(([, v]) => v) as [string, string][];
+const jsonLd = [{ '@context': 'https://schema.org', '@type': 'ContactPage', name: `Contact ${site.name}`, url: `${site.url}/contact` }];
+---
+<BaseLayout title="Contact | Fleur de Lise Healing, Windsor, Ontario" description="Get in touch with Lise Pinard-Wolf at Fleur de Lise Healing in Windsor, Ontario — questions are welcome. Email, call, or send a message." path="/contact" jsonLd={jsonLd} bookBar={false}>
+  <PageHero eyebrow="Contact" title="Let’s start with hello" lead="Questions are welcome, big or small. Send a note and Lise will reply when she can." />
+
+  <section class="section tex-linen on-light">
+    <div class="wrap layout">
+      <div class="main"><InquiryForm kind="contact" /></div>
+      <aside class="aside" aria-label="Contact details">
+        <ul class="details">
+          <li><Icon name="mail" size={32} /><div><h2 class="lbl">Email</h2><a href={`mailto:${site.email}`}>{site.email}</a></div></li>
+          <li><Icon name="phone" size={32} /><div><h2 class="lbl">Phone</h2><a href={site.phoneHref}>{site.phone}</a></div></li>
+          <li><Icon name="pin" size={32} /><div><h2 class="lbl">Location</h2><span>{site.location}</span><span class="sub">In person &amp; virtual sessions, depending on the service</span></div></li>
+          {social.length > 0 && <li><Icon name="heart" size={32} /><div><h2 class="lbl">Follow</h2><span class="soc">{social.map(([k, v]) => <a href={v} rel="noopener" target="_blank" class="cap">{k}</a>)}</span></div></li>}
+        </ul>
+        <div class="book">
+          <p class="serif">Ready to begin?</p>
+          <Button href="/book">{site.book.cta}</Button>
+        </div>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>
+<style>
+  .layout { display: grid; gap: 64px; }
+  .details { list-style: none; padding: 0; margin: 0; display: grid; gap: 0; }
+  .details li { display: grid; grid-template-columns: 40px 1fr; gap: 20px; padding: 28px 0; border-top: 1px solid rgb(151 92 43 / .35); align-items: start; }
+  .details li:last-child { border-bottom: 1px solid rgb(151 92 43 / .35); }
+  .details :global(svg) { color: var(--bronze); margin-top: 2px; }
+  .lbl { font-family: var(--font-sans); font-style: normal; font-size: .75rem; letter-spacing: .2em; text-transform: uppercase; font-weight: 500; color: var(--bronze-text); margin-bottom: 6px; }
+  .details a, .details span { display: block; text-decoration: none; word-break: break-word; font-size: 1.0625rem; } .details a { display: inline-block; padding-block: 10px; margin-block: -6px; } .details a:hover { text-decoration: underline; text-underline-offset: 4px; }
+  .details .sub { font-size: .9375rem; color: var(--plum-text-soft); margin-top: 4px; } .soc { display: flex !important; gap: 20px; } .cap { text-transform: capitalize; }
+  .book { margin-top: 40px; padding: 32px; background: var(--plum); color: var(--ivory); border-top: 2px solid var(--gold); display: grid; gap: 20px; justify-items: start; }
+  .book .serif { font-style: italic; font-size: 1.5rem; }
+  @media (min-width: 1000px) { .layout { grid-template-columns: 7fr 4fr; gap: 96px; align-items: start; } .aside { position: sticky; top: calc(var(--header-h) + 32px); } }
+</style>

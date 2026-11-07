@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import Icon from '../../components/Icon.astro';
+import Invitation from '../../components/Invitation.astro';
+import { serviceContent } from '../../data/service-content';
+import { sit } from '../../data/site';
+const main = [serviceContent.reiki, serviceContent.eft, serviceContent.tarot];
+---
+<BaseLayout title="Services | Reiki, EFT & Tarot in Windsor, Ontario | Fleur de Lise Healing" description="Reiki, Emotional Freedom Technique (EFT) and tarot readings in Windsor, Ontario — gentle, personal complementary support in person or virtually, depending on the service.">
+  <PageHero eyebrow="Services" title="Gentle support, at your own pace" lead="Reiki, EFT and tarot — in person or virtually, depending on the service. Choose what feels right, or start with a conversation." />
+
+  <section class="section tex-ivory on-light" aria-labelledby="svc-title">
+    <div class="wrap">
+      <h2 id="svc-title" class="sr-only">Services</h2>
+      <ul class="list">
+        {main.map((c, i) => (
+          <li class="item reveal" id={c.slug} style={`--d:${i}`}>
+            <Icon name={c.icon} size={64} class="ico" />
+            <div class="txt">
+              <h3 class="serif"><a href={`/services/${c.slug}`}>{c.name}</a></h3>
+              <p>{c.lead}</p>
+            </div>
+            <a class="link-arrow" href={`/services/${c.slug}`} aria-label={`Learn more about ${c.name}`}>Learn more <Icon name="arrow" size={18} /></a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section tex-midnight on-dark sitband" aria-labelledby="sit-h">
+    <div class="wrap row">
+      <Icon name="sit" size={72} class="ico" />
+      <div>
+        <p class="eyebrow">Coming {sit.launch}</p>
+        <h2 id="sit-h">{sit.name} (SIT)</h2>
+        <p class="lead">Joining the services on <time datetime={sit.launchISO}>{sit.launch}</time>. Ask to be notified when sessions open.</p>
+      </div>
+      <a class="btn" href="/services/sit">About SIT</a>
+    </div>
+  </section>
+
+  <section class="section tex-linen on-light" aria-labelledby="modes-h">
+    <div class="wrap modes">
+      <div class="intro">
+        <p class="eyebrow">In person &amp; virtual</p>
+        <h2 id="modes-h">Meet in the way that suits you</h2>
+        <p class="lead">Sessions are offered in person in Windsor, Ontario and virtually, depending on the service. When you get in touch, Lise will confirm what’s available for the one you’re interested in.</p>
+      </div>
+      <div class="two">
+        <div class="mode"><Icon name="inperson" size={48} /><h3>In person</h3><p>Unhurried time together in Windsor, Ontario.</p></div>
+        <div class="mode"><Icon name="virtual" size={48} /><h3>Virtual</h3><p>Join from wherever you feel comfortable and at ease.</p></div>
+      </div>
+    </div>
+  </section>
+  <Invitation />
+</BaseLayout>
+<style>
+  .list { display: grid; }
+  .item { display: grid; grid-template-columns: auto 1fr; gap: 12px 28px; align-items: center; padding: 40px 0; border-top: 1px solid rgb(151 92 43 / .35); }
+  .item:last-child { border-bottom: 1px solid rgb(151 92 43 / .35); }
+  .item :global(.ico) { color: var(--bronze); }
+  .item h3 { font-style: italic; font-weight: 400; font-size: clamp(1.75rem, 1.4rem + 1.2vw, 2.25rem); line-height: 1.2; }
+  .item h3 a { text-decoration: none; display: inline-block; padding-block: 8px; margin-block: -8px; }
+  .item p { color: var(--plum-text-soft); margin-top: 6px; max-width: 52ch; }
+  .item .link-arrow { grid-column: 2; justify-self: start; }
+  @media (min-width: 900px) { .item { grid-template-columns: 96px 1fr auto; padding: 48px 0; } .item .link-arrow { grid-column: auto; } }
+  .sitband .row { display: grid; gap: 28px; align-items: center; justify-items: start; }
+  .sitband :global(.ico) { color: var(--gold); }
+  .sitband h2 { margin: 10px 0 14px; } .sitband .lead { color: var(--ivory-80); max-width: 52ch; }
+  @media (min-width: 900px) { .sitband .row { grid-template-columns: auto 1fr auto; gap: 56px; } }
+  .modes { display: grid; gap: 48px; }
+  .modes h2 { margin: 12px 0 20px; } .modes .lead { color: var(--plum-text-soft); max-width: 48ch; }
+  .two { display: grid; gap: 20px; align-content: center; }
+  .mode { background: var(--plum); color: var(--ivory); padding: 32px; border-top: 2px solid var(--gold); display: grid; gap: 10px; }
+  .mode :global(svg) { color: var(--gold); } .mode p { color: var(--ivory-80); }
+  @media (min-width: 900px) { .modes { grid-template-columns: 1.1fr 1fr; gap: 96px; align-items: center; } }
+</style>

@@ -21,5 +21,16 @@ Nothing here is rendered to visitors. Sections are built so each item below can 
 - Values one-liners (Safe / Nurturing / Authentic).
 - SIT announcement paragraph.
 
+## Added with the inner pages (all drafted from Brand Kit v5 language; awaiting Lise's approval)
+- About page: "How I hold space" principles and "A welcoming space" copy. Bio / credentials render automatically from `site.lise.bio` / `site.lise.credentials`.
+- Service pages (`src/data/service-content.ts`): overviews, "what to expect" (shared by all three), EFT "Notice / Tap / Pause" steps, tarot "78 cards" line. Duration, price, format, availability render from `details` when supplied.
+- SIT page: launch date + "I'll share more closer to launch" only. No SIT logo, no description of the technique.
+- Privacy page: plain-language notice written for the current mailto-based forms — **needs Lise's review (and ideally legal review) before launch**, and an update when a delivery service or booking provider is added.
+- Disclaimer page includes the 9-8-8 / 911 crisis line wording — confirm Lise is happy with it.
+
+## Decisions pending
+- Inquiry delivery: forms currently open the visitor's email app (mailto) — free, no data stored. Recommended upgrade: Cloudflare Email Routing `send_email` binding from the existing Worker (free; needs Email Routing enabled on a Framework zone and fleurdelisehealing@gmail.com verified as destination) + Turnstile. Not configured; needs approval.
+- Booking provider (see `src/data/booking.ts` — one-line switch to embed/redirect).
+
 ## Assets
 - `brand-originals/E_submark-transparent_DAMAGED-do-not-use.png` — alpha matte is corrupted (red/yellow artefacts). Replace with a clean export. Until then the textured plum sub-mark (D) is used in the header, footer and favicon.

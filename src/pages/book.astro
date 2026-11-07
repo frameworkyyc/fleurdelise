@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import InquiryForm from '../components/InquiryForm.astro';
+import Icon from '../components/Icon.astro';
+import { booking } from '../data/booking';
+import { site } from '../data/site';
+const steps = [
+  { t: 'Send your inquiry', d: 'Tell Lise which service interests you and what might suit you.' },
+  { t: 'Lise replies', d: 'She’ll confirm what’s available and agree a time and format with you.' },
+  { t: 'Come as you are', d: 'Nothing to prepare. Every session begins with a conversation.' },
+];
+---
+<BaseLayout title="Request an Appointment | Fleur de Lise Healing, Windsor, Ontario" description="Send an appointment inquiry for Reiki, EFT or tarot with Lise Pinard-Wolf in Windsor, Ontario — in person or virtual. Lise will reply to confirm a time." path="/book" bookBar={false}>
+  <PageHero eyebrow="Book" title="Request an appointment" lead="This is an appointment inquiry. Nothing is booked until Lise replies to confirm a time with you." />
+
+  <section class="section tex-linen on-light">
+    <div class="wrap layout">
+      <div class="main">
+        {booking.provider === 'inquiry' && <InquiryForm kind="book" />}
+        {booking.provider === 'embed' && <iframe class="embed" src={booking.url} title={booking.title} loading="lazy"></iframe>}
+        {booking.provider === 'redirect' && <a class="btn btn-plum" href={booking.url}>{booking.label}</a>}
+      </div>
+      <aside class="aside" aria-label="What happens next">
+        <h2 class="h2">What happens next</h2>
+        <ol class="steps">
+          {steps.map((s, i) => <li><span class="n serif" aria-hidden="true">{i + 1}</span><div><h3>{s.t}</h3><p>{s.d}</p></div></li>)}
+        </ol>
+        <div class="direct">
+          <h3>Prefer to talk it through?</h3>
+          <p><Icon name="phone" size={24} /><a href={site.phoneHref}>{site.phone}</a></p>
+          <p><Icon name="mail" size={24} /><a href={`mailto:${site.email}`}>{site.email}</a></p>
+          <p class="small">{site.disclaimer}</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>
+<style>
+  .layout { display: grid; gap: 64px; }
+  .embed { width: 100%; min-height: 720px; border: 0; background: #fff; }
+  .aside h2 { margin-bottom: 28px; }
+  .steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 28px; }
+  .steps li { display: grid; grid-template-columns: 44px 1fr; gap: 16px; }
+  .n { font-style: italic; font-size: 2rem; line-height: 1; color: var(--bronze); } .steps p { color: var(--plum-text-soft); }
+  .direct { margin-top: 48px; padding: 28px; background: var(--plum); color: var(--ivory); border-top: 2px solid var(--gold); display: grid; gap: 10px; }
+  .direct p { display: flex; gap: 12px; align-items: center; } .direct :global(svg) { color: var(--gold); flex: none; } .direct a { display: inline-block; padding-block: 10px; text-decoration: none; word-break: break-word; } .direct a:hover { color: var(--gold); }
+  .direct .small { display: block; margin-top: 12px; font-family: var(--font-serif); font-style: italic; font-size: .9375rem; color: var(--ivory-60); }
+  @media (min-width: 1000px) { .layout { grid-template-columns: 7fr 4fr; gap: 96px; align-items: start; } .aside { position: sticky; top: calc(var(--header-h) + 32px); } }
+</style>

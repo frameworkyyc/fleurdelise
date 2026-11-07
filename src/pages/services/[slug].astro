@@ -1,0 +1,113 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import Icon from '../../components/Icon.astro';
+import Button from '../../components/Button.astro';
+import { serviceContent, type ServiceContent } from '../../data/service-content';
+import { site } from '../../data/site';
+
+export function getStaticPaths() {
+  return Object.values(serviceContent).map((c) => ({ params: { slug: c.slug }, props: { c } }));
+}
+const { c } = Astro.props as { c: ServiceContent };
+const others = Object.values(serviceContent).filter((o) => o.slug !== c.slug && !o.upcoming);
+const sitOther = c.slug !== 'sit' ? serviceContent.sit : null;
+const cta = c.upcoming ? { href: '/contact?interest=sit', label: 'Ask to be notified' } : { href: `/book?service=${c.slug}`, label: site.book.cta };
+const d = c.details; const hasDetails = d && Object.values(d).some(Boolean);
+const jsonLd = [{
+  '@context': 'https://schema.org', '@type': 'Service', name: c.name, description: c.metaDescription,
+  provider: { '@type': 'LocalBusiness', '@id': `${site.url}/#business`, name: site.name },
+  areaServed: { '@type': 'City', name: 'Windsor, Ontario' },
+}];
+---
+<BaseLayout title={c.metaTitle} description={c.metaDescription} path={`/services/${c.slug}`} jsonLd={jsonLd}>
+  <PageHero icon={c.icon} eyebrow={c.eyebrow} title={c.title} lead={c.lead} />
+
+  <section class="section tex-linen on-light" aria-labelledby="ov-h">
+    <div class="wrap two">
+      <div><p class="eyebrow">Overview</p><h2 id="ov-h">{c.overviewTitle}</h2></div>
+      <div class="prose">{c.overview.map((p, i) => <p class:list={[i === 0 && 'lead']}>{p}</p>)}</div>
+    </div>
+  </section>
+
+  {c.how && (
+    <section class="section tex-ivory on-light" aria-labelledby="how-h">
+      <div class="wrap">
+        <p class="eyebrow">Step by step</p>
+        <h2 id="how-h">{c.how.title}</h2>
+        {c.how.intro && <p class="lead intro">{c.how.intro}</p>}
+        <ol class="steps">
+          {c.how.steps.map((s, i) => (
+            <li class="reveal" style={`--d:${i}`}><span class="num serif" aria-hidden="true">{i + 1}</span><h3>{s.title}</h3><p>{s.text}</p></li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  )}
+
+  {c.expect && (
+    <section class="section tex-midnight on-dark" aria-labelledby="ex-h">
+      <div class="wrap">
+        <p class="eyebrow">What to expect</p>
+        <h2 id="ex-h">What to expect in your first session</h2>
+        <ul class="cards">
+          {c.expect.map((e, i) => (
+            <li class="card reveal" style={`--d:${i}`}><h3>{e.title}</h3><p>{e.text}</p></li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  {hasDetails && (
+    <section class="section tex-ivory on-light" aria-labelledby="det-h">
+      <div class="wrap"><p class="eyebrow">Session details</p><h2 id="det-h">The practical bits</h2>
+        <dl class="dl">
+          {d?.format && <div><dt>Format</dt><dd>{d.format}</dd></div>}
+          {d?.duration && <div><dt>Duration</dt><dd>{d.duration}</dd></div>}
+          {d?.price && <div><dt>Investment</dt><dd>{d.price}</dd></div>}
+          {d?.availability && <div><dt>Availability</dt><dd>{d.availability}</dd></div>}
+        </dl>
+      </div>
+    </section>
+  )}
+
+  <section class="section tex-plum on-dark cta" aria-labelledby="cta-h">
+    <div class="wrap center">
+      <h2 id="cta-h" class="display">{c.upcoming ? 'Be among the first to hear.' : 'When you’re ready.'}</h2>
+      <p class="lead">{c.upcoming ? 'Send a note and I’ll let you know when SIT sessions open.' : 'Send an appointment inquiry — there’s no commitment, and Lise will reply to confirm a time.'}</p>
+      <Button href={cta.href}>{cta.label}</Button>
+      <p class="fine">{site.disclaimer}</p>
+    </div>
+  </section>
+
+  <section class="section tex-linen on-light" aria-labelledby="more-h">
+    <div class="wrap">
+      <h2 id="more-h" class="h2">{c.upcoming ? 'Services available now' : 'Other ways to be supported'}</h2>
+      <ul class="more">
+        {others.map((o) => <li><a href={`/services/${o.slug}`}><Icon name={o.icon} size={40} /><span class="serif">{o.name}</span><Icon name="arrow" size={18} class="arr" /></a></li>)}
+        {sitOther && <li><a href="/services/sit"><Icon name="sit" size={40} /><span class="serif">SIT <small>Coming May 1, 2027</small></span><Icon name="arrow" size={18} class="arr" /></a></li>}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+<style>
+  .two { display: grid; gap: 28px; } .two h2 { margin-top: 12px; } @media (min-width: 900px) { .two { grid-template-columns: 5fr 7fr; gap: 96px; } }
+  .prose { max-width: 60ch; } .prose .lead { color: var(--plum); }
+  h2 { margin: 12px 0 0; } .intro { margin-top: 20px; color: var(--plum-text-soft); max-width: 52ch; }
+  .steps { display: grid; gap: 24px; margin-top: clamp(40px, 5vw, 64px); list-style: none; padding: 0; }
+  .steps li { padding: 28px 0 0; border-top: 1px solid rgb(151 92 43 / .4); display: grid; gap: 8px; }
+  .num { font-size: 2.5rem; font-style: italic; color: var(--bronze); line-height: 1; } .steps p { color: var(--plum-text-soft); max-width: 32ch; }
+  @media (min-width: 900px) { .steps { grid-template-columns: repeat(3, 1fr); gap: 56px; } }
+  .cards { display: grid; gap: 20px; margin-top: clamp(40px, 5vw, 64px); }
+  .card { background: var(--plum); padding: 36px 32px; border-top: 2px solid var(--gold); display: grid; gap: 10px; align-content: start; } .card p { color: var(--ivory-80); }
+  @media (min-width: 900px) { .cards { grid-template-columns: repeat(3, 1fr); gap: 28px; } }
+  .dl { display: grid; gap: 0; margin-top: 40px; max-width: 640px; } .dl div { display: grid; grid-template-columns: 9rem 1fr; gap: 16px; padding: 18px 0; border-top: 1px solid rgb(151 92 43 / .35); }
+  .dl dt { font-size: .75rem; letter-spacing: .2em; text-transform: uppercase; font-weight: 500; color: var(--bronze-text); padding-top: 4px; } .dl dd { margin: 0; }
+  .cta .center { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 24px; } .cta .lead { color: var(--ivory-80); max-width: 46ch; margin-bottom: 8px; }
+  .fine { font-family: var(--font-serif); font-style: italic; font-size: .9375rem; color: var(--ivory-60); max-width: 50ch; margin-top: 12px; }
+  .more { display: grid; gap: 12px; margin-top: 32px; max-width: 720px; }
+  .more a { display: flex; align-items: center; gap: 20px; padding: 22px 24px; min-height: 64px; border: 1px solid rgb(151 92 43 / .4); text-decoration: none; transition: background-color .4s var(--ease), border-color .4s, transform .4s var(--ease); }
+  .more a:hover { background: rgb(255 250 245 / .55); border-color: var(--plum); transform: translateX(4px); }
+  .more :global(svg:first-child) { color: var(--bronze); flex: none; } .more span { font-size: 1.25rem; font-style: italic; flex: 1; } .more small { display: block; font-family: var(--font-sans); font-style: normal; font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--bronze-text); }
+</style>
