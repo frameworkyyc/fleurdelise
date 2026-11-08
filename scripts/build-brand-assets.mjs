@@ -1,16 +1,26 @@
 // Generates web-optimised brand assets from /brand-originals into /public/brand.
 // Originals are never modified — only resized/re-encoded (no crop, recolour or effects).
 import sharp from 'sharp';
-import { writeFile } from 'node:fs/promises';
+import { writeFile, mkdir } from 'node:fs/promises';
 
 const O = 'brand-originals/';
 const P = 'public/brand/';
 const webp = { quality: 88, effort: 6, alphaQuality: 100 };
 
-// Primary on-plum logo: Dark Background Alternative (C, transparent)
+// Primary on-plum logo: Dark Background Alternative (C, transparent).
+// Encoded as near-lossless WebP (VP8L container, alpha stored natively). The earlier lossy+alpha encoding
+// (VP8X + ALPH + VP8) was the only image on the site using that path and is the prime Safari/iPad suspect.
+const logoWebp = { lossless: true, nearLossless: true, quality: 60, effort: 6 };
 for (const w of [360, 768, 1024, 1536]) {
-  await sharp(O + 'C_dark-alternative-transparent.png').resize({ width: w }).webp(webp).toFile(`${P}logo-dark-${w}.webp`);
+  await sharp(O + 'C_dark-alternative-transparent.png').resize({ width: w }).webp(logoWebp).toFile(`${P}logo-dark-${w}.webp`);
 }
+// Universal fallback (<picture> <img src>): PNG alpha works everywhere, incl. browsers without WebP.
+await sharp(O + 'C_dark-alternative-transparent.png').resize({ width: 1024 })
+  .png({ compressionLevel: 9, adaptiveFiltering: true }).toFile(`${P}logo-dark-1024.png`);
+// Diagnostics only (staging /logo-test; stripped from production builds): the previous encoding, for A/B on device.
+await mkdir(`${P}diag`, { recursive: true });
+await sharp(O + 'C_dark-alternative-transparent.png').resize({ width: 768 })
+  .webp({ quality: 88, effort: 6, alphaQuality: 100 }).toFile(`${P}diag/logo-lossy-alpha-768.webp`);
 // Sub-mark (D, textured plum) — temporary until a clean transparent sub-mark is supplied
 for (const w of [128, 256, 512]) {
   await sharp(O + 'D_submark-plum-textured.png').resize({ width: w }).webp(webp).toFile(`${P}submark-plum-${w}.webp`);
