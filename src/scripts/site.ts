@@ -1,3 +1,4 @@
+export {}; // module scope
 // Progressive enhancement only — the site is fully usable without this script.
 const doc = document.documentElement;
 const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -57,7 +58,7 @@ if (bar && 'IntersectionObserver' in window) {
 /* Safety net: hero entrance animations are an enhancement only. If one is still unfinished well after it should
    have ended (stalled/throttled compositor, etc.), drop it so the element shows its normal, fully visible state. */
 setTimeout(() => {
-  document.querySelectorAll<HTMLElement>('.hero-logo-frame, .hero-eyebrow, .hero-tag .line, .hero-lead, .hero-cta').forEach((el) => {
+  document.querySelectorAll<HTMLElement>('.hero-logo-media, .hero-eyebrow, .hero-tag .line, .hero-lead, .hero-cta').forEach((el) => {
     if (parseFloat(getComputedStyle(el).opacity) < 0.99) el.style.animation = 'none';
   });
-}, 6000);
+}, 7500);

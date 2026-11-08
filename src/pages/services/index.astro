@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHero from '../../components/PageHero.astro';
 import Icon from '../../components/Icon.astro';
+import ServiceIllustration from '../../components/garden/ServiceIllustration.astro';
 import Invitation from '../../components/Invitation.astro';
 import { serviceContent } from '../../data/service-content';
 import { sit } from '../../data/site';
@@ -15,8 +16,8 @@ const main = [serviceContent.reiki, serviceContent.eft, serviceContent.tarot];
       <h2 id="svc-title" class="sr-only">Services</h2>
       <ul class="list">
         {main.map((c, i) => (
-          <li class="item reveal" id={c.slug} style={`--d:${i}`}>
-            <Icon name={c.icon} size={64} class="ico" />
+          <li class="item svc-host reveal" id={c.slug} style={`--d:${i}`}>
+            <ServiceIllustration variant={c.slug as "reiki" | "eft" | "tarot"} size={88} class="ico" />
             <div class="txt">
               <h3 class="serif"><a href={`/services/${c.slug}`}>{c.name}</a></h3>
               <p>{c.lead}</p>
@@ -64,7 +65,7 @@ const main = [serviceContent.reiki, serviceContent.eft, serviceContent.tarot];
   .item h3 a { text-decoration: none; display: inline-block; padding-block: 8px; margin-block: -8px; }
   .item p { color: var(--plum-text-soft); margin-top: 6px; max-width: 52ch; }
   .item .link-arrow { grid-column: 2; justify-self: start; }
-  @media (min-width: 900px) { .item { grid-template-columns: 96px 1fr auto; padding: 48px 0; } .item .link-arrow { grid-column: auto; } }
+  @media (min-width: 900px) { .item { grid-template-columns: 112px 1fr auto; padding: 48px 0; } .item .link-arrow { grid-column: auto; } }
   .sitband .row { display: grid; gap: 28px; align-items: center; justify-items: start; }
   .sitband :global(.ico) { color: var(--gold); }
   .sitband h2 { margin: 10px 0 14px; } .sitband .lead { color: var(--ivory-80); max-width: 52ch; }

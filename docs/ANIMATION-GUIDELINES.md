@@ -21,6 +21,9 @@ No `filter`, `backdrop-filter`, `blur()` or `drop-shadow()` inside any `@keyfram
 - Heavy `will-change` use, or very large composited layers.
 - `decoding="async"` on the LCP/hero image.
 
+## Reusable components (Garden in Bloom)
+See [GARDEN-IN-BLOOM.md](./GARDEN-IN-BLOOM.md): `HeroBloom`, `Lotus`, `Sprout`, `FleurDeLis`, `SeamOrnament`, `ServiceIllustration`, `GardenVine`, driven by `src/scripts/garden.ts` + `src/styles/garden.css` (`data-grow`, `data-bloom`, `.gl`/`--s`/`--w`, `.g-draw`). Prefer these over new bespoke animation. Manual Safari testing: [SAFARI-QA-CHECKLIST.md](./SAFARI-QA-CHECKLIST.md).
+
 ## Bloom recipe (sketch)
 ```css
 .petal { transform-box: fill-box; transform-origin: 50% 100%;

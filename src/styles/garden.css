@@ -1,0 +1,31 @@
+/* ==========================================================================
+   Garden in Bloom — Safari-safe motion primitives (docs/ANIMATION-GUIDELINES.md)
+   Rules: transform + opacity (+ SVG stroke-dashoffset) only. No filter/backdrop-filter/blur anywhere in motion.
+   Scroll-linked growth: JS (src/scripts/garden.ts) writes a unitless progress --p (0→1) on [data-grow] /
+   [data-grow-page] elements; CSS maps it to transforms. Without JS (or on failure / reduced motion) --p is 1,
+   i.e. everything is shown fully bloomed.
+   ========================================================================== */
+[data-grow], [data-grow-page] { --p: 1; }
+.js [data-grow], .js [data-grow-page] { --p: 0; }
+.garden-fail [data-grow], .garden-fail [data-grow-page] { --p: 1 !important; }
+@media (prefers-reduced-motion: reduce) { .js [data-grow], .js [data-grow-page] { --p: 1; } }
+
+/* Local (staggered) progress: set --s (start, 0–1) and --w (width, 0–1) inline on any descendant that has class .gl */
+.gl { --lp: clamp(0, calc((var(--p) - var(--s, 0)) / var(--w, 1)), 1); }
+
+/* SVG helpers (all rely on a wrapper translate so that transform-origin: 0 0 is the element's anchor point) */
+.g-fade { opacity: var(--lp); }
+.g-pop  { opacity: var(--lp); transform: scale(calc(.2 + .8 * var(--lp))); transform-origin: 0 0; }
+.g-grow-up { opacity: var(--lp); transform: scale(calc(.18 + .82 * var(--lp))); transform-box: fill-box; transform-origin: 50% 100%; }
+.g-stem { transform: scaleY(var(--lp)); transform-box: fill-box; transform-origin: 50% 100%; }
+/* line-draw: JS measures each path (getTotalLength) into --len; without JS the line is simply drawn */
+.js .g-draw { stroke-dasharray: var(--len, 9999); stroke-dashoffset: calc(var(--len, 9999) * (1 - var(--lp, var(--p)))); }
+.garden-fail .g-draw { stroke-dasharray: none !important; stroke-dashoffset: 0 !important; }
+@media (prefers-reduced-motion: reduce) { .js .g-draw { stroke-dasharray: none; stroke-dashoffset: 0; } }
+
+/* Shared line-art look (Brand Kit §05: hand-drawn fine line, one weight; gold/ivory on plum, bronze on linen) */
+.line-art { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Interactive illustrations open when their host (card / row) is hovered or focused (also .is-bloomed via JS) */
+.svc-host:hover .svc, .svc-host:focus-within .svc { --o: 1; }
+.g-rise { opacity: var(--lp); transform: translateY(calc((1 - var(--lp)) * 22px)); }

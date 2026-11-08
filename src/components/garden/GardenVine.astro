@@ -1,0 +1,47 @@
+---
+/**
+ * Page-edge vine for wide screens (≥1440px, where the page margins are free). Roots at the bottom of the viewport and
+ * grows upward as the visitor scrolls the page; leaf pairs open along the way and a lotus blooms at the top as the
+ * visitor nears the end. Fixed, decorative, pointer-events: none. Driven by --p = whole-page scroll progress.
+ */
+const stem = 'M40 990C20 900 62 820 38 730S18 560 42 470S62 300 38 210S30 110 40 70';
+// attachment points along the stem [x, y, angle°, start]
+const leaves: [number, number, number, number][] = [
+  [30, 920, -50, 0.04], [52, 890, 40, 0.07], [36, 790, -48, 0.14], [52, 740, 46, 0.18],
+  [30, 640, -52, 0.26], [50, 560, 44, 0.32], [38, 480, -46, 0.4], [56, 400, 42, 0.46],
+  [40, 320, -50, 0.54], [50, 250, 40, 0.6], [34, 170, -46, 0.68], [46, 120, 40, 0.74],
+];
+const buds: [number, number, number][] = [[24, 700, 0.3], [58, 520, 0.44], [22, 360, 0.58]];
+const petal = 'M0 0C5-7 5-18 0-26C-5-18-5-7 0 0Z';
+---
+<div class="vine" data-grow-page aria-hidden="true">
+  <svg viewBox="0 0 80 1000" preserveAspectRatio="xMidYMax meet" focusable="false">
+    <path class="v-stem gl g-draw" style="--s:0;--w:.78" d={stem} />
+    {leaves.map(([x, y, a, s]) => (
+      <g transform={`translate(${x} ${y}) rotate(${a})`}><path class="v-leaf gl" style={`--s:${s};--w:.12`} d="M0 0C6-9 18-10 28 0 18 9 6 9 0 0Z" /></g>
+    ))}
+    {buds.map(([x, y, s]) => (
+      <g transform={`translate(${x} ${y})`}>
+        {[-24, 0, 24].map((th) => <g class="v-fan gl" style={`--th:${th};--s:${s};--w:.14`}><path class="v-pet" d={petal} /></g>)}
+      </g>
+    ))}
+    <!-- crowning lotus -->
+    <g transform="translate(40 66)">
+      {[0, -22, 22, -44, 44, -66, 66].map((th, i) => (
+        <g class="v-fan gl" style={`--th:${th};--s:${(0.78 + i * 0.025).toFixed(3)};--w:.12`}><path class="v-pet v-big" d={petal} /></g>
+      ))}
+    </g>
+  </svg>
+</div>
+<style>
+  .vine { display: none; }
+  @media (min-width: 1440px) {
+    .vine { display: block; position: fixed; z-index: 4; left: 14px; top: 0; bottom: 0; width: 76px; pointer-events: none; color: var(--gold); opacity: .55; }
+    .vine svg { width: 100%; height: 100%; display: block; overflow: visible; }
+    .vine :global(*) { fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+    .v-leaf { opacity: var(--lp); transform: scale(calc(.15 + .85 * var(--lp))); transform-origin: 0 0; }
+    .v-fan { transform: rotate(calc(var(--th) * 1deg * var(--lp))); transform-origin: 0 0; }
+    .v-pet { opacity: var(--lp); transform: scale(calc(.2 + .8 * var(--lp))); transform-origin: 0 0; }
+    .v-big { transform: scale(calc((.2 + .8 * var(--lp)) * 1.5)); }
+  }
+</style>

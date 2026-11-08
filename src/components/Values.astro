@@ -1,17 +1,21 @@
 ---
+import Sprout from './garden/Sprout.astro';
+import SeamOrnament from './garden/SeamOrnament.astro';
 const values = [
-  { n: '01', name: 'Safe', text: 'Your pace, your privacy, your choice — always.' },
-  { n: '02', name: 'Nurturing', text: 'Gentle support for whatever you’re carrying.' },
-  { n: '03', name: 'Authentic', text: 'Plain words and real presence. No performance, no judgment.' },
+  { n: '01', name: 'Safe', kind: 'bud', text: 'Your pace, your privacy, your choice — always.' },
+  { n: '02', name: 'Nurturing', kind: 'leaf', text: 'Gentle support for whatever you’re carrying.' },
+  { n: '03', name: 'Authentic', kind: 'flower', text: 'Plain words and real presence. No performance, no judgment.' },
 ];
 ---
 <section class="section tex-linen on-light values" aria-labelledby="values-title">
+  <SeamOrnament tone="linen" />
   <div class="wrap">
     <p class="eyebrow reveal">Core values</p>
     <h2 id="values-title" class="reveal" style="--d:1">A safe space to bloom.</h2>
     <ol class="list">
       {values.map((v, i) => (
         <li class="reveal" style={`--d:${i + 1}`}>
+          <Sprout kind={v.kind as "bud" | "leaf" | "flower"} size={64} />
           <span class="num" aria-hidden="true">{v.n}</span>
           <h3 class="serif">{v.name}</h3>
           <p>{v.text}</p>

@@ -1,0 +1,97 @@
+---
+/**
+ * Interactive botanical service illustrations (fine line, currentColor — gold on plum, bronze on linen).
+ * Open amount --o: resting .3 → 1 when the host is hovered / focused (.svc-host) or once scrolled into view
+ * (.is-bloomed, set by garden.ts so touch devices bloom too). Transform/opacity only. Decorative.
+ *   reiki  — a lotus whose petals fan open, with rays of light and still water
+ *   eft    — a fern that unfurls, with dew drops that "tap" and ripple
+ *   tarot  — a card where a four-point star blooms into a flower between two moons, tendrils climbing
+ */
+interface Props { variant: 'reiki' | 'eft' | 'tarot'; size?: number; class?: string }
+const { variant, size = 96, class: cls } = Astro.props;
+const petal = 'M0 0C6-8 6-22 0-34C-6-22-6-8 0 0Z';
+// fern: leaflets attached along the stem's cubic curve, alternating sides, shrinking toward the tip
+const P = [[30, 86], [34, 60], [44, 38], [64, 14]];
+const bez = (t: number) => [0, 1].map((i) => (1 - t) ** 3 * P[0][i] + 3 * (1 - t) ** 2 * t * P[1][i] + 3 * (1 - t) * t ** 2 * P[2][i] + t ** 3 * P[3][i]);
+const tang = (t: number) => { const d = [0, 1].map((i) => 3 * (1 - t) ** 2 * (P[1][i] - P[0][i]) + 6 * (1 - t) * t * (P[2][i] - P[1][i]) + 3 * t ** 2 * (P[3][i] - P[2][i])); return (Math.atan2(d[1], d[0]) * 180) / Math.PI; };
+const fern = [0.14, 0.3, 0.46, 0.62, 0.78, 0.92].flatMap((t, s) => {
+  const [x, y] = bez(t); const a = tang(t); const k = 1.05 - s * 0.1;
+  return [{ x: x.toFixed(1), y: y.toFixed(1), a: (a - 52).toFixed(0), k, s }, { x: x.toFixed(1), y: y.toFixed(1), a: (a + 52).toFixed(0), k, s }];
+});
+---
+<span class:list={['svc', `svc-${variant}`, cls]} data-bloom style={`width:${size}px;height:${size}px`} aria-hidden="true">
+  <svg viewBox="0 0 96 96" width={size} height={size} focusable="false">
+    {variant === 'reiki' && (
+      <>
+        <g transform="translate(48 72)">
+          {[[0, 1, 0], [-22, 0.92, 1], [22, 0.92, 1], [-46, 0.8, 2], [46, 0.8, 2], [-68, 0.62, 3], [68, 0.62, 3]].map(([th, k, i]) => (
+            <g class="pt-fan" style={`--th:${th};--k:${k};--i:${i}`}><path class="pt-petal" d={petal} /></g>
+          ))}
+        </g>
+        <g class="rays">{[-48, -24, 0, 24, 48].map((a, i) => <path class="ray" style={`--i:${i}`} d="M48 22V12" transform={`rotate(${a} 48 62)`} />)}</g>
+        <path class="water" d="M24 78Q36 84 48 78T72 78" />
+        <path class="water w2" d="M32 85Q42 89 52 85T68 85" />
+      </>
+    )}
+    {variant === 'eft' && (
+      <>
+        <path class="fern-stem" d="M30 86C34 60 44 38 64 14" />
+        <g class="ferns">
+          {fern.map((f) => (
+            <g transform={`translate(${f.x} ${f.y})`}><g class="lf-rot" style={`--a:${f.a};--k:${f.k};--s:${f.s}`}><path class="lf" d="M0 0C4-5 13-7 21-2C13 3 4 4 0 0Z" /></g></g>
+          ))}
+        </g>
+        <g class="dew"><circle class="drop d1" cx="73" cy="12" r="2.3" /><circle class="drop d2" cx="21" cy="52" r="2" /><circle class="drop d3" cx="80" cy="40" r="1.8" /></g>
+        <g class="ripples" transform="translate(72 74)"><circle class="rip r1" r="9" /><circle class="rip r2" r="9" /></g>
+        <circle class="tap" cx="72" cy="74" r="2.2" />
+      </>
+    )}
+    {variant === 'tarot' && (
+      <>
+        <rect class="card" x="24" y="8" width="48" height="80" rx="5" />
+        <path class="moon" d="M51 14a7.2 7.2 0 1 0 0 13 5.8 5.8 0 0 1 0-13z" />
+        <g transform="translate(48 53)">
+          <path class="starcore" d="M0-10C1-3.5 3.5-1 10 0 3.5 1 1 3.5 0 10-1 3.5-3.5 1-10 0-3.5-1-1-3.5 0-10Z" />
+          {[0, 45, 90, 135, 180, 225, 270, 315].map((a, i) => (
+            <g class="fl-fan" style={`--th:${a};--i:${i}`}><ellipse class="fl-petal" cx="0" cy="-14" rx="2.8" ry="5.2" /></g>
+          ))}
+        </g>
+        <path class="tendril t1" d="M32 83C29 79 34 76 31 72" />
+        <path class="tendril t2" d="M64 83C67 79 62 76 65 72" />
+      </>
+    )}
+  </svg>
+</span>
+<style>
+  .svc { --o: .3; display: inline-block; line-height: 0; }
+  .svc :global(svg) { overflow: visible; }
+  .svc.is-bloomed { --o: 1; }
+  .svc :global(*) { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ---- reiki ---- */
+  .pt-fan { transform: rotate(calc(var(--th) * 1deg * var(--o))); transform-origin: 0 0; transition: transform 1s var(--ease-slow); transition-delay: calc(var(--i) * 60ms); }
+  .pt-petal { transform: scale(calc((.55 + .45 * var(--o)) * var(--k))); transform-origin: 0 0; transition: transform 1s var(--ease-slow); transition-delay: calc(var(--i) * 60ms); }
+  .ray { opacity: calc(var(--o) * var(--o)); transition: opacity .9s var(--ease); transition-delay: calc(var(--i) * 70ms + .25s); }
+  .water { opacity: .55; } .water.w2 { opacity: .3; }
+
+  /* ---- eft ---- */
+  .fern-stem { opacity: .95; }
+  .lf-rot { transform: rotate(calc(var(--a) * 1deg)) scale(calc((.15 + .85 * var(--o)) * var(--k))); transform-origin: 0 0; opacity: calc(.25 + .75 * var(--o)); transition: transform 1s var(--ease-slow), opacity .8s var(--ease); transition-delay: calc(var(--s) * 90ms); }
+  .drop { fill: currentColor; stroke: none; opacity: calc(var(--o) * .9); transform: translateY(calc((1 - var(--o)) * -6px)); transition: transform .9s var(--ease-slow), opacity .8s var(--ease); }
+  .d2 { transition-delay: .15s; } .d3 { transition-delay: .3s; }
+  .tap { fill: currentColor; stroke: none; opacity: calc(var(--o) * .9); }
+  .rip { transform-origin: 0 0; transform: scale(.2); opacity: 0; }
+  :global(.svc-host):hover .rip, :global(.svc-host):focus-within .rip, .svc.is-bloomed .rip { animation: ripple 2.2s var(--ease) infinite; }
+  :global(.svc-host):hover .r2, :global(.svc-host):focus-within .r2, .svc.is-bloomed .r2 { animation-delay: 1.1s; }
+  @keyframes ripple { 0% { transform: scale(.2); opacity: .85; } 100% { transform: scale(1); opacity: 0; } }
+
+  /* ---- tarot ---- */
+  .card { opacity: .9; }
+  .moon { opacity: calc(.35 + .65 * var(--o)); transition: opacity .9s var(--ease); }
+  .starcore { transform-origin: 0 0; transform: scale(calc(1 - .25 * var(--o))) rotate(calc(var(--o) * 45deg)); transition: transform 1s var(--ease-slow); }
+  .fl-fan { transform: rotate(calc(var(--th) * 1deg)); transform-origin: 0 0; }
+  .fl-petal { transform-origin: 0 0; transform: scale(calc(.05 + .95 * var(--o))); opacity: var(--o); transition: transform 1s var(--ease-slow), opacity .8s var(--ease); transition-delay: calc(var(--i) * 45ms); }
+  .tendril { opacity: calc(.2 + .8 * var(--o)); transform: scaleY(calc(.3 + .7 * var(--o))); transform-box: fill-box; transform-origin: 50% 100%; transition: transform 1s var(--ease-slow), opacity .8s var(--ease); }
+
+  @media (prefers-reduced-motion: reduce) { .rip { animation: none !important; } }
+</style>

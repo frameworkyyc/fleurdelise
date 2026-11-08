@@ -1,25 +1,36 @@
 ---
 import Button from './Button.astro';
-import Moons from './Moons.astro';
+import Lotus from './garden/Lotus.astro';
+import Sprout from './garden/Sprout.astro';
+import SeamOrnament from './garden/SeamOrnament.astro';
 import { site } from '../data/site';
 ---
 <section class="section tex-ivory on-light invite" aria-labelledby="invite-title">
-  <div class="wrap">
-    <Moons class="moons reveal" />
-    <h2 id="invite-title" class="display reveal" style="--d:1">Your story is welcome here.</h2>
-    <p class="lead reveal" style="--d:2">When you’re ready, book a first conversation — or send a message with any questions. There’s no rush.</p>
-    <div class="actions reveal" style="--d:3">
+  <SeamOrnament tone="ivory" />
+  <!-- the whole composition is one scroll-grown garden: it reaches full bloom as the section centres in view -->
+  <div class="wrap" data-grow data-grow-start=".97" data-grow-end=".54">
+    <div class="garden" aria-hidden="true">
+      <Sprout kind="flower" size={96} class="sp-l" />
+      <Lotus class="lotus-main" />
+      <Sprout kind="flower" size={96} class="sp-r" />
+    </div>
+    <h2 id="invite-title" class="display gl g-rise" style="--s:.5;--w:.3">Your story is welcome here.</h2>
+    <p class="lead gl g-rise" style="--s:.58;--w:.28">When you’re ready, book a first conversation — or send a message with any questions. There’s no rush.</p>
+    <div class="actions gl g-rise" style="--s:.62;--w:.28">
       <Button href={site.book.href} variant="plum">{site.book.cta}</Button>
       <a class="link-arrow" href="/contact">Get in touch</a>
     </div>
   </div>
 </section>
 <style>
-  .invite { text-align: center; }
+  .invite { text-align: center; padding-top: calc(var(--section-y) + 24px); }
   .wrap { display: flex; flex-direction: column; align-items: center; }
-  .invite :global(.moons) { color: var(--bronze); opacity: .8; margin-bottom: 36px; width: 128px; }
-  h2 { max-width: 16ch; text-wrap: balance; }
+  .garden { display: grid; grid-template-columns: 1fr minmax(220px, 380px) 1fr; align-items: end; gap: clamp(8px, 3vw, 40px); width: min(100%, 760px); margin-bottom: 8px; }
+  .garden :global(.sp-l) { justify-self: end; margin-bottom: 18px; }
+  .garden :global(.sp-r) { justify-self: start; margin-bottom: 18px; transform: scaleX(-1); }
+  .garden :global(.lotus-main) { width: 100%; }
+  h2 { max-width: 16ch; text-wrap: balance; margin-top: 8px; }
   .lead { max-width: 44ch; margin: 28px auto 0; color: var(--plum-text-soft); }
   .actions { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 20px 32px; margin-top: 40px; }
-  @media (max-width: 767px) { .actions .btn { width: 100%; } }
+  @media (max-width: 767px) { .actions :global(.btn) { width: 100%; } .garden { grid-template-columns: 1fr minmax(200px, 300px) 1fr; } .garden :global(.sprout svg) { width: 56px; height: 56px; } }
 </style>

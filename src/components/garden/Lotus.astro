@@ -1,0 +1,47 @@
+---
+/**
+ * Scroll-grown fine-line lotus (gold or bronze via currentColor). Wrap in (or place under) an element with
+ * `data-grow`; petals fan open and grow, stem draws, star blooms — all driven by --p (transform/opacity/dash only).
+ * Decorative. At --p = 1 (no JS / reduced motion) it is fully bloomed.
+ */
+interface Props { class?: string; label?: string }
+const { class: cls } = Astro.props;
+// [fan angle°, length, width, start, width-of-window]
+const L = 0.78;
+const defs: [number, number, number, number][] = [
+  [0, 313, 150, 0], [-14, 300, 140, 1], [14, 300, 140, 1], [-32, 314, 150, 2], [32, 314, 150, 2],
+  [-52, 340, 160, 3], [52, 340, 160, 3], [-76, 273, 112, 4], [76, 273, 112, 4],
+];
+const petal = (l: number, w: number) => `M0 0C${(w * 0.62).toFixed(1)} ${(-l * 0.3).toFixed(1)} ${(w * 0.5).toFixed(1)} ${(-l * 0.78).toFixed(1)} 0 ${-l}C${(-w * 0.5).toFixed(1)} ${(-l * 0.78).toFixed(1)} ${(-w * 0.62).toFixed(1)} ${(-l * 0.3).toFixed(1)} 0 0Z`;
+const star = Array.from({ length: 16 }, (_, k) => {
+  const a = (k * 22.5 - 90) * (Math.PI / 180);
+  const r = k % 4 === 0 ? 76 : k % 4 === 2 ? 40 : 11;
+  return `${(r * Math.cos(a)).toFixed(1)},${(r * Math.sin(a)).toFixed(1)}`;
+}).join(' ');
+---
+<svg class:list={['lotus', cls]} viewBox="0 0 1000 760" aria-hidden="true" focusable="false">
+  <g transform="translate(500 640)">
+    <!-- stem + root star -->
+    <path class="lt-stem gl g-draw" style="--s:0;--w:.22" d="M0 0V74" />
+    <!-- petals -->
+    {defs.map(([th, len, w, i]) => (
+      <g class="lt-fan gl" style={`--th:${th};--s:${(0.08 + i * 0.1).toFixed(2)};--w:.42`}>
+        <path class="lt-petal" d={petal(len * L, w * L)} />
+        <path class="lt-vein g-draw" d={`M0 0C${(w * L * 0.1).toFixed(1)} ${(-len * L * 0.4).toFixed(1)} 0 ${(-len * L * 0.7).toFixed(1)} 0 ${(-len * L * 0.9).toFixed(1)}`} />
+      </g>
+    ))}
+    <!-- star above the lotus -->
+    <g transform="translate(0 -360)"><polygon class="lt-star gl g-pop" style="--s:.82;--w:.18" points={star} /></g>
+  </g>
+</svg>
+<style>
+  .lotus { display: block; width: 100%; height: auto; overflow: visible; color: var(--bronze); }
+  .lotus * { fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+  .lt-fan { transform: rotate(calc(var(--th) * 1deg * var(--lp))); transform-origin: 0 0; }
+  .lt-petal { fill: rgb(151 92 43 / .06); opacity: var(--lp); transform: scale(calc(.14 + .86 * var(--lp))); transform-origin: 0 0; }
+  .lt-vein { stroke-width: 1.6; opacity: calc(var(--lp) * .7); }
+  .lt-stem { stroke-width: 3; }
+  .lt-star { fill: currentColor; stroke: none; }
+  :global(.on-dark) .lotus { color: var(--gold); }
+  :global(.on-dark) .lt-petal { fill: rgb(242 228 217 / .05); }
+</style>

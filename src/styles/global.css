@@ -1,5 +1,6 @@
 @import './tokens.css';
 @import './forms.css';
+@import './garden.css';
 
 /* ---------- Reset & base ---------- */
 *, *::before, *::after { box-sizing: border-box; }

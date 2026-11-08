@@ -1,0 +1,19 @@
+---
+// Fleur-de-lis medallion that sits on the seam between two sections and unfolds (scale/rotate/opacity) as it scrolls in.
+// Place as the FIRST child of a `.section`. Decorative.
+import FleurDeLis from './FleurDeLis.astro';
+interface Props { tone?: 'plum' | 'midnight' | 'linen' | 'ivory' }
+const { tone = 'plum' } = Astro.props;
+---
+<span class={`seam seam-${tone}`} data-grow data-grow-start=".98" data-grow-end=".62" aria-hidden="true">
+  <span class="seam-in"><FleurDeLis size={30} /></span>
+</span>
+<style>
+  .seam { position: absolute; z-index: 6; top: 0; left: 50%; width: 56px; height: 56px; margin: -28px 0 0 -28px; border-radius: 50%; display: grid; place-items: center; pointer-events: none;
+    opacity: var(--p); transform: scale(calc(.45 + .55 * var(--p))) rotate(calc((1 - var(--p)) * -50deg)); }
+  .seam-in { display: grid; place-items: center; }
+  .seam-plum { background: var(--plum); color: var(--gold); box-shadow: 0 0 0 1px rgb(201 148 76 / .55); }
+  .seam-midnight { background: var(--midnight); color: var(--gold); box-shadow: 0 0 0 1px rgb(201 148 76 / .55); }
+  .seam-linen { background: var(--linen); color: var(--bronze); box-shadow: 0 0 0 1px rgb(151 92 43 / .5); }
+  .seam-ivory { background: var(--ivory); color: var(--bronze); box-shadow: 0 0 0 1px rgb(151 92 43 / .5); }
+</style>

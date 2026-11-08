@@ -1,15 +1,19 @@
 ---
 import Icon from './Icon.astro';
+import SeamOrnament from './garden/SeamOrnament.astro';
+import FleurDeLis from './garden/FleurDeLis.astro';
 import { site } from '../data/site';
 const social = Object.entries(site.social).filter(([, v]) => v) as [string, string][];
 const year = new Date().getFullYear();
 ---
 <footer class="site-footer tex-midnight on-dark" id="contact-footer">
+  <SeamOrnament tone="midnight" />
   <div class="wrap">
     <div class="f-grid">
       <div class="f-brand">
         <img src="/brand/submark-plum-256.webp" srcset="/brand/submark-plum-256.webp 1x, /brand/submark-plum-512.webp 2x" width="120" height="120" alt="Fleur de Lise Healing sub-mark" loading="lazy" decoding="async" />
         <p class="serif f-tag">Come as you are.<br />Bloom at your own pace.</p>
+        <FleurDeLis size={36} class="f-fleur" />
       </div>
       <nav class="f-col" aria-label="Footer">
         <h2 class="f-h">Explore</h2>
@@ -39,9 +43,10 @@ const year = new Date().getFullYear();
 </footer>
 
 <style>
-  .site-footer { padding-block: clamp(56px, 7vw, 96px) 32px; border-top: 1px solid rgb(201 148 76 / 0.25); }
+  .site-footer { position: relative; padding-block: clamp(56px, 7vw, 96px) 32px; border-top: 1px solid rgb(201 148 76 / 0.25); }
   .f-grid { display: grid; gap: 48px; }
   .f-brand img { border-radius: 14px; box-shadow: 0 0 0 1px rgb(201 148 76 / 0.5); margin-bottom: 24px; }
+  .f-brand :global(.f-fleur) { color: var(--gold); opacity: .7; margin-top: 20px; }
   .f-tag { font-style: italic; font-size: 1.375rem; line-height: 1.4; color: var(--ivory-80); }
   .f-h { font-family: var(--font-sans); font-style: normal; font-size: 0.75rem; letter-spacing: .2em; text-transform: uppercase; font-weight: 500; color: var(--gold); margin-bottom: 20px; }
   .f-col ul { display: grid; gap: 0; }

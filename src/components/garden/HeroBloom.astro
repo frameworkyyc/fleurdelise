@@ -1,0 +1,116 @@
+---
+/**
+ * Hero "bloom" overlay — a fine-line gold lotus that draws and opens, then dissolves as the EXACT approved logo
+ * fades in beneath it. The overlay is decorative (aria-hidden), is invisible at rest (opacity 0), and ends hidden:
+ * the logo artwork itself is never redrawn, recoloured or altered; it is simply the final state.
+ *
+ * Coordinates are in the logo's own 1536×1024 space (measured from the supplied artwork), so the line-art lotus,
+ * crescent, stem and stars sit exactly where the logo's own elements appear.
+ *
+ * Safari-safe: transform / opacity / stroke-dashoffset only. No filters. All timing is CSS keyframes.
+ */
+const B = { x: 768, y: 575 }; // lotus base (logo space)
+
+// petals: [fan angle°, length, width, stagger order]
+const petalDefs: [number, number, number, number][] = [
+  [0, 313, 150, 0],
+  [-14, 300, 140, 1], [14, 300, 140, 1],
+  [-32, 314, 150, 2], [32, 314, 150, 2],
+  [-52, 340, 160, 3], [52, 340, 160, 3],
+  [-76, 273, 112, 4], [76, 273, 112, 4],
+];
+const petalPath = (L: number, w: number) =>
+  `M0 0C${(w * 0.62).toFixed(1)} ${(-L * 0.3).toFixed(1)} ${(w * 0.5).toFixed(1)} ${(-L * 0.78).toFixed(1)} 0 ${-L}C${(-w * 0.5).toFixed(1)} ${(-L * 0.78).toFixed(1)} ${(-w * 0.62).toFixed(1)} ${(-L * 0.3).toFixed(1)} 0 0Z`;
+
+// crescent ring: ellipse centre (765,320) rx 335 ry 285 — left arm from top-left tip to bottom centre, right arm mirrored
+const ell = { cx: 765, cy: 320, rx: 335, ry: 285 };
+const pt = (deg: number) => [ell.cx + ell.rx * Math.cos((deg * Math.PI) / 180), ell.cy + ell.ry * Math.sin((deg * Math.PI) / 180)].map((n) => n.toFixed(1));
+const [lx, ly] = pt(240.5), [bx, by] = pt(90), [rx2, ry2] = pt(299.5);
+const arcL = `M${lx} ${ly}A${ell.rx} ${ell.ry} 0 0 0 ${bx} ${by}`;
+const arcR = `M${rx2} ${ry2}A${ell.rx} ${ell.ry} 0 0 1 ${bx} ${by}`;
+
+// 8-point star (logo star centre ≈ (768,185))
+const star = Array.from({ length: 16 }, (_, k) => {
+  const ang = (k * 22.5 - 90) * (Math.PI / 180);
+  const r = k % 4 === 0 ? (k === 0 ? 82 : k === 8 ? 64 : 88) : k % 4 === 2 ? 46 : 13;
+  return `${(768 + r * Math.cos(ang)).toFixed(1)},${(185 + r * Math.sin(ang)).toFixed(1)}`;
+}).join(' ');
+
+// four-point sparkle
+const spark = (x: number, y: number, s: number) => `M${x} ${y - s}C${x + s * 0.12} ${y - s * 0.2} ${x + s * 0.2} ${y - s * 0.12} ${x + s} ${y}C${x + s * 0.2} ${y + s * 0.12} ${x + s * 0.12} ${y + s * 0.2} ${x} ${y + s}C${x - s * 0.12} ${y + s * 0.2} ${x - s * 0.2} ${y + s * 0.12} ${x - s} ${y}C${x - s * 0.2} ${y - s * 0.12} ${x - s * 0.12} ${y - s * 0.2} ${x} ${y - s}Z`;
+
+// leaf sprig along a quadratic curve (left side; the right side is a mirror)
+const P0 = [485, 495], P1 = [360, 470], P2 = [232, 268];
+const q = (t: number) => [0, 1].map((i) => (1 - t) ** 2 * P0[i] + 2 * (1 - t) * t * P1[i] + t ** 2 * P2[i]);
+const tan = (t: number) => { const d = [0, 1].map((i) => 2 * (1 - t) * (P1[i] - P0[i]) + 2 * t * (P2[i] - P1[i])); return (Math.atan2(d[1], d[0]) * 180) / Math.PI; };
+const leaves = [0.16, 0.3, 0.44, 0.58, 0.72, 0.86, 1].map((t, i) => {
+  const [x, y] = q(t); const a = tan(t) + (i % 2 ? 42 : -42); const s = 0.75 + (i % 3) * 0.12;
+  return { x: x.toFixed(1), y: y.toFixed(1), a: a.toFixed(1), s, i };
+});
+---
+<svg class="bloom-fx" viewBox="0 0 1536 1024" aria-hidden="true" focusable="false">
+  <g class="fx-ink">
+    <!-- crescent ring -->
+    <path class="fx-arc" style="--len:900" d={arcL} />
+    <path class="fx-arc" style="--len:900" d={arcR} />
+
+    <!-- celestial top: orb, star, sparkles -->
+    <circle class="fx-pop" style="--d:1.0s" cx="768" cy="45" r="30" />
+    <polygon class="fx-pop" style="--d:1.15s" points={star} />
+    <path class="fx-pop" style="--d:1.35s" d={spark(548, 195, 24)} />
+    <path class="fx-pop" style="--d:1.45s" d={spark(988, 195, 24)} />
+
+    <!-- leaf sprigs -->
+    {[false, true].map((mirror) => (
+      <g transform={mirror ? 'translate(1536 0) scale(-1 1)' : undefined}>
+        <path class="fx-stem-line" d={`M${P0[0]} ${P0[1]}Q${P1[0]} ${P1[1]} ${P2[0]} ${P2[1]}`} />
+        {leaves.map((l) => (
+          <g transform={`translate(${l.x} ${l.y}) rotate(${l.a}) scale(${l.s})`}>
+            <path class="fx-leaf" style={`--d:${(1.0 + l.i * 0.1).toFixed(2)}s`} d="M0 0C14-14 44-14 66 0 44 14 14 14 0 0Z" />
+          </g>
+        ))}
+      </g>
+    ))}
+
+    <!-- stem, bottom star, lotus -->
+    <g transform={`translate(${B.x} ${B.y})`}>
+      <path class="fx-stem" d="M0 62V0" />
+      <path class="fx-bstar" d={spark(0, 62, 26)} />
+      {petalDefs.map(([th, L, w, i]) => (
+        <g class="fx-fan" style={`--th:${th}deg;--i:${i}`}>
+          <path class="fx-petal" style={`--i:${i}`} d={petalPath(L, w)} />
+        </g>
+      ))}
+    </g>
+  </g>
+</svg>
+
+<style>
+  .bloom-fx { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 2;
+    opacity: 0; /* invisible at rest — the exact logo is the final state */
+    animation: fx-life 3.2s linear; }
+  .fx-ink { fill: none; stroke: var(--gold); stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .fx-arc { stroke-dasharray: var(--len); animation: arc-draw 1.5s var(--ease-slow) backwards .45s; }
+  .fx-arc + .fx-arc { animation-delay: .55s; }
+  .fx-pop { transform-box: fill-box; transform-origin: 50% 50%; animation: fx-pop .9s var(--ease-slow) backwards; animation-delay: var(--d, 1s); stroke-width: 3; }
+  .fx-stem-line { stroke: rgb(242 228 217 / .55); stroke-width: 2.4; animation: fx-fade 1s var(--ease) backwards .9s; }
+  .fx-leaf { stroke: rgb(242 228 217 / .6); stroke-width: 2.4; fill: rgb(242 228 217 / .04); transform-box: fill-box; transform-origin: 0% 50%; animation: fx-leaf .9s var(--ease-slow) backwards; animation-delay: var(--d, 1s); }
+  .fx-stem { transform-box: fill-box; transform-origin: 50% 100%; animation: fx-stem .8s var(--ease-slow) backwards .15s; }
+  .fx-bstar { fill: var(--gold); stroke: none; transform-box: fill-box; transform-origin: 50% 50%; animation: fx-pop .8s var(--ease-slow) backwards .1s; }
+
+  /* petals: outer <g> fans open (rotate), inner path grows (scale) — origin is the lotus base at the local origin */
+  .fx-fan { transform: rotate(var(--th)); transform-origin: 0 0; animation: fx-fan 1.25s var(--ease-slow) backwards; animation-delay: calc(.7s + var(--i) * 70ms); }
+  .fx-petal { fill: rgb(242 228 217 / .05); stroke: var(--gold); transform-origin: 0 0; animation: fx-grow 1.25s var(--ease-slow) backwards; animation-delay: calc(.7s + var(--i) * 70ms); }
+
+  @keyframes fx-life { 0% { opacity: 0; } 7% { opacity: 1; } 64% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes arc-draw { from { stroke-dashoffset: var(--len); } }
+  @keyframes fx-pop { from { opacity: 0; transform: scale(.2) rotate(40deg); } }
+  @keyframes fx-fade { from { opacity: 0; } }
+  @keyframes fx-leaf { from { opacity: 0; transform: scale(.1); } }
+  @keyframes fx-stem { from { transform: scaleY(0); } }
+  @keyframes fx-fan { from { transform: rotate(0deg); } }
+  @keyframes fx-grow { from { opacity: 0; transform: scale(.12); } }
+
+  @media (prefers-reduced-motion: reduce) { .bloom-fx { display: none; } }
+</style>

@@ -8,6 +8,7 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import StickyBookBar from '../components/StickyBookBar.astro';
+import GardenVine from '../components/garden/GardenVine.astro';
 import { site } from '../data/site';
 
 interface Props { title: string; description: string; path?: string; home?: boolean; image?: string; jsonLd?: object[]; bookBar?: boolean; noindex?: boolean }
@@ -44,17 +45,19 @@ const robots = noindex || !site.isProduction ? 'noindex, nofollow' : 'index, fol
     <meta property="og:image:alt" content={`${site.name} logo on velvet plum`} />
     <meta name="twitter:card" content="summary_large_image" />
     <slot name="head" />
-    <script is:inline>document.documentElement.classList.add('js')</script>
+    <script is:inline>document.documentElement.classList.add('js');setTimeout(function(){if(!document.documentElement.dataset.garden)document.documentElement.classList.add('garden-fail')},4000)</script>
     {jsonLd.map((d) => <script type="application/ld+json" set:html={JSON.stringify(d)} />)}
   </head>
   <body class:list={[bookBar && 'has-bookbar']}>
     <a class="skip-link" href="#main">Skip to content</a>
+    <GardenVine />
     <Header home={home} />
     <main id="main"><slot /></main>
     <Footer />
     {bookBar && <StickyBookBar />}
     <script src="../scripts/site.ts"></script>
     <script src="../scripts/forms.ts"></script>
+    <script src="../scripts/garden.ts"></script>
   </body>
 </html>
 <style is:global>
