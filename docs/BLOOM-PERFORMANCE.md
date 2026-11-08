@@ -58,7 +58,19 @@ Cost is ~linear in pixels. 930 keeps the same pixel density as before (0.75 vide
 ## Behaviour that did not change
 Sequence, timing (GO 1.3 s, lettering 1.8 s, hand-off ≈ 3.83 s from video start), appearance, once-per-session, all static fallbacks, reduced-motion, accessibility, and the exact static logo as the final state.
 
-## New switches (all optional, query-string)
+## Status: FINAL (approved on iPad Safari)
+Standard 930 px playback was tested on the client's iPad and approved as smooth. The animation is considered finalized; no further visual changes.
+
+**Shipped behaviour**
+- Default = **standard 930 px**.
+- **Lite 720 px** is the automatic fallback for weaker devices: non-Apple devices reporting ≤ 4 cores or ≤ 4 GB RAM. Apple devices always get standard (Safari hides memory info and under-reports cores, so those signals would wrongly demote capable iPads). Devices with Data Saver, 2g/3g, ≤ 2 cores/GB, Reduce Motion, or no WebGL skip the bloom entirely and show the static logo.
+- The smoothness guard (static logo if early playback is choppy) is unchanged.
+- The debug HUD and `?bloom-debug` modes were **removed** from the shipped code. Remaining query switches: `?bloom=off` (static logo) and `?bloom-q=lite|standard` (force a variant, for testing).
+- If deeper profiling is ever needed again, the HUD can be recovered from git history (commit 61315b6, `src/scripts/bloom.ts`).
+
+The manual iPad protocol below was used for the approval run; it referenced the HUD and is kept for history.
+
+## (Historical) debug switches (all optional, query-string)
 - `?bloom-debug` — force the bloom (ignores once-per-session and low-core/slow-network gates; still honours Reduce Motion) and show a **HUD with playback stats** when it ends.
 - `?bloom-debug=nogl` — decode only (video plays, nothing is uploaded/drawn: the screen stays blank until hand-off). Isolates decode cost from GL cost.
 - `?bloom-q=lite` — 720 px variant (≈ 40% cheaper uploads) for A/B.

@@ -38,3 +38,7 @@ Why stacked alpha: a normal video is an opaque rectangle and would show as a fla
 - **LCP ≈ 3.0 s** on desktop in bloom mode (the lettering layer is the largest paint and arrives at ≈2.1 s; the static/fallback path is ≈1.2 s). This is the cost of a choreographed reveal; shorten `WORD`/trim the clip if LCP matters more.
 - Software-rendered test browsers log "GPU stall due to ReadPixels"; real GPUs do not.
 - The H.264/Safari path could not be decoded in the test browser (no proprietary codecs) — see SAFARI-QA-CHECKLIST.md.
+
+
+## Playback variants & switches (final)
+Standard 930 px by default; 720 px `lite/` automatically on weaker non-Apple devices. `?bloom=off` forces the static logo; `?bloom-q=lite|standard` forces a variant. The debug HUD was removed — see [BLOOM-PERFORMANCE.md](./BLOOM-PERFORMANCE.md). The animation is approved and final.

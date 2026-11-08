@@ -6,9 +6,9 @@ Why both: a confirmed bug (animated blur/drop-shadow keyframes → white rectang
 Final logo pixel-identical; content visible with JS off / reduced motion / script failure / animations disabled; scroll-linked values monotonic; hover/focus/keyboard illustration states; axe 0 violations (11 pages × 3 viewports); no overflow/console errors; frame times (p95 16.8 ms desktop; throttled phone max 50 ms, none >50 ms); CLS ≈ 0; `check:motion` passes.
 
 ## Manual — bloom SMOOTHNESS (iPad) — see docs/BLOOM-PERFORMANCE.md for the full protocol
-Run `?bloom-debug`, `?bloom-debug&bloom-q=lite`, `?bloom-debug=nogl`, `?bloom=off` in regular **and** Private Safari and send the HUD text + which felt smoothest.
+Approved on iPad Safari (standard 930 px). Re-check after any change to the bloom assets or player; use `?bloom=off` to compare with the static logo and `?bloom-q=lite` to check the fallback variant.
 - [ ] Motion looks evenly paced (no periodic hitch, no stutter at the start/end of the bloom)
-- [ ] HUD: `cbMeanMs` ≈ 33, `skippedFrames` ≈ 0, `displayOver25ms` small
+- [ ] Lite variant (`?bloom-q=lite`) also plays cleanly and ends on the exact logo
 
 ## Manual — cinematic bloom video (NEW — highest priority on Safari, regular AND Private)
 Plays the **H.264 MP4** on a WebGL canvas (the test browser has no H.264, so this exact path is untested here).
