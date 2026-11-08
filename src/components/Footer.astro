@@ -38,7 +38,7 @@ const year = new Date().getFullYear();
     </div>
     <div class="f-base">
       <p class="f-disclaimer">{site.disclaimer}</p>
-      <p class="f-legal">© {year} {site.name} · <a href="/privacy">Privacy</a> · <a href="/disclaimer">Disclaimer</a></p>
+      <p class="f-legal">© {year} {site.name} · <a href="/privacy">Privacy</a> · <a href="/disclaimer">Disclaimer</a><span class="f-sep" aria-hidden="true"> · </span><span class="f-credit">Built by <a href="https://frameworkco.ca" target="_blank" rel="noopener noreferrer">Framework<span class="sr-only"> (opens in a new tab)</span></a></span></p>
     </div>
   </div>
 </footer>
@@ -63,6 +63,11 @@ const year = new Date().getFullYear();
   .f-base { margin-top: 56px; padding-top: 28px; border-top: 1px solid rgb(242 228 217 / 0.12); display: grid; gap: 12px; font-size: .875rem; color: var(--ivory-60); }
   .f-disclaimer { font-family: var(--font-serif); font-style: italic; font-size: 1rem; color: var(--ivory-80); }
   .f-legal a { display: inline-block; padding-block: 12px; text-decoration: none; } .f-legal a:hover { color: var(--gold); }
+  /* Narrow screens: the credit sits on its own quiet line (no dangling separator); from 900px it joins the legal line after a "·". */
+  .f-credit { display: block; white-space: nowrap; } .f-sep { display: none; }
+  @media (min-width: 900px) { .f-credit { display: inline; } .f-sep { display: inline; } }
+  .f-credit a { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; text-decoration-color: rgb(201 148 76 / .4); transition: color .3s, text-decoration-color .3s; }
+  .f-credit a:hover { text-decoration-color: var(--gold); }
   @media (min-width: 900px) {
     .f-grid { grid-template-columns: 1.3fr 1fr 1.3fr; gap: 64px; }
     .f-base { grid-template-columns: 1fr auto; align-items: end; }
