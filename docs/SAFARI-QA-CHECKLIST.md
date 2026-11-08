@@ -5,6 +5,11 @@ Why both: a confirmed bug (animated blur/drop-shadow keyframes → white rectang
 ## Verified automatically (Chromium only) — NOT a substitute for Safari
 Final logo pixel-identical; content visible with JS off / reduced motion / script failure / animations disabled; scroll-linked values monotonic; hover/focus/keyboard illustration states; axe 0 violations (11 pages × 3 viewports); no overflow/console errors; frame times (p95 16.8 ms desktop; throttled phone max 50 ms, none >50 ms); CLS ≈ 0; `check:motion` passes.
 
+## Manual — bloom SMOOTHNESS (iPad) — see docs/BLOOM-PERFORMANCE.md for the full protocol
+Run `?bloom-debug`, `?bloom-debug&bloom-q=lite`, `?bloom-debug=nogl`, `?bloom=off` in regular **and** Private Safari and send the HUD text + which felt smoothest.
+- [ ] Motion looks evenly paced (no periodic hitch, no stutter at the start/end of the bloom)
+- [ ] HUD: `cbMeanMs` ≈ 33, `skippedFrames` ≈ 0, `displayOver25ms` small
+
 ## Manual — cinematic bloom video (NEW — highest priority on Safari, regular AND Private)
 Plays the **H.264 MP4** on a WebGL canvas (the test browser has no H.264, so this exact path is untested here).
 - [ ] Bud opens into the lotus; crescent, moons, star and leaves emerge; **no white rectangle, no black box, no flashing** at any point

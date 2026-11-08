@@ -20,7 +20,11 @@ export {};
 const GO = 1.3;           // hero text cue
 const WORD = 1.8;         // lettering fade-in cue (the flower is essentially complete; crescent + leaves are finishing)
 const START_TIMEOUT = 1200; // ms to get the first playable frame before falling back to the static logo
+const HOLD_MS = 467;        // the clip ends when the dissolve to the exact approved frame completes (3.37 s); this still hold restores the
+                            // original 3.83 s hand-off time without decoding/uploading any static frames
+const Q = new URLSearchParams(location.search).get('bloom-debug'); // ?bloom-debug  → HUD + stats (forces the bloom); ?bloom-debug=nogl → decode only
 const BASE = '/brand/bloom/';
+const LITE = new URLSearchParams(location.search).get('bloom-q') === 'lite'; // ?bloom-q=lite → 720 px variant (≈ 40% cheaper to upload) for on-device A/B
 const SEEN_KEY = 'fdl-bloom-seen';
 
 const root = document.documentElement;
@@ -29,6 +33,8 @@ const stage = frame?.querySelector<HTMLElement>('.bloom-stage') ?? null;
 const canvas = stage?.querySelector<HTMLCanvasElement>('.bloom-canvas') ?? null;
 const video = stage?.querySelector<HTMLVideoElement>('.bloom-video') ?? null;
 
+const DEBUG = Q !== null;
+const NOGL = Q === 'nogl';
 let finished = false;
 let gl: WebGLRenderingContext | null = null;
 let watchdog = 0;
@@ -75,7 +81,9 @@ function initGL(w: number, h: number) {
   ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_S, ctx.CLAMP_TO_EDGE); ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_T, ctx.CLAMP_TO_EDGE);
   ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_MIN_FILTER, ctx.LINEAR); ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_MAG_FILTER, ctx.LINEAR);
   ctx.uniform2f(ctx.getUniformLocation(prog, 'sz'), w, h);
-  ctx.clearColor(0, 0, 0, 0);
+  ctx.disable(ctx.DITHER); ctx.disable(ctx.BLEND); ctx.disable(ctx.DEPTH_TEST); // the quad overwrites every pixel (premultiplied output): no clear / blend needed
+  // allocate the texture ONCE; per-frame uploads then use texSubImage2D (no GPU re-allocation every frame)
+  ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.RGBA, w, h * 2, 0, ctx.RGBA, ctx.UNSIGNED_BYTE, null);
   return ctx;
 }
 
@@ -83,16 +91,51 @@ function fit() {
   if (!gl || !canvas || !stage) return;
   const r = stage.getBoundingClientRect();
   const dpr = Math.min(devicePixelRatio || 1, 2);
-  canvas.width = Math.max(2, Math.round(r.width * dpr));
-  canvas.height = Math.max(2, Math.round(r.height * dpr));
+  // never render more pixels than the video actually contains (the compositor scales the canvas up for free)
+  const w = Math.max(2, Math.min(Math.round(r.width * dpr), video?.videoWidth || 1e5));
+  canvas.width = w;
+  canvas.height = Math.max(2, Math.round(w * (r.height / r.width)));
   gl.viewport(0, 0, canvas.width, canvas.height);
 }
 
+let uploadMs: number[] = [];
 function draw() {
   if (!gl || !video || video.readyState < 2) return;
-  gl.clear(gl.COLOR_BUFFER_BIT);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video);
+  const t0 = DEBUG ? performance.now() : 0;
+  gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, video);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  if (DEBUG) uploadMs.push(performance.now() - t0);
+}
+
+/* ---------- debug: capture real-device playback numbers (?bloom-debug / ?bloom-debug=nogl) ---------- */
+const rafIv: number[] = [];
+let rafRun = false;
+function startRaf() { rafRun = true; let last = 0; const f = (t: number) => { if (!rafRun) return; if (last) rafIv.push(t - last); last = t; requestAnimationFrame(f); }; requestAnimationFrame(f); }
+const pc = (a: number[], p: number) => { const s = [...a].sort((x, y) => x - y); return s.length ? s[Math.min(s.length - 1, Math.floor(s.length * p))] : 0; };
+const mean = (a: number[]) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0);
+function report(meta: { mt: number; pf: number; pd: number | null; ts: number }[]) {
+  rafRun = false;
+  const iv = meta.slice(1).map((m, i) => m.ts - meta[i].ts);
+  const gaps = meta.slice(1).map((m, i) => m.mt - meta[i].mt);
+  const nominal = pc(gaps, 0.5) || 1 / 30;
+  let q: { total: number; dropped: number } | null = null;
+  try { const x = video!.getVideoPlaybackQuality(); q = { total: x.totalVideoFrames, dropped: x.droppedVideoFrames }; } catch { /* ignore */ }
+  const dbg = gl?.getExtension('WEBGL_debug_renderer_info');
+  const out = {
+    mode: NOGL ? 'decode-only (no GL)' : 'GL composite', video: `${video!.videoWidth}x${video!.videoHeight}`, canvas: canvas ? `${canvas.width}x${canvas.height}` : '-', dpr: devicePixelRatio,
+    fps: +(1 / nominal).toFixed(1), frames: meta.length, cbMeanMs: +mean(iv).toFixed(1), cbP95Ms: +pc(iv, 0.95).toFixed(1), cbMaxMs: +Math.max(0, ...iv).toFixed(0),
+    skippedFrames: gaps.filter((g) => g > nominal * 1.5).length, uaDropped: q ? `${q.dropped}/${q.total}` : 'n/a',
+    uploadMeanMs: +mean(uploadMs).toFixed(2), uploadP95Ms: +pc(uploadMs, 0.95).toFixed(2),
+    displayMeanMs: +mean(rafIv).toFixed(1), displayP95Ms: +pc(rafIv, 0.95).toFixed(1), displayOver25ms: `${rafIv.filter((x) => x > 25).length}/${rafIv.length}`,
+    gpu: dbg && gl ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : 'n/a', cores: navigator.hardwareConcurrency, ua: navigator.userAgent,
+  };
+  (window as any).__bloomStats = out;
+  console.log('[bloom-debug]', JSON.stringify(out));
+  const pre = document.createElement('pre');
+  pre.id = 'bloom-hud';
+  pre.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:9999;margin:0;padding:10px 12px;max-width:94vw;background:rgba(0,0,0,.82);color:#fff;font:11px/1.45 ui-monospace,Menlo,monospace;white-space:pre-wrap;user-select:all;border-radius:6px';
+  pre.textContent = 'BLOOM PLAYBACK — screenshot or copy this\n' + Object.entries(out).map(([k, v]) => `${k}: ${v}`).join('\n');
+  document.body.appendChild(pre);
 }
 
 async function run() {
@@ -106,42 +149,54 @@ async function run() {
     v.addEventListener('canplay', () => res(), { once: true });
     v.addEventListener('error', () => rej(new Error('video error')), { once: true });
   });
-  v.src = BASE + (webm ? 'bloom.webm' : 'bloom.mp4');
+  v.src = BASE + (LITE ? 'lite/' : '') + (webm ? 'bloom.webm' : 'bloom.mp4');
   v.load();
   await Promise.race([playable, new Promise<never>((_, rej) => setTimeout(() => rej(new Error('start timeout')), START_TIMEOUT))]);
   if (document.hidden) throw new Error('hidden');
 
-  // stacked video: width × 2·height → the canvas matches the 16:9 colour half
-  gl = initGL(v.videoWidth, v.videoHeight / 2);
-  fit();
-  addEventListener('resize', fit);
-  canvas!.addEventListener('webglcontextlost', (e) => { e.preventDefault(); finish(false); });
+  // stacked video: width × 2·height → the canvas matches the colour half
+  if (!NOGL) {
+    gl = initGL(v.videoWidth, v.videoHeight / 2);
+    fit();
+    addEventListener('resize', fit);
+    canvas!.addEventListener('webglcontextlost', (e) => { e.preventDefault(); finish(false); });
+  }
 
-  let goDone = false, wordDone = false, last = 0, slow = 0, frames = 0;
-  const tick = () => {
+  let goDone = false, wordDone = false, last = 0, slow = 0, frames = 0, lastT = -1;
+  const meta: { mt: number; pf: number; pd: number | null; ts: number }[] = [];
+  const tick = (_now?: number, m?: any) => {
     if (finished) return;
-    draw();
-    // frame-rate guard: only for genuinely poor playback (< 10 fps for half of the first frames) — hand over to the static logo
+    if (m && DEBUG) meta.push({ mt: m.mediaTime, pf: m.presentedFrames, pd: m.processingDuration ?? null, ts: performance.now() });
+    // only touch the GPU when a new video frame is actually available
+    if (!NOGL && (m || v.currentTime !== lastT)) draw();
+    lastT = v.currentTime;
+    // smoothness guard: a device that can only manage a choppy ~<15 fps (callback gaps > 66 ms for half of the first 24 frames)
+    // gets the static logo rather than a laggy bloom (hand-off cross-fades from whatever is on screen)
     const now = performance.now();
-    if (last) { frames++; if (now - last > 100) slow++; }
+    if (last) { frames++; if (now - last > 66) slow++; }
     last = now;
-    if (frames === 16 && slow >= 8) { finish(true); return; }
-    const t = v.currentTime;
+    if (frames === 24 && slow >= 12) { finish(true); return; }
+    const t = m?.mediaTime ?? v.currentTime;
     if (!goDone && t >= GO) { goDone = true; root.classList.add('hero-go'); }
     if (!wordDone && t >= WORD) { wordDone = true; root.classList.add('bloom-word-in'); }
     schedule();
   };
   const schedule = () => { if ('requestVideoFrameCallback' in v) (v as any).requestVideoFrameCallback(tick); else requestAnimationFrame(tick); };
 
-  v.addEventListener('ended', () => { draw(); finish(true); }, { once: true });
+  v.addEventListener('ended', () => {
+    if (!NOGL) draw();
+    if (DEBUG) report(meta);
+    setTimeout(() => finish(true), HOLD_MS);        // still hold on the exact emblem, then hand off
+  }, { once: true });
   v.addEventListener('error', () => finish(false));
   await v.play();                                    // rejects if autoplay is refused → static logo
-  try { sessionStorage.setItem(SEEN_KEY, '1'); } catch { /* private mode etc. */ }
+  if (!DEBUG) { try { sessionStorage.setItem(SEEN_KEY, '1'); } catch { /* private mode etc. */ } }
   root.dataset.bloom = 'playing';
-  draw();
+  if (DEBUG) startRaf();
+  if (!NOGL) draw();
   schedule();
   // watchdog: never leave the static logo hidden if playback stalls
-  watchdog = window.setTimeout(() => finish(v.currentTime > 0.5), (v.duration || 4) * 1000 + 4000);
+  watchdog = window.setTimeout(() => finish(v.currentTime > 0.5), (v.duration || 4) * 1000 + HOLD_MS + 4000);
 }
 
 if (frame && stage && canvas && video && root.classList.contains('bloom-pending')) {

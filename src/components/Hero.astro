@@ -68,12 +68,15 @@ const stars = [{ x: 14, y: 24, d: 0 }, { x: 86, y: 30, d: 1.6 }, { x: 22, y: 70,
   /* soft ambient shadow — replaces the former `filter: drop-shadow()`; animated filters broke iPad Safari Private Browsing */
   .hero-logo-shadow { position: absolute; z-index: -1; inset: 18% 6% -6%; background: radial-gradient(closest-side, rgb(0 0 0 / .34), rgb(0 0 0 / .14) 55%, transparent 100%); }
   /* ---- cinematic bloom layers (opacity/transform only; no filters) ---- */
-  .bloom-stage { position: absolute; z-index: 3; left: 0; top: 0; width: 100%; height: 84.375%; pointer-events: none; visibility: hidden; }
+  /* the packed video covers only the emblem's footprint: logo-space crop 150,0,1240,700 of the 1536x1024 logo box (see public/brand/bloom/bloom.json) */
+  .bloom-stage { position: absolute; z-index: 3; left: 9.7656%; top: 0; width: 80.7292%; height: 68.3594%; pointer-events: none; visibility: hidden; }
   .bloom-canvas { display: block; width: 100%; height: 100%; }
-  .bloom-video { position: absolute; left: 0; top: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+  .bloom-video { position: absolute; left: 0; top: 0; width: 16px; height: 16px; opacity: 0; pointer-events: none; } /* not 1px: keep it a real, in-viewport video so WebKit never treats it as invisible */
   .bloom-word { position: absolute; z-index: 2; left: 0; top: 0; width: 100%; height: auto; pointer-events: none; visibility: hidden; opacity: 0; transform: translateY(8px); transition: opacity .9s var(--ease), transform .9s var(--ease); }
   :global(html.bloom-pending) .bloom-stage, :global(html.bloom-pending) .bloom-word, :global(html.bloom-done) .bloom-stage, :global(html.bloom-done) .bloom-word { visibility: visible; }
   :global(html.bloom-word-in) .bloom-word { opacity: 1; transform: none; }
+  /* ambient hero animations rest while the bloom plays (frees the compositor for the video); they resume at hand-off */
+  :global(html.bloom-pending) .glow, :global(html.bloom-pending) .dust i, :global(html.bloom-pending) .twinkle, :global(html.bloom-pending) .scroll-cue span { animation-play-state: paused; }
   /* while the bloom plays the static logo waits (hidden); hero text waits for the 'hero-go' cue */
   :global(html.bloom-pending) .hero-logo-media { animation: none; }
   :global(html.bloom-pending) .hero-logo-media picture { opacity: 0; } /* ambient shadow stays visible so nothing pulses at hand-off */
@@ -91,7 +94,7 @@ const stars = [{ x: 14, y: 24, d: 0 }, { x: 86, y: 30, d: 1.6 }, { x: 22, y: 70,
   .hero-cta { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 20px 32px; margin-top: 36px; animation: rise 1.4s var(--ease-slow) backwards 1.2s; }
 
   /* candlelight glow (Brand Kit §05 "Ritual") */
-  .glow { position: absolute; z-index: 0; width: 120vmin; height: 120vmin; left: 50%; top: 34%; translate: -50% -50%; border-radius: 50%;
+  .glow { position: absolute; z-index: 0; width: 120vmin; height: 120vmin; left: 50%; top: 34%; transform: translate(-50%, -50%); border-radius: 50%;
     background: radial-gradient(circle, rgb(207 128 92 / .30) 0%, rgb(160 87 58 / .14) 34%, transparent 68%); animation: breathe 11s ease-in-out infinite; }
   .vignette { position: absolute; inset: 0; z-index: 1; background: radial-gradient(ellipse at 50% 40%, transparent 38%, rgb(31 9 19 / .6) 100%); }
 
@@ -99,12 +102,12 @@ const stars = [{ x: 14, y: 24, d: 0 }, { x: 86, y: 30, d: 1.6 }, { x: 22, y: 70,
   .dust i { position: absolute; bottom: -12px; left: var(--x); width: var(--s); height: var(--s); border-radius: 50%; background: var(--gold); opacity: 0; box-shadow: 0 0 8px 1px rgb(201 148 76 / .55); animation: float var(--d) linear infinite; animation-delay: var(--delay); }
   .twinkle { position: absolute; color: var(--gold); opacity: 0; animation: twinkle 6s ease-in-out infinite; animation-delay: var(--delay); }
 
-  .scroll-cue { position: absolute; z-index: 2; left: 50%; bottom: 20px; translate: -50% 0; width: 44px; height: 44px; display: grid; place-items: center; }
+  .scroll-cue { position: absolute; z-index: 2; left: 50%; bottom: 20px; transform: translateX(-50%); width: 44px; height: 44px; display: grid; place-items: center; }
   .scroll-cue span { display: block; width: 1px; height: 36px; background: linear-gradient(var(--gold), transparent); transform-origin: top; animation: cue 3.2s var(--ease) infinite 3.2s; opacity: .0; }
 
   @keyframes logo-in { from { opacity: 0; transform: translateY(10px) scale(.965); } to { opacity: 1; transform: none; } }
   @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-  @keyframes breathe { 0%, 100% { opacity: .75; scale: 1; } 50% { opacity: 1; scale: 1.06; } }
+  @keyframes breathe { 0%, 100% { opacity: .75; transform: translate(-50%, -50%) scale(1); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.06); } }
   @keyframes float { 0% { transform: translate3d(0, 0, 0); opacity: 0; } 12% { opacity: var(--o); } 85% { opacity: var(--o); } 100% { transform: translate3d(14px, -105svh, 0); opacity: 0; } }
   @keyframes twinkle { 0%, 100% { opacity: 0; transform: scale(.6); } 50% { opacity: .75; transform: scale(1); } }
   @keyframes cue { 0% { opacity: 0; transform: scaleY(0); } 40% { opacity: .9; transform: scaleY(1); } 100% { opacity: 0; transform: scaleY(1) translateY(10px); } }

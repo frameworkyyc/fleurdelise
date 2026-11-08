@@ -22,7 +22,7 @@ No `filter`, `backdrop-filter`, `blur()` or `drop-shadow()` inside any `@keyfram
 - `decoding="async"` on the LCP/hero image.
 
 ## Video / canvas animation (hero bloom)
-Hero logo animation is a **stacked-alpha video on a WebGL canvas** — see [BLOOM-ANIMATION.md](./BLOOM-ANIMATION.md). Rules: the static approved logo is always the fallback and must never be left hidden; no CSS filters/blend modes; play once; skip on reduced motion / data-saver / slow or weak devices; test regular **and** Private Safari.
+Hero logo animation is a **stacked-alpha video on a WebGL canvas** — see [BLOOM-ANIMATION.md](./BLOOM-ANIMATION.md). Rules: **never resample the video's frame rate** (use the source's native fps; 30 divides 60/120 Hz evenly); crop to the content footprint (upload cost is per pixel); allocate GL textures once + `texSubImage2D`; the static approved logo is always the fallback and must never be left hidden; no CSS filters/blend modes; play once; skip on reduced motion / data-saver / slow or weak devices; test regular **and** Private Safari.
 
 ## Reusable components (Garden in Bloom)
 See [GARDEN-IN-BLOOM.md](./GARDEN-IN-BLOOM.md): `HeroBloom`, `Lotus`, `Sprout`, `FleurDeLis`, `SeamOrnament`, `ServiceIllustration`, `GardenVine`, driven by `src/scripts/garden.ts` + `src/styles/garden.css` (`data-grow`, `data-bloom`, `.gl`/`--s`/`--w`, `.g-draw`). Prefer these over new bespoke animation. Manual Safari testing: [SAFARI-QA-CHECKLIST.md](./SAFARI-QA-CHECKLIST.md).
