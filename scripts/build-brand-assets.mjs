@@ -15,6 +15,9 @@ const logoWebp = { lossless: true, nearLossless: true, quality: 60, effort: 6 };
 for (const w of [360, 768, 1024, 1536]) {
   await sharp(O + 'C_dark-alternative-transparent.png').resize({ width: w }).webp(logoWebp).toFile(`${P}logo-dark-${w}.webp`);
 }
+// Lettering layer (pixel-exact split of the approved logo, see scripts/bloom/split-logo.py): fades in beneath the
+// blooming flower. Same canvas as the full logo (1536x1024) so it aligns exactly.
+await sharp('brand-originals/derived/wordmark-layer.png').resize({ width: 1024 }).webp(logoWebp).toFile(`${P}logo-wordmark-1024.webp`);
 // Universal fallback (<picture> <img src>): PNG alpha works everywhere, incl. browsers without WebP.
 await sharp(O + 'C_dark-alternative-transparent.png').resize({ width: 1024 })
   .png({ compressionLevel: 9, adaptiveFiltering: true }).toFile(`${P}logo-dark-1024.png`);

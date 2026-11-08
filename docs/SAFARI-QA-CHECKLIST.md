@@ -5,6 +5,19 @@ Why both: a confirmed bug (animated blur/drop-shadow keyframes → white rectang
 ## Verified automatically (Chromium only) — NOT a substitute for Safari
 Final logo pixel-identical; content visible with JS off / reduced motion / script failure / animations disabled; scroll-linked values monotonic; hover/focus/keyboard illustration states; axe 0 violations (11 pages × 3 viewports); no overflow/console errors; frame times (p95 16.8 ms desktop; throttled phone max 50 ms, none >50 ms); CLS ≈ 0; `check:motion` passes.
 
+## Manual — cinematic bloom video (NEW — highest priority on Safari, regular AND Private)
+Plays the **H.264 MP4** on a WebGL canvas (the test browser has no H.264, so this exact path is untested here).
+- [ ] Bud opens into the lotus; crescent, moons, star and leaves emerge; **no white rectangle, no black box, no flashing** at any point
+- [ ] The flower floats over the hero background (texture/glow visible around it) — **no visible rectangle/edge**
+- [ ] Lettering fades in beneath the flower; hero text follows; CTA tappable
+- [ ] Hand-off to the final logo is seamless: no jump, no doubled outlines, no re-fade after it settles
+- [ ] Plays **once**; navigate away and back to Home in the same tab → no replay (static logo immediately); scroll up/down → no replay
+- [ ] iPhone **Low Power Mode ON**: video refuses to autoplay → static logo + text appear within ~1.5 s (no blank hero)
+- [ ] Reduce Motion ON: static logo + text immediately
+- [ ] Private Browsing: same as above (sessionStorage may be unavailable → it may replay on each load; that's acceptable)
+- [ ] Older iPad/iPhone (≤2 cores): static logo instead of video is expected
+- [ ] Check smoothness on the slowest device you have; the page falls back automatically if it stutters
+
 ## Manual — hero
 - [ ] Lotus line-art draws (arcs, petals open), then the **full-colour logo appears; no white rectangle** at any point
 - [ ] Final state is the clean logo; no leftover gold lines

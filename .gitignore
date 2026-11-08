@@ -7,3 +7,4 @@ dist
 !.env.example
 .dev.vars
 docs/Brand-Kit-v5.pdf
+scratch-bloom/

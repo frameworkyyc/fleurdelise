@@ -46,6 +46,14 @@ const robots = noindex || !site.isProduction ? 'noindex, nofollow' : 'index, fol
     <meta name="twitter:card" content="summary_large_image" />
     <slot name="head" />
     <script is:inline>document.documentElement.classList.add('js');setTimeout(function(){if(!document.documentElement.dataset.garden)document.documentElement.classList.add('garden-fail')},4000)</script>
+    {home && (
+      <script is:inline set:html={`(function(){var h=document.documentElement,c=navigator.connection||{};
+        try{if(sessionStorage.getItem('fdl-bloom-seen'))return}catch(e){}
+        if(matchMedia('(prefers-reduced-motion: reduce)').matches||c.saveData||/(^|-)[23]g$/.test(c.effectiveType||'')||navigator.hardwareConcurrency<=2||navigator.deviceMemory<=2||!window.WebGLRenderingContext)return;
+        h.classList.add('bloom-pending');
+        /* independent failsafe: if the player never started, reveal the static logo and release the text */
+        setTimeout(function(){if(h.dataset.bloom!=='playing'){h.classList.remove('bloom-pending');h.classList.add('hero-go')}},3500)})()`} />
+    )}
     {jsonLd.map((d) => <script type="application/ld+json" set:html={JSON.stringify(d)} />)}
   </head>
   <body class:list={[bookBar && 'has-bookbar']}>
@@ -58,6 +66,7 @@ const robots = noindex || !site.isProduction ? 'noindex, nofollow' : 'index, fol
     <script src="../scripts/site.ts"></script>
     <script src="../scripts/forms.ts"></script>
     <script src="../scripts/garden.ts"></script>
+    <script src="../scripts/bloom.ts"></script>
   </body>
 </html>
 <style is:global>

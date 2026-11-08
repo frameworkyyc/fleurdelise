@@ -1,6 +1,5 @@
 ---
 import Button from './Button.astro';
-import HeroBloom from './garden/HeroBloom.astro';
 import { site } from '../data/site';
 // Deterministic "gold dust" so builds are stable (no Math.random at render time).
 const motes = Array.from({ length: 18 }, (_, i) => {
@@ -25,7 +24,7 @@ const stars = [{ x: 14, y: 24, d: 0 }, { x: 86, y: 30, d: 1.6 }, { x: 22, y: 70,
       rectangle on iPad Safari Private Browsing (docs/SAFARI-LOGO.md). Animate opacity/transform only; keep fill-mode
       `backwards` so the base state is always visible. (Enforced by scripts/check-motion.mjs.)
     -->
-    <div class="hero-logo-frame">
+    <div class="hero-logo-frame" data-bloom-frame>
       <div class="hero-logo-media">
         <span class="hero-logo-shadow" aria-hidden="true"></span>
       <picture>
@@ -33,8 +32,16 @@ const stars = [{ x: 14, y: 24, d: 0 }, { x: 86, y: 30, d: 1.6 }, { x: 22, y: 70,
         <img class="hero-logo" data-hero-logo src="/brand/logo-dark-1024.png" width="1536" height="1024" alt={`${site.name} — lotus, crescent moon and stars`} fetchpriority="high" />
       </picture>
       </div>
-      <!-- decorative lotus that blooms, then dissolves into the exact logo above (see HeroBloom.astro) -->
-      <HeroBloom />
+      <!--
+        Cinematic bloom (src/scripts/bloom.ts): an AI-generated lotus bloom (Higgsfield, Wan 3.0) is played as a
+        stacked-alpha video on this canvas, the approved lettering fades in beneath it, then everything hands off to the
+        EXACT static logo above. Hidden unless html.bloom-pending; the static logo is always the fallback.
+      -->
+      <div class="bloom-stage" aria-hidden="true">
+        <canvas class="bloom-canvas"></canvas>
+        <video class="bloom-video" muted preload="auto" tabindex={-1} {...({ playsinline: true, disablepictureinpicture: true, disableremoteplayback: true } as any)}></video>
+      </div>
+      <img class="bloom-word" src="/brand/logo-wordmark-1024.webp" alt="" width="1536" height="1024" aria-hidden="true" decoding="async" />
     </div>
     <p class="eyebrow hero-eyebrow">Reiki · EFT · Tarot <span aria-hidden="true">—</span> In-person &amp; virtual</p>
     <h1 id="hero-title" class="display hero-tag">
@@ -56,17 +63,32 @@ const stars = [{ x: 14, y: 24, d: 0 }, { x: 86, y: 30, d: 1.6 }, { x: 22, y: 70,
 
   .hero-logo-frame { position: relative; width: clamp(280px, min(92vw, 640px, calc((100svh - 520px) * 1.5)), 640px); margin-bottom: 8px; }
   /* the EXACT logo: base state fully visible; animation (opacity/transform only) just brings it in after the bloom */
-  .hero-logo-media { position: relative; isolation: isolate; animation: logo-in 1.4s var(--ease-slow) backwards 1.5s; }
+  .hero-logo-media { position: relative; isolation: isolate; animation: logo-in 1.2s var(--ease-slow) backwards .1s; }
   .hero-logo { display: block; width: 100%; height: auto; }
   /* soft ambient shadow — replaces the former `filter: drop-shadow()`; animated filters broke iPad Safari Private Browsing */
   .hero-logo-shadow { position: absolute; z-index: -1; inset: 18% 6% -6%; background: radial-gradient(closest-side, rgb(0 0 0 / .34), rgb(0 0 0 / .14) 55%, transparent 100%); }
-  .hero-eyebrow { color: var(--gold); margin: 12px 0 20px; animation: rise 1.4s var(--ease-slow) backwards 2s; max-width: 30ch; text-wrap: balance; }
+  /* ---- cinematic bloom layers (opacity/transform only; no filters) ---- */
+  .bloom-stage { position: absolute; z-index: 3; left: 0; top: 0; width: 100%; height: 84.375%; pointer-events: none; visibility: hidden; }
+  .bloom-canvas { display: block; width: 100%; height: 100%; }
+  .bloom-video { position: absolute; left: 0; top: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+  .bloom-word { position: absolute; z-index: 2; left: 0; top: 0; width: 100%; height: auto; pointer-events: none; visibility: hidden; opacity: 0; transform: translateY(8px); transition: opacity .9s var(--ease), transform .9s var(--ease); }
+  :global(html.bloom-pending) .bloom-stage, :global(html.bloom-pending) .bloom-word, :global(html.bloom-done) .bloom-stage, :global(html.bloom-done) .bloom-word { visibility: visible; }
+  :global(html.bloom-word-in) .bloom-word { opacity: 1; transform: none; }
+  /* while the bloom plays the static logo waits (hidden); hero text waits for the 'hero-go' cue */
+  :global(html.bloom-pending) .hero-logo-media { animation: none; }
+  :global(html.bloom-pending) .hero-logo-media picture { opacity: 0; } /* ambient shadow stays visible so nothing pulses at hand-off */
+  :global(html.bloom-pending:not(.hero-go)) .hero-eyebrow, :global(html.bloom-pending:not(.hero-go)) .hero-tag .line, :global(html.bloom-pending:not(.hero-go)) .hero-lead, :global(html.bloom-pending:not(.hero-go)) .hero-cta { animation-play-state: paused; }
+  /* hand-off: the exact static logo fades in as the canvas + lettering layer fade out (identical pixels beneath) */
+  :global(html.bloom-done) .hero-logo-media { animation: none; }
+  :global(html.bloom-done) .hero-logo-media picture { transition: opacity .5s var(--ease); }
+  :global(html.bloom-done) .bloom-stage, :global(html.bloom-done) .bloom-word { opacity: 0; transition: opacity .5s var(--ease); }
+  .hero-eyebrow { color: var(--gold); margin: 12px 0 20px; animation: rise 1.4s var(--ease-slow) backwards .2s; max-width: 30ch; text-wrap: balance; }
   .hero-tag { display: grid; gap: 2px; }
   .hero-tag .line { display: block; text-wrap: balance; animation: rise 1.6s var(--ease-slow) backwards; }
-  .hero-tag .line:nth-child(1) { animation-delay: 2.2s; }
-  .hero-tag .line:nth-child(2) { animation-delay: 2.5s; }
-  .hero-lead { max-width: 46ch; margin: 24px auto 0; color: var(--ivory-80); animation: rise 1.4s var(--ease-slow) backwards 2.8s; }
-  .hero-cta { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 20px 32px; margin-top: 36px; animation: rise 1.4s var(--ease-slow) backwards 3.1s; }
+  .hero-tag .line:nth-child(1) { animation-delay: .35s; }
+  .hero-tag .line:nth-child(2) { animation-delay: .6s; }
+  .hero-lead { max-width: 46ch; margin: 24px auto 0; color: var(--ivory-80); animation: rise 1.4s var(--ease-slow) backwards .9s; }
+  .hero-cta { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 20px 32px; margin-top: 36px; animation: rise 1.4s var(--ease-slow) backwards 1.2s; }
 
   /* candlelight glow (Brand Kit §05 "Ritual") */
   .glow { position: absolute; z-index: 0; width: 120vmin; height: 120vmin; left: 50%; top: 34%; translate: -50% -50%; border-radius: 50%;
@@ -89,6 +111,7 @@ const stars = [{ x: 14, y: 24, d: 0 }, { x: 86, y: 30, d: 1.6 }, { x: 22, y: 70,
 
   @media (max-width: 767px) { .hero { padding-bottom: 96px; } .hero-cta .btn { width: 100%; } .scroll-cue { display: none; } .hero-lead { margin-top: 20px; } }
   @media (prefers-reduced-motion: reduce) {
+    .bloom-stage, .bloom-word { display: none; }
     .hero-logo-media, .hero-eyebrow, .hero-tag .line, .hero-lead, .hero-cta { animation: none; }
     .dust, .scroll-cue { display: none; }
     .glow { animation: none; }

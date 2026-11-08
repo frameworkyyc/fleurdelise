@@ -8,7 +8,7 @@ One continuous garden. The visitor arrives at a lotus that draws itself and *bec
 ## What is where
 | Moment | Component | Driver |
 |---|---|---|
-| **Hero: blooming lotus → exact logo** | `garden/HeroBloom.astro` + `Hero.astro` | CSS keyframes (≈3.2 s): stem & star, crescent draws, 9 line-art petals fan open, sprigs & celestial details, then the **exact logo fades in beneath** and the drawing dissolves. Overlay is `opacity: 0` at rest. |
+| **Hero: blooming lotus → exact logo** | `Hero.astro` + `src/scripts/bloom.ts` | **Superseded:** the SVG line-art overlay was removed. The hero is now an AI-generated bloom video (Higgsfield) played as stacked-alpha on a canvas, handing off to the exact static logo — see [BLOOM-ANIMATION.md](./BLOOM-ANIMATION.md). |
 | **Flowers growing on scroll** | `garden/GardenVine.astro` (≥1440 px), `garden/Sprout.astro` (values), `garden/Lotus.astro` | `garden.ts` writes `--p` (0→1); CSS maps to transform/opacity/stroke-dash |
 | **Fleur-de-lis details** | `garden/FleurDeLis.astro`, `garden/SeamOrnament.astro` | Medallion unfolds (scale/rotate/opacity) on each section seam; footer ornament |
 | **Interactive service illustrations** | `garden/ServiceIllustration.astro` (`reiki` lotus, `eft` fern + dew, `tarot` star-flower) | Open on hover, keyboard focus, and once scrolled into view (so touch devices bloom too). Rest = bud / young frond / lone star. |
