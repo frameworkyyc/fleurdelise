@@ -25,7 +25,30 @@ const jsonLd = [c.slug === 'sit' ? sitSchema() : serviceSchema(c.slug), breadcru
   <section class="section tex-linen on-light" aria-labelledby="ov-h">
     <div class="wrap two">
       <div><p class="eyebrow">Overview</p><h2 id="ov-h">{c.overviewTitle}</h2></div>
-      <div class="prose">{c.overview.map((p, i) => <p class:list={[i === 0 && 'lead']}>{p}</p>)}</div>
+      <div class="right">
+        <div class="prose">{c.overview.map((p, i) => <p class:list={[i === 0 && 'lead']}>{p}</p>)}</div>
+        {c.credentials && (
+          <aside class="trained" aria-labelledby="trained-h">
+            <p id="trained-h" class="eyebrow">Training</p>
+            <ul class="t-rows">
+              {c.credentials.items.map((t) => (
+                <li class:list={['t-row', t.upcoming && 'is-upcoming']}>
+                  <span class="t-what serif">{t.label}</span>
+                  <span class="t-when serif">{t.detail}</span>
+                  {t.note && <span class="t-note">{t.note}</span>}
+                </li>
+              ))}
+            </ul>
+            {c.credentials.courses && (
+              <>
+                <p class="t-sub">{c.credentials.courses.heading}</p>
+                <ul class="t-courses">{c.credentials.courses.items.map((t) => <li>{t}</li>)}</ul>
+              </>
+            )}
+            <a class="link-arrow t-more" href="/about#training">More about Lise’s training <Icon name="arrow" size={18} /></a>
+          </aside>
+        )}
+      </div>
     </div>
   </section>
 
@@ -92,6 +115,19 @@ const jsonLd = [c.slug === 'sit' ? sitSchema() : serviceSchema(c.slug), breadcru
 </BaseLayout>
 <style>
   .two { display: grid; gap: 28px; } .two h2 { margin-top: 12px; } @media (min-width: 900px) { .two { grid-template-columns: 5fr 7fr; gap: 96px; } }
+  .right { min-width: 0; }
+  .trained { margin-top: 40px; padding-top: 26px; border-top: 1px solid rgb(151 92 43 / .4); max-width: 60ch; }
+  .t-rows { list-style: none; margin: 14px 0 0; padding: 0; }
+  .t-row { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 20px; padding: 8px 0; }
+  .t-what { font-size: 1.1875rem; color: var(--plum); line-height: 1.35; }
+  .t-when { font-style: italic; color: var(--bronze-text); font-size: 1rem; }
+  .t-note { flex-basis: 100%; font-size: .8125rem; letter-spacing: .06em; text-transform: uppercase; color: var(--bronze-text); }
+  .is-upcoming .t-what { color: var(--plum-text-soft); }
+  .t-sub { margin-top: 22px; font-size: .8125rem; letter-spacing: .12em; text-transform: uppercase; color: var(--bronze-text); }
+  .t-courses { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; }
+  .t-courses li { position: relative; padding-left: 20px; color: var(--plum-text-soft); font-size: .9375rem; line-height: 1.5; }
+  .t-courses li::before { content: ''; position: absolute; left: 3px; top: .62em; width: 5px; height: 5px; background: var(--gold); transform: rotate(45deg); }
+  .t-more { margin-top: 24px; }
   .prose { max-width: 60ch; } .prose .lead { color: var(--plum); }
   h2 { margin: 12px 0 0; } .intro { margin-top: 20px; color: var(--plum-text-soft); max-width: 52ch; }
   .steps { display: grid; gap: 24px; margin-top: clamp(40px, 5vw, 64px); list-style: none; padding: 0; }

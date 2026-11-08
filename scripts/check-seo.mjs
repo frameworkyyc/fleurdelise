@@ -54,6 +54,16 @@ for (const f of files) {
   if (path === '/' && !nodes.some((n) => types(n).includes('LocalBusiness'))) fail('/: LocalBusiness JSON-LD missing');
   if (path.startsWith('/services/') && !nodes.some((n) => types(n).includes('BreadcrumbList'))) fail(`${path}: BreadcrumbList missing`);
 
+  // Credentials: SIT certification must always read as upcoming; sound/crystal/pendulum training is listed on /about only
+  // (it must never imply those are offered services); structured data lists completed qualifications only.
+  const text = h.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, ' ').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+  for (const mm of text.matchAll(/Certified SIT Practitioner/g)) {
+    const near = text.slice(mm.index, mm.index + 220);
+    if (!/expected|upcoming|not yet completed/i.test(near)) fail(`${path}: "Certified SIT Practitioner" is not flagged as upcoming/expected`);
+  }
+  if (path !== '/about' && /\b(singing bowl|sound bath|sound healing|sound therapy|crystal practitioner|crystal singing|pendulum)\b/i.test(text)) fail(`${path}: sound/crystal/pendulum training mentioned outside /about (could imply an offered service)`);
+  for (const n of nodes) if (types(n).includes('Person') && /SIT|Subconscious/i.test(JSON.stringify(n.hasCredential || []))) fail(`${path}: Person.hasCredential must not include the upcoming SIT certification`);
+
   // Images
   for (const img of h.match(/<img\b[^>]*>/g) || []) {
     if (!/\balt=/.test(img)) fail(`${path}: <img> without alt: ${img.slice(0, 80)}`);

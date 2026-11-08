@@ -6,7 +6,7 @@ Nothing here is rendered to visitors. Sections are built so each item below can 
 ## Needed from Lise
 | Item | Where it lands | Status |
 |---|---|---|
-| Professional bio, photo, certifications | `site.lise.photo` / About page. The Home "Meet Lise" arch shows the photo automatically once set; until then it shows a botanical illustration. | Awaiting |
+| Professional bio, photo | `site.lise.photo` / About page. The Home "Meet Lise" arch shows the photo automatically once set; until then it shows a botanical illustration. | Awaiting (certifications received — see docs/CREDENTIALS.md) |
 | Reiki / EFT / Tarot descriptions, "what to expect", session format | `/services/*` pages (next phase) | Awaiting |
 | Duration + pricing per service | Service pages + booking | Awaiting |
 | Which services are in-person, virtual or both | Service cards + booking form | Awaiting (Home only says "depending on the service") |
@@ -27,6 +27,9 @@ Nothing here is rendered to visitors. Sections are built so each item below can 
 - SIT page: launch date + "I'll share more closer to launch" only. No SIT logo, no description of the technique.
 - Privacy page: plain-language notice written for the current mailto-based forms — **needs Lise's review (and ideally legal review) before launch**, and an update when a delivery service or booking provider is added.
 - Disclaimer page includes the 9-8-8 / 911 crisis line wording — confirm Lise is happy with it.
+
+## Received — to confirm with Lise
+- Training & certifications (docs/CREDENTIALS.md): confirm EFT may be called "certified"; confirm which additional courses (if any) she wants to offer as services later; dates/providers for the additional courses only if she wants them shown.
 
 ## Decisions pending
 - Inquiry delivery: forms currently open the visitor's email app (mailto) — free, no data stored. Recommended upgrade: Cloudflare Email Routing `send_email` binding from the existing Worker (free; needs Email Routing enabled on a Framework zone and fleurdelisehealing@gmail.com verified as destination) + Turnstile. Not configured; needs approval.

@@ -27,8 +27,6 @@ export const site = {
     photoAlt: undefined as string | undefined,
     /** Paragraphs of Lise's own bio — About page shows them when supplied. */
     bio: undefined as string[] | undefined,
-    /** Certifications, exactly as Lise supplies them. */
-    credentials: undefined as string[] | undefined,
   },
 
   nav: [
@@ -38,6 +36,43 @@ export const site = {
   ],
   book: { label: 'Book', href: '/book', cta: 'Book a first conversation' },
 } as const;
+
+/**
+ * Lise's training — supplied by Lise (Nov 2026). Titles are kept exactly as supplied. NOTHING here is inferred:
+ * no providers, accreditation, dates or hours are stated beyond what she gave us. The SIT certification is upcoming
+ * (expected April 2027) and must stay flagged `upcoming` until she has completed it.
+ * The "additional" courses are listed for completeness; they do NOT mean those practices are offered as services.
+ */
+export interface TrainingItem { title: string; when: string; whenISO?: string; upcoming?: boolean; note?: string }
+export const training: { primary: TrainingItem[]; additional: string[]; tarotCourses: string[] } = {
+  primary: [
+    { title: 'Practicing tarot', when: 'Since 2003' },
+    { title: 'Certified Master Usui Reiki Practitioner', when: 'December 10, 2023', whenISO: '2023-12-10' },
+    { title: 'Emotional Freedom Technique', when: 'December 27, 2025', whenISO: '2025-12-27' },
+    { title: 'Certified SIT Practitioner', when: 'Expected April 2027', upcoming: true, note: 'Upcoming — not yet completed' },
+  ],
+  additional: [
+    'Awakening & Understanding Your Intuition',
+    'Crystal Singing Bowls Sound Therapy & Sound Healing Training',
+    'Tibetan Singing Bowls Sound Therapy & Sound Healing Training',
+    'Tarot Reading Masterclass Certified Beginner to Pro',
+    'Tibetan Singing Bowls Group Sound Bath Training',
+    'Advanced Tarot Spreads Certified: 12 Powerful Layouts',
+    'Tarot Card Success: The Complete Tarot Reading Course',
+    'Pendulum Dowsing for Healers & Energy Practitioners',
+    'Major Arcana Mastery Certified: Card Combinations',
+    'Crystal Practitioner Certification: Beginner Level',
+  ],
+  /** The subset of `additional` that is tarot study (shown on the tarot page). */
+  tarotCourses: [
+    'Tarot Reading Masterclass Certified Beginner to Pro',
+    'Advanced Tarot Spreads Certified: 12 Powerful Layouts',
+    'Tarot Card Success: The Complete Tarot Reading Course',
+    'Major Arcana Mastery Certified: Card Combinations',
+  ],
+};
+/** Completed qualifications only (no upcoming SIT, no tarot-experience line) — used for structured data. */
+export const completedCredentials = training.primary.filter((t) => !t.upcoming && !/^Practicing/.test(t.title)).map((t) => t.title);
 
 export type IconName = 'reiki' | 'eft' | 'tarot' | 'sit' | 'inperson' | 'virtual' | 'mail' | 'phone' | 'pin' | 'heart' | 'calendar';
 

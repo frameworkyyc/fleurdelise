@@ -33,7 +33,7 @@ docs/              CONTENT-TRACKER.md (internal pending info)
 ```
 
 ## Docs
-`docs/DEPLOYMENT.md` · `docs/CONTENT-TRACKER.md` · `docs/SAFARI-LOGO.md` (confirmed Safari Private Browsing bug) · `docs/ANIMATION-GUIDELINES.md` (rules for all new motion) · `docs/GARDEN-IN-BLOOM.md` (redesign + component API) · `docs/SAFARI-QA-CHECKLIST.md` (manual regular + Private Browsing QA) · `docs/BLOOM-ANIMATION.md` (cinematic hero bloom: Higgsfield, packing, playback) · `docs/SEO-AUDIT.md` · `docs/SEO-PHASE3A-REPORT.md` · `docs/REDIRECTS.md` · `docs/SIT-LAUNCH-CHECKLIST.md` · `docs/DARK-SURFACES.md` (dark-surface colour matching) · `docs/BLOOM-PERFORMANCE.md` (smoothness investigation + iPad test protocol)
+`docs/DEPLOYMENT.md` · `docs/CONTENT-TRACKER.md` · `docs/SAFARI-LOGO.md` (confirmed Safari Private Browsing bug) · `docs/ANIMATION-GUIDELINES.md` (rules for all new motion) · `docs/GARDEN-IN-BLOOM.md` (redesign + component API) · `docs/SAFARI-QA-CHECKLIST.md` (manual regular + Private Browsing QA) · `docs/BLOOM-ANIMATION.md` (cinematic hero bloom: Higgsfield, packing, playback) · `docs/CREDENTIALS.md` · `docs/SEO-AUDIT.md` · `docs/SEO-PHASE3A-REPORT.md` · `docs/REDIRECTS.md` · `docs/SIT-LAUNCH-CHECKLIST.md` · `docs/DARK-SURFACES.md` (dark-surface colour matching) · `docs/BLOOM-PERFORMANCE.md` (smoothness investigation + iPad test protocol)
 
 ## Brand rules enforced in code
 Logos are only used whole and unmodified (Dark Background Alternative on plum; textured sub-mark as a framed tile). One texture per surface. Gold text only on plum; Bronze eyebrows on light. Disclaimer in the footer. Motion is CSS-only and disabled under `prefers-reduced-motion`.

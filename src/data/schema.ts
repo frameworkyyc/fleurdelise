@@ -6,7 +6,7 @@
  *
  * SIT is deliberately NOT a Service/Offer until its launch. Before then /services/sit is a plain WebPage.
  */
-import { site, services, sit } from './site';
+import { site, services, sit, completedCredentials } from './site';
 import { serviceContent } from './service-content';
 
 const id = (frag: string) => `${site.url}/#${frag}`;
@@ -45,7 +45,9 @@ export const personSchema = () => ({
   '@context': 'https://schema.org', '@type': 'Person', '@id': id('lise'), name: site.owner, jobTitle: 'Holistic wellness practitioner',
   url: abs('/about'), worksFor: { '@id': id('business') },
   address: { '@type': 'PostalAddress', addressLocality: 'Windsor', addressRegion: 'ON', addressCountry: 'CA' },
-  ...(site.lise.credentials?.length ? { hasCredential: site.lise.credentials.map((c) => ({ '@type': 'EducationalOccupationalCredential', name: c })) } : {}),
+  // Completed qualifications only. SIT (expected April 2027) is deliberately excluded until it is actually completed.
+  hasCredential: completedCredentials.map((name) => ({ '@type': 'EducationalOccupationalCredential', name })),
+  knowsAbout: ['Reiki', 'Emotional Freedom Technique', 'Tarot'],
 });
 
 export const breadcrumbSchema = (trail: { name: string; href: string }[]) => ({

@@ -4,9 +4,9 @@ import PageHero from '../components/PageHero.astro';
 import Portrait from '../components/Portrait.astro';
 import Icon from '../components/Icon.astro';
 import Invitation from '../components/Invitation.astro';
-import { site } from '../data/site';
+import { site, training } from '../data/site';
 import { personSchema, breadcrumbSchema } from '../data/schema';
-const { bio, credentials } = site.lise;
+const { bio } = site.lise;
 const principles = [
   { icon: 'heart', title: 'Personal connection', text: 'One-to-one, unhurried, and always at your pace.' },
   { icon: 'inperson', title: 'Compassion', text: 'Whatever you’re carrying is welcome here.' },
@@ -15,7 +15,7 @@ const principles = [
 ] as const;
 const jsonLd = [personSchema(), breadcrumbSchema([{ name: 'Home', href: '/' }, { name: 'About', href: '/about' }])];
 ---
-<BaseLayout title="About Lise Pinard-Wolf | Fleur de Lise Healing, Windsor" description="Meet Lise Pinard-Wolf — a Windsor, Ontario practitioner offering Reiki, EFT and tarot with understanding, compassion and no judgment." path="/about" jsonLd={jsonLd}>
+<BaseLayout title="About Lise Pinard-Wolf | Fleur de Lise Healing, Windsor" description="Meet Lise Pinard-Wolf — a Windsor, Ontario Certified Master Usui Reiki Practitioner and tarot reader (since 2003), with EFT training. No judgment." path="/about" jsonLd={jsonLd}>
   <PageHero crumbs={[{ name: 'Home', href: '/' }, { name: 'About' }]} eyebrow="About Lise" title="A practitioner who understands." lead="Gentle, personal support for people who are carrying something they haven’t been able to put down." />
 
   <section class="section tex-linen on-light" aria-labelledby="who-h">
@@ -27,6 +27,7 @@ const jsonLd = [personSchema(), breadcrumbSchema([{ name: 'Home', href: '/' }, {
         <div class="prose reveal" style="--d:2">
           <p class="lead">I’m Lise Pinard-Wolf, and I offer <a href="/services/reiki">Reiki</a>, <a href="/services/eft">EFT tapping</a> and <a href="/services/tarot">tarot readings</a> in Windsor, Ontario — in person and virtually, depending on the service.</p>
           <p>My own life experience means I meet everyone with understanding, not judgment. You decide what to share, and we move at the pace that feels right for you.</p>
+          <p>I’ve practiced tarot since 2003 and am a Certified Master Usui Reiki Practitioner. <a href="#training">See all my training and certifications.</a></p>
           {bio?.map((p) => <p>{p}</p>)}
         </div>
       </div>
@@ -45,12 +46,28 @@ const jsonLd = [personSchema(), breadcrumbSchema([{ name: 'Home', href: '/' }, {
     </div>
   </section>
 
-  {credentials && credentials.length > 0 && (
-    <section class="section tex-ivory on-light" aria-labelledby="cred-h">
-      <div class="wrap"><p class="eyebrow">Training &amp; certifications</p><h2 id="cred-h">Credentials</h2>
-        <ul class="creds">{credentials.map((c) => <li>{c}</li>)}</ul></div>
-    </section>
-  )}
+  <section id="training" class="section tex-ivory on-light" aria-labelledby="cred-h">
+    <div class="wrap train">
+      <div class="train-intro">
+        <p class="eyebrow reveal">Experience &amp; study</p>
+        <h2 id="cred-h" class="reveal" style="--d:1">Training &amp; certifications</h2>
+        <p class="lead reveal" style="--d:2">Reiki, EFT and tarot readings are the services I offer today. SIT is expected to join them once my certification is complete in April 2027.</p>
+      </div>
+      <div class="train-body">
+        <ol class="primary reveal" style="--d:2">
+          {training.primary.map((t) => (
+            <li class:list={[t.upcoming && 'is-upcoming']}>
+              <span class="when serif">{t.whenISO ? <time datetime={t.whenISO}>{t.when}</time> : t.when}</span>
+              <span class="what serif">{t.title}</span>
+              {t.note && <span class="note">{t.note}</span>}
+            </li>
+          ))}
+        </ol>
+        <h3 class="more-h reveal" style="--d:3">Additional training &amp; certifications</h3>
+        <ul class="extra reveal" style="--d:3">{training.additional.map((t) => <li>{t}</li>)}</ul>
+      </div>
+    </div>
+  </section>
 
   <section class="section tex-linen on-light" aria-labelledby="wel-h">
     <div class="wrap welcome">
@@ -72,6 +89,20 @@ const jsonLd = [personSchema(), breadcrumbSchema([{ name: 'Home', href: '/' }, {
   .card { background: var(--plum); padding: 40px 32px; border-top: 2px solid var(--gold); display: grid; gap: 12px; align-content: start; }
   .card :global(.ico) { color: var(--gold); margin-bottom: 8px; } .card p { color: var(--ivory-80); }
   @media (min-width: 700px) { .cards { grid-template-columns: repeat(2, 1fr); } } @media (min-width: 1100px) { .cards { grid-template-columns: repeat(4, 1fr); gap: 24px; } }
-  .creds { display: grid; gap: 0; margin-top: 32px; max-width: 640px; list-style: none; padding: 0; } .creds li { padding: 16px 0; border-top: 1px solid rgb(151 92 43 / .35); }
+  .train { display: grid; gap: 40px; } @media (min-width: 900px) { .train { grid-template-columns: 5fr 7fr; gap: 96px; } }
+  .train-intro .lead { margin-top: 24px; max-width: 34ch; color: var(--plum-text-soft); }
+  .primary { list-style: none; margin: 0; padding: 0; }
+  .primary li { display: grid; grid-template-columns: minmax(8.5rem, 11rem) 1fr; gap: 4px 24px; align-items: baseline; padding: 20px 0; border-top: 1px solid rgb(151 92 43 / .35); }
+  .primary li:last-child { border-bottom: 1px solid rgb(151 92 43 / .35); }
+  .primary .when { font-style: italic; color: var(--bronze-text); font-size: 1.0625rem; }
+  .primary .what { font-size: clamp(1.1875rem, 1.1rem + .4vw, 1.375rem); color: var(--plum); line-height: 1.3; }
+  .primary .note { grid-column: 2; font-size: .8125rem; letter-spacing: .06em; text-transform: uppercase; color: var(--bronze-text); }
+  .primary .is-upcoming .what { color: var(--plum-text-soft); }
+  @media (max-width: 560px) { .primary li { grid-template-columns: 1fr; } .primary .note { grid-column: 1; } }
+  .more-h { margin-top: clamp(36px, 5vw, 56px); font-family: var(--font-sans); font-weight: 500; font-size: .8125rem; letter-spacing: .14em; text-transform: uppercase; color: var(--bronze-text); }
+  .extra { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 12px 40px; }
+  @media (min-width: 700px) { .extra { grid-template-columns: repeat(2, 1fr); } }
+  .extra li { position: relative; padding-left: 20px; color: var(--plum-text-soft); font-size: .9375rem; line-height: 1.5; }
+  .extra li::before { content: ''; position: absolute; left: 3px; top: .62em; width: 5px; height: 5px; background: var(--gold); transform: rotate(45deg); }
   .welcome { display: grid; gap: 32px; } @media (min-width: 900px) { .welcome { grid-template-columns: 5fr 7fr; gap: 96px; } }
 </style>
