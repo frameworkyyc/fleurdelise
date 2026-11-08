@@ -2,7 +2,8 @@
 //
 // Confirmed on-device (iPad Safari, Private Browsing): @keyframes that animate `filter: blur() drop-shadow()`
 // rendered the hero logo as a white rectangle. This script FAILS the build if any @keyframes block contains
-// a filter / backdrop-filter / blur() / drop-shadow(). It only WARNS about filters in `transition` / `will-change`.
+// a filter / backdrop-filter / blur() / drop-shadow(), and also FAILS on `transition`s of filter/backdrop-filter and on
+// `will-change: filter`. (A *static* filter/backdrop-filter that is not animated is allowed.)
 //
 // Usage: node scripts/check-motion.mjs [rootDir=src]
 import { readdir, readFile } from 'node:fs/promises';
@@ -39,10 +40,10 @@ for await (const file of walk(root)) {
     re.lastIndex = i;
   }
 
-  // Advisory only
+  // Transition / will-change checks
   for (const [n, line] of code.split('\n').entries()) {
-    if (/transition\s*:[^;]*(?:backdrop-)?filter/i.test(line)) warnings.push(`${file}:${n + 1}  transition includes a filter property: ${line.trim().slice(0, 110)}`);
-    if (/will-change\s*:[^;]*filter/i.test(line)) warnings.push(`${file}:${n + 1}  will-change: filter`);
+    if (/transition(?:-property)?\s*:[^;]*(?:backdrop-)?filter/i.test(line)) errors.push(`${file}:${n + 1}  transition animates a filter property: ${line.trim().slice(0, 100)}`);
+    if (/will-change\s*:[^;]*filter/i.test(line)) errors.push(`${file}:${n + 1}  will-change: filter`);
   }
 }
 

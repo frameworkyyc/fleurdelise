@@ -34,5 +34,11 @@ No `filter`, `backdrop-filter`, `blur()` or `drop-shadow()` inside any `@keyfram
 2. Chromium automated: final state visible with `animation: none`, reduced motion, JS disabled, and paused animations (safety net).
 3. **On device: iPad/iPhone Safari in regular AND Private Browsing.** If something looks wrong, isolate it on a temporary, unlinked, noindexed page with one tile per suspect (this is how the logo bug was found), then delete the page.
 
-## Known advisory items (existing, not yet changed)
-`check:motion` warns about two existing `transition`s that include a filter property: `.site-header` (`backdrop-filter`, on scroll) and the service-card icon hover glow (`filter: drop-shadow`). They have not caused a reported problem; verify on Private Browsing and consider replacing with opacity/transform equivalents.
+## Resolved (2026-11-08)
+The audit that followed the logo bug found four more filter uses; all are now Safari-safe:
+- `.site-header` — frosted glass is a **static** `backdrop-filter` on a `::before`; only its `opacity` (and `visibility`) transitions.
+- Service-card icon hover glow — a gradient pseudo-element fading `opacity`/`transform` (was an animated `drop-shadow`).
+- Meet-Lise portrait leaf shadow — static `blur(1.2px)` on an animating element removed (shadow is already soft).
+- Sticky mobile booking bar — `backdrop-filter` on an element that slides in with a transform removed; background is now a near-opaque plum.
+
+`npm run check:motion` now also **fails** on `transition`s of `filter`/`backdrop-filter` and on `will-change: filter`.

@@ -39,8 +39,13 @@ const current = (href: string) => (path === href || path.startsWith(href + '/') 
 </div>
 
 <style>
-  .site-header { position: fixed; inset: 0 0 auto 0; z-index: 50; height: var(--header-h); transition: background-color .5s var(--ease), box-shadow .5s var(--ease), backdrop-filter .5s; }
-  .site-header.is-scrolled, .site-header:not([data-home]) { background: rgb(31 9 19 / 0.82); backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2); box-shadow: 0 1px 0 rgb(201 148 76 / 0.18); }
+  .site-header { position: fixed; inset: 0 0 auto 0; z-index: 50; height: var(--header-h); }
+  /* Frosted glass (Safari-safe): the backdrop-filter is STATIC on a pseudo-element; only its opacity animates, and
+     visibility removes it from compositing while hidden. Never transition backdrop-filter itself (docs/ANIMATION-GUIDELINES.md). */
+  .site-header::before { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background: rgb(31 9 19 / 0.82); -webkit-backdrop-filter: blur(14px) saturate(1.2); backdrop-filter: blur(14px) saturate(1.2); box-shadow: 0 1px 0 rgb(201 148 76 / 0.18);
+    opacity: 0; visibility: hidden; transition: opacity .5s var(--ease), visibility 0s linear .5s; }
+  .site-header.is-scrolled::before, .site-header:not([data-home])::before { opacity: 1; visibility: visible; transition: opacity .5s var(--ease), visibility 0s; }
   .header-in { height: 100%; display: flex; align-items: center; gap: 24px; }
   .brand { display: block; width: 52px; height: 52px; border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 1px rgb(201 148 76 / 0.55); margin-right: auto; transition: opacity .6s var(--ease), transform .6s var(--ease), visibility .6s; }
   .brand img { width: 100%; height: 100%; }

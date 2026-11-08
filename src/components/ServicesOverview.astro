@@ -16,7 +16,7 @@ import { services } from '../data/site';
     <ul class="cards">
       {services.map((s, i) => (
         <li class="card reveal" style={`--d:${i}`}>
-          <Icon name={s.icon} size={60} class="ico" />
+          <span class="ico-wrap"><Icon name={s.icon} size={60} class="ico" /></span>
           <h3><a href={s.href}>{s.name}</a></h3>
           <p>{s.blurb}</p>
           <span class="more" aria-hidden="true">Learn more <Icon name="arrow" size={18} /></span>
@@ -35,7 +35,12 @@ import { services } from '../data/site';
   .modes .note { flex-basis: 100%; color: var(--ivory-60); font-size: .875rem; }
   .cards { display: grid; gap: 24px; }
   .card { position: relative; background: var(--plum); padding: 40px 32px 36px; border-top: 2px solid var(--gold); display: flex; flex-direction: column; gap: 14px; transition: transform .6s var(--ease), box-shadow .6s var(--ease), background-color .6s var(--ease); }
-  .card :global(.ico) { color: var(--gold); margin-bottom: 12px; transition: transform .6s var(--ease), filter .6s; }
+  .ico-wrap { position: relative; display: block; width: 60px; height: 60px; margin-bottom: 12px; color: var(--gold); transition: transform .6s var(--ease); }
+  .ico-wrap :global(.ico) { position: relative; }
+  /* hover glow: gradient pseudo-element fading in (replaces the former animated `filter: drop-shadow()`) */
+  .ico-wrap::before { content: ''; position: absolute; inset: -16px; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(closest-side, rgb(201 148 76 / .14), rgb(201 148 76 / .05) 55%, transparent 100%);
+    opacity: 0; transform: scale(.7); transition: opacity .6s var(--ease), transform .6s var(--ease); }
   .card h3 a { text-decoration: none; display: inline-block; padding-block: 10px; margin-block: -10px; }
   .card h3 a::after { content: ''; position: absolute; inset: 0; } /* whole card is the link */
   .card h3 { font-size: 1.1875rem; }
@@ -43,7 +48,8 @@ import { services } from '../data/site';
   .more { display: inline-flex; align-items: center; gap: 10px; margin-top: 16px; font-size: .8125rem; letter-spacing: .16em; text-transform: uppercase; font-weight: 500; color: var(--gold); }
   .more :global(svg) { transition: transform .4s var(--ease); }
   .card:hover { transform: translateY(-6px); background: #55233a; box-shadow: 0 30px 50px -30px rgb(0 0 0 / .7); }
-  .card:hover :global(.ico) { transform: translateY(-2px); filter: drop-shadow(0 0 10px rgb(201 148 76 / .45)); }
+  .card:hover .ico-wrap, .card:focus-within .ico-wrap { transform: translateY(-2px); }
+  .card:hover .ico-wrap::before, .card:focus-within .ico-wrap::before { opacity: 1; transform: scale(1); }
   .card:hover .more :global(svg) { transform: translateX(5px); }
   .card:focus-within { outline: 2px solid var(--gold); outline-offset: 4px; }
   .card h3 a:focus-visible { outline: none; }
