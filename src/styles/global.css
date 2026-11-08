@@ -41,12 +41,24 @@ p { text-wrap: pretty; }
 .on-light { color: var(--plum); }
 
 .tex-plum {
-  background-color: var(--plum);
+  /* Rich dark velvet, matched to the approved logo's own backdrop: Midnight Plum at the edges (~#1a0710–#220914 in the artwork),
+     a soft pool of Velvet Plum where the emblem sits, two faint off-centre drifts for tonal variation, and a fine weave. */
+  background-color: var(--midnight);
   background-image:
-    repeating-linear-gradient(0deg, rgb(242 228 217 / 0.05) 0 1px, transparent 1px 4px),
-    repeating-linear-gradient(90deg, rgb(242 228 217 / 0.05) 0 1px, transparent 1px 4px);
+    radial-gradient(ellipse 75% 60% at 50% 28%, rgb(76 31 49 / 0.80) 0%, rgb(76 31 49 / 0.46) 42%, transparent 100%),
+    radial-gradient(ellipse 42% 36% at 12% 74%, rgb(76 31 49 / 0.32), transparent 72%),
+    radial-gradient(ellipse 36% 30% at 90% 56%, rgb(76 31 49 / 0.26), transparent 72%),
+    repeating-linear-gradient(0deg, rgb(242 228 217 / 0.03) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(90deg, rgb(242 228 217 / 0.03) 0 1px, transparent 1px 4px);
 }
-.tex-midnight { background-color: var(--midnight); }
+.tex-midnight {
+  /* same family as .tex-plum so every dark section reads as one velvet; deeper, with a faint plum lift so it is never flat black */
+  background-color: var(--midnight);
+  background-image:
+    radial-gradient(ellipse 80% 55% at 50% 0%, rgb(76 31 49 / 0.30), transparent 72%),
+    repeating-linear-gradient(0deg, rgb(242 228 217 / 0.02) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(90deg, rgb(242 228 217 / 0.02) 0 1px, transparent 1px 4px);
+}
 .tex-ivory {
   background-color: var(--ivory);
   background-image:

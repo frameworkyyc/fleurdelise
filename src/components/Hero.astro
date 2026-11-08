@@ -95,8 +95,8 @@ const stars = [{ x: 14, y: 24, d: 0 }, { x: 86, y: 30, d: 1.6 }, { x: 22, y: 70,
 
   /* candlelight glow (Brand Kit §05 "Ritual") */
   .glow { position: absolute; z-index: 0; width: 120vmin; height: 120vmin; left: 50%; top: 34%; transform: translate(-50%, -50%); border-radius: 50%;
-    background: radial-gradient(circle, rgb(207 128 92 / .30) 0%, rgb(160 87 58 / .14) 34%, transparent 68%); animation: breathe 11s ease-in-out infinite; }
-  .vignette { position: absolute; inset: 0; z-index: 1; background: radial-gradient(ellipse at 50% 40%, transparent 38%, rgb(31 9 19 / .6) 100%); }
+    background: radial-gradient(circle, rgb(207 128 92 / .20) 0%, rgb(160 87 58 / .09) 34%, transparent 66%); animation: breathe 11s ease-in-out infinite; }
+  .vignette { position: absolute; inset: 0; z-index: 1; background: radial-gradient(ellipse at 50% 38%, transparent 34%, rgb(31 9 19 / .55) 100%); }
 
   .dust { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
   .dust i { position: absolute; bottom: -12px; left: var(--x); width: var(--s); height: var(--s); border-radius: 50%; background: var(--gold); opacity: 0; box-shadow: 0 0 8px 1px rgb(201 148 76 / .55); animation: float var(--d) linear infinite; animation-delay: var(--delay); }
