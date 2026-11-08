@@ -8,9 +8,6 @@ if (!production) {
   for (const f of await readdir('dist')) if (f.startsWith('sitemap')) await rm(`dist/${f}`);
   console.log('post-build: staging build — X-Robots-Tag noindex header written, sitemap removed');
 } else {
-  // diagnostics are staging-only
-  await rm('dist/logo-test', { recursive: true, force: true });
-  await rm('dist/brand/diag', { recursive: true, force: true });
   await writeFile('dist/_headers', '/*\n  Referrer-Policy: strict-origin-when-cross-origin\n');
   console.log('post-build: production build');
 }

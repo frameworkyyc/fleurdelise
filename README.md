@@ -10,6 +10,7 @@ Astro (static) → Cloudflare Workers Static Assets. Built to **Framework Brand 
 | `npm run build` | static build to `dist/` |
 | `npm run preview` | serve the build locally |
 | `npm run check` | Astro type/diagnostic check |
+| `npm run check:motion` | Safari-safety guard for animation CSS (also runs in every build) |
 | `node scripts/build-brand-assets.mjs` | regenerate optimised logos/icons/OG image from `brand-originals/` |
 
 ## Environments
@@ -30,6 +31,9 @@ src/components/    Header, Footer, Hero, Button, Icon, Moons, Botanical, section
 src/layouts/       BaseLayout (SEO, OG, JSON-LD, skip link, fonts)
 docs/              CONTENT-TRACKER.md (internal pending info)
 ```
+
+## Docs
+`docs/DEPLOYMENT.md` · `docs/CONTENT-TRACKER.md` · `docs/SAFARI-LOGO.md` (confirmed Safari Private Browsing bug) · `docs/ANIMATION-GUIDELINES.md` (rules for all new motion)
 
 ## Brand rules enforced in code
 Logos are only used whole and unmodified (Dark Background Alternative on plum; textured sub-mark as a framed tile). One texture per surface. Gold text only on plum; Bronze eyebrows on light. Disclaimer in the footer. Motion is CSS-only and disabled under `prefers-reduced-motion`.

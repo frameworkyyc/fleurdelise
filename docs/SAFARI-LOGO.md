@@ -1,21 +1,37 @@
-# Safari / iPad hero-logo issue (white rectangle) — investigation notes
+# Safari (iPad, Private Browsing) hero-logo white rectangle — findings
 
-**Symptom:** hero logo renders in Chrome; on iPad Safari a white rectangle appears instead. Rest of site fine.
+**Status: root cause confirmed on device. Fixed and deployed to staging. Diagnostics page removed.**
 
-**Not reproducible here** (no WebKit in the build sandbox) — see "Still needs on-device confirmation".
+## Symptom
+Hero logo rendered correctly in Chrome. On iPad Safari a large white rectangle appeared in its place; the rest of the site loaded normally. Reloading with reduced privacy protections did not help.
 
-## Evidence gathered
-- Served logo bytes and headers were correct (verified before the staging domain was put behind Cloudflare Access); decodes cleanly in libwebp; alpha matches the original PNG (MAE 0.07).
-- The hero logo was the **only** image on the site stored as *lossy WebP + separate alpha plane* (`VP8X+ALPH+VP8`). Every other WebP (sub-marks) is plain lossy with no alpha, and those render fine.
-- The hero logo was also the **only** element animated with CSS `filter` (`blur()` + `drop-shadow()` keyframes, `fill-mode: both`) plus a permanent `drop-shadow` on the `<img>`, and used `decoding="async"`.
+## On-device test results (iPad Safari, Private Browsing, `/logo-test`)
+| Tile | What it isolated | Result |
+|---|---|---|
+| A | Previous encoding (lossy WebP + alpha), no effects | ✅ works |
+| B | Previous encoding + **static** `drop-shadow` filter | ✅ works |
+| **C** | Previous encoding + **original entrance animation** (`blur()` → `blur(0)` + `drop-shadow()` keyframes, `fill-mode: both`) | ❌ **white rectangle** |
+| D | New near-lossless WebP (VP8L), no effects | ✅ works |
+| E | PNG fallback | ✅ works |
+| F | New hero implementation (opacity/transform only) | ✅ works |
 
-## Changes (defence in depth; logo artwork unchanged)
-1. Re-encoded as **near-lossless WebP (VP8L, native alpha)** — 46.7 dB vs 29.1 dB before; `<picture>` with a **PNG fallback**.
-2. **No CSS filter on the image**; ambient shadow is a gradient pseudo-element. Entrance animation is opacity/transform only.
-3. Animation `fill-mode: backwards` (not `both`): base style is fully visible if an animation doesn't run or finish.
-4. Removed `decoding="async"` from the LCP hero image.
-5. JS safety net (6 s): any hero entrance animation still unfinished is dropped, leaving the element visible.
-6. `/logo-test` (staging only, unlinked, noindex; stripped from production builds) isolates each suspect on-device.
+The original logo also worked in regular (non-private) Safari browsing.
 
-## Still needs on-device confirmation (iPad Safari)
-Open `/logo-test`, screenshot the full page, and note which tiles A–F show the logo, a blank area, or a white box.
+## Root cause
+The **animated `filter` keyframes** on the logo image — `filter: blur(8px) drop-shadow(…)` animating to `blur(0) drop-shadow(…)`, held with `animation-fill-mode: both` — render as an opaque white rectangle in iPad Safari **Private Browsing**.
+
+Ruled out by the same test: the image file and its encoding (A works), the WebP lossy+alpha format (A), a static `drop-shadow` (B), the `<picture>`/PNG path (E, F).
+
+**Unexplained:** why it only fails in Private Browsing (regular Safari was fine). We have not investigated further because the guidance is the same regardless: don't animate filters. Treat any Safari-specific rendering as needing a Private Browsing check too.
+
+## Note on the encoding change
+During investigation the logo was re-encoded from lossy+alpha WebP to near-lossless WebP (+~75 KB at 1024 px, visibly crisper) with a PNG `<picture>` fallback. Test A shows this was **not** needed to fix the bug. It is kept because it is verified working on device and the quality is better. If page weight ever matters more than crispness, the lighter lossy encoding is safe to restore (`scripts/build-brand-assets.mjs`).
+
+## What is in place (the working implementation — preserve it)
+- `src/components/Hero.astro`: `<picture>` (near-lossless WebP + PNG fallback); no CSS filter on the image; ambient shadow is a gradient pseudo-element; entrance animation is opacity/transform only; `fill-mode: backwards`; no `decoding="async"`.
+- `src/scripts/site.ts`: 6-second safety net drops any unfinished hero entrance animation.
+- `prefers-reduced-motion`: animations off, everything visible.
+- `scripts/check-motion.mjs` (runs in every `npm run build`): **fails the build** if any `@keyframes` contains `filter`, `backdrop-filter`, `blur()` or `drop-shadow()`; warns on `transition`/`will-change` with filters.
+
+## Verified automatically (Chromium)
+Old vs new hero render identically in layout (desktop, iPad-size, phone-size at 2×/3×); logo visible with animations disabled, reduced motion, missing keyframes, JS disabled, and frozen animations (the old version stays invisible when frozen); PNG fallback loads when WebP is unrecognised; axe 0 violations.

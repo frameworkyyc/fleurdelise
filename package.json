@@ -5,12 +5,13 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node scripts/post-build.mjs",
+    "build": "node scripts/check-motion.mjs && astro build && node scripts/post-build.mjs",
     "preview": "astro preview",
     "check": "astro check",
     "deploy:staging": "npm run build:staging && wrangler deploy",
     "build:staging": "PUBLIC_SITE_ENV=staging PUBLIC_SITE_URL=https://fleurdelise.frameworktools.ca npm run build",
-    "build:production": "PUBLIC_SITE_ENV=production npm run build"
+    "build:production": "PUBLIC_SITE_ENV=production npm run build",
+    "check:motion": "node scripts/check-motion.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
