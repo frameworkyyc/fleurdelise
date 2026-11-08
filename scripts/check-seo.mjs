@@ -57,10 +57,12 @@ for (const f of files) {
   // Credentials: SIT certification must always read as upcoming; sound/crystal/pendulum training is listed on /about only
   // (it must never imply those are offered services); structured data lists completed qualifications only.
   const text = h.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, ' ').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
-  for (const mm of text.matchAll(/Certified SIT Practitioner/g)) {
-    const near = text.slice(mm.index, mm.index + 220);
-    if (!/expected|upcoming|not yet completed/i.test(near)) fail(`${path}: "Certified SIT Practitioner" is not flagged as upcoming/expected`);
+  // SIT: never "Certified SIT ..."/"SIT practitioner" as a present state; any certification mention must say it is expected (April 2027).
+  if (/certified\s+SIT|SIT[- ]certified|SIT practitioner/i.test(text)) fail(`${path}: wording implies Lise is already SIT-certified`);
+  for (const mm of text.matchAll(/(?:SIT|Subconscious Imprinting Technique)[^.]{0,80}certif|certif[^.]{0,80}(?:SIT|Subconscious Imprinting)/gi)) {
+    if (!/expected/i.test(text.slice(Math.max(0, mm.index - 60), mm.index + mm[0].length + 80))) fail(`${path}: SIT certification mention is not marked "expected April 2027"`);
   }
+  if (/\b(book|booking|book an?) (an? )?SIT\b|SIT (sessions? (are|is) (now )?(available|open|offered)|is now (available|offered))|I (now )?offer SIT/i.test(text)) fail(`${path}: wording implies SIT sessions are currently offered`);
   if (path !== '/about' && /\b(singing bowl|sound bath|sound healing|sound therapy|crystal practitioner|crystal singing|pendulum)\b/i.test(text)) fail(`${path}: sound/crystal/pendulum training mentioned outside /about (could imply an offered service)`);
   for (const n of nodes) if (types(n).includes('Person') && /SIT|Subconscious/i.test(JSON.stringify(n.hasCredential || []))) fail(`${path}: Person.hasCredential must not include the upcoming SIT certification`);
 

@@ -49,7 +49,7 @@ export const training: { primary: TrainingItem[]; additional: string[]; tarotCou
     { title: 'Practicing tarot', when: 'Since 2003' },
     { title: 'Certified Master Usui Reiki Practitioner', when: 'December 10, 2023', whenISO: '2023-12-10' },
     { title: 'Emotional Freedom Technique', when: 'December 27, 2025', whenISO: '2025-12-27' },
-    { title: 'Certified SIT Practitioner', when: 'Expected April 2027', upcoming: true, note: 'Upcoming — not yet completed' },
+    { title: 'Subconscious Imprinting Technique (SIT)', when: 'Upcoming', upcoming: true, note: 'Certification expected April 2027' },
   ],
   additional: [
     'Awakening & Understanding Your Intuition',

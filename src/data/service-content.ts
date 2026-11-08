@@ -95,9 +95,9 @@ export const serviceContent: Record<ServiceContent['slug'], ServiceContent> = {
     overviewTitle: 'What to know',
     overview: [
       'I’ll share more about SIT here as the launch gets closer.',
-      'Certification as an SIT practitioner is expected in April 2027, ahead of the May 1, 2027 launch.',
+      'Certification expected April 2027, ahead of the May 1, 2027 launch.',
       'If you’d like to be among the first to hear when sessions open, send a note and I’ll be in touch.',
     ],
-    credentials: { items: [{ label: 'Certified SIT Practitioner', detail: 'Expected April 2027', upcoming: true, note: 'Upcoming — not yet completed' }] },
+    credentials: { items: [{ label: 'Subconscious Imprinting Technique (SIT)', detail: 'Upcoming', upcoming: true, note: 'Certification expected April 2027' }] },
   },
 };
