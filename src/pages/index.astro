@@ -6,25 +6,14 @@ import ServicesOverview from '../components/ServicesOverview.astro';
 import Values from '../components/Values.astro';
 import SitAnnouncement from '../components/SitAnnouncement.astro';
 import Invitation from '../components/Invitation.astro';
-import { site } from '../data/site';
+import { businessSchema, websiteSchema } from '../data/schema';
 
-const title = 'Fleur de Lise Healing | Reiki, EFT & Tarot in Windsor, Ontario';
-const description = 'Gentle, personal wellness support in Windsor, Ontario. Reiki, Emotional Freedom Technique (EFT) and tarot readings with Lise Pinard-Wolf — in person or virtually, depending on the service.';
-const jsonLd = [
-  {
-    '@context': 'https://schema.org', '@type': 'LocalBusiness', '@id': `${site.url}/#business`,
-    name: site.name, url: site.url, image: `${site.url}/brand/og-image.jpg`, logo: `${site.url}/brand/icon-512.png`,
-    description, telephone: '+1-226-346-7206', email: site.email,
-    address: { '@type': 'PostalAddress', addressLocality: 'Windsor', addressRegion: 'ON', addressCountry: 'CA' },
-    areaServed: { '@type': 'City', name: 'Windsor, Ontario' },
-    founder: { '@type': 'Person', name: site.owner },
-    sameAs: Object.values(site.social).filter(Boolean),
-  },
-  { '@context': 'https://schema.org', '@type': 'WebSite', name: site.name, url: site.url, inLanguage: 'en-CA' },
-];
+const title = 'Reiki, EFT & Tarot in Windsor, Ontario | Fleur de Lise Healing';
+const description = 'Reiki, EFT tapping and tarot readings with Lise Pinard-Wolf in Windsor, Ontario. Gentle, personal support, in person or virtually depending on the service.';
+const jsonLd = [businessSchema(description), websiteSchema()];
 ---
 <BaseLayout title={title} description={description} path="/" home jsonLd={jsonLd}>
-  <link slot="head" rel="preload" as="image" type="image/webp" href="/brand/logo-dark-1024.webp" imagesrcset="/brand/logo-dark-768.webp 768w, /brand/logo-dark-1024.webp 1024w, /brand/logo-dark-1536.webp 1536w" imagesizes="(max-width: 700px) 92vw, 640px" fetchpriority="high" />
+  <link slot="head" rel="preload" as="image" type="image/webp" href="/brand/logo-dark-1024.webp" imagesrcset="/brand/logo-dark-768.webp 768w, /brand/logo-dark-1024.webp 1024w, /brand/logo-dark-1280.webp 1280w, /brand/logo-dark-1536.webp 1536w" imagesizes="(max-width: 700px) 92vw, 640px" fetchpriority="high" />
   <Hero />
   <LiseIntro />
   <ServicesOverview />

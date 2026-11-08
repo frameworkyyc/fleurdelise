@@ -5,11 +5,17 @@ import Icon from '../../components/Icon.astro';
 import ServiceIllustration from '../../components/garden/ServiceIllustration.astro';
 import Invitation from '../../components/Invitation.astro';
 import { serviceContent } from '../../data/service-content';
-import { sit } from '../../data/site';
+import { sit, site, services as svcList } from '../../data/site';
+import { breadcrumbSchema } from '../../data/schema';
 const main = [serviceContent.reiki, serviceContent.eft, serviceContent.tarot];
+const jsonLd = [
+  breadcrumbSchema([{ name: 'Home', href: '/' }, { name: 'Services', href: '/services' }]),
+  { '@context': 'https://schema.org', '@type': 'CollectionPage', name: 'Services — Reiki, EFT and tarot in Windsor, Ontario', url: new URL('/services', site.url).href, isPartOf: { '@id': `${site.url}/#website` },
+    mainEntity: { '@type': 'ItemList', itemListElement: svcList.map((s, i) => ({ '@type': 'ListItem', position: i + 1, url: new URL(s.href, site.url).href, name: s.name })) } },
+];
 ---
-<BaseLayout title="Services | Reiki, EFT & Tarot in Windsor, Ontario | Fleur de Lise Healing" description="Reiki, Emotional Freedom Technique (EFT) and tarot readings in Windsor, Ontario — gentle, personal complementary support in person or virtually, depending on the service.">
-  <PageHero eyebrow="Services" title="Gentle support, at your own pace" lead="Reiki, EFT and tarot — in person or virtually, depending on the service. Choose what feels right, or start with a conversation." />
+<BaseLayout title="Reiki, EFT & Tarot Services in Windsor | Fleur de Lise Healing" description="Explore Reiki, Emotional Freedom Technique (EFT) tapping and tarot readings in Windsor, Ontario — gentle, personal support in person or virtually." path="/services" jsonLd={jsonLd}>
+  <PageHero crumbs={[{ name: 'Home', href: '/' }, { name: 'Services' }]} eyebrow="Services" title="Gentle support, at your own pace" lead="Reiki, EFT and tarot — in person or virtually, depending on the service. Choose what feels right, or start with a conversation." />
 
   <section class="section tex-ivory on-light" aria-labelledby="svc-title">
     <div class="wrap">

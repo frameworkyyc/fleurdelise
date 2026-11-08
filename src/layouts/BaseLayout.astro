@@ -10,7 +10,6 @@ import Footer from '../components/Footer.astro';
 import StickyBookBar from '../components/StickyBookBar.astro';
 import GardenVine from '../components/garden/GardenVine.astro';
 import { site } from '../data/site';
-
 interface Props { title: string; description: string; path?: string; home?: boolean; image?: string; jsonLd?: object[]; bookBar?: boolean; noindex?: boolean }
 const { title, description, path = Astro.url.pathname, home = false, image = '/brand/og-image.jpg', jsonLd = [], bookBar = true, noindex = false } = Astro.props;
 const canonical = new URL(path, site.url).href;

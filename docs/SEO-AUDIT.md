@@ -1,6 +1,6 @@
 # SEO audit — Fleur de Lise Healing (Phase 1 + 2)
 
-Status: **audit and strategy only. No site changes have been made.** Phase 3 starts only after approval.
+Status: audit and strategy (Phases 1–2). **Phase 3a has since been implemented on staging — see [SEO-PHASE3A-REPORT.md](./SEO-PHASE3A-REPORT.md).** Phase 3b, redirects and go-live are still pending client information/approval.
 Audited: the production-mode build of the current `staging` branch (all 12 pages), Chromium mobile profiling, and public web searches (snapshot, not a ranking study).
 
 ## 0. What this audit can and cannot claim

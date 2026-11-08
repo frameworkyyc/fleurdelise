@@ -5,6 +5,7 @@ import Icon from '../../components/Icon.astro';
 import Button from '../../components/Button.astro';
 import { serviceContent, type ServiceContent } from '../../data/service-content';
 import { site } from '../../data/site';
+import { serviceSchema, sitSchema, breadcrumbSchema } from '../../data/schema';
 
 export function getStaticPaths() {
   return Object.values(serviceContent).map((c) => ({ params: { slug: c.slug }, props: { c } }));
@@ -14,14 +15,12 @@ const others = Object.values(serviceContent).filter((o) => o.slug !== c.slug && 
 const sitOther = c.slug !== 'sit' ? serviceContent.sit : null;
 const cta = c.upcoming ? { href: '/contact?interest=sit', label: 'Ask to be notified' } : { href: `/book?service=${c.slug}`, label: site.book.cta };
 const d = c.details; const hasDetails = d && Object.values(d).some(Boolean);
-const jsonLd = [{
-  '@context': 'https://schema.org', '@type': 'Service', name: c.name, description: c.metaDescription,
-  provider: { '@type': 'LocalBusiness', '@id': `${site.url}/#business`, name: site.name },
-  areaServed: { '@type': 'City', name: 'Windsor, Ontario' },
-}];
+const trail = [{ name: 'Home', href: '/' }, { name: 'Services', href: '/services' }, { name: c.name, href: `/services/${c.slug}` }];
+// SIT is a coming-soon WebPage (never a Service) until launch — see src/data/schema.ts.
+const jsonLd = [c.slug === 'sit' ? sitSchema() : serviceSchema(c.slug), breadcrumbSchema(trail)];
 ---
 <BaseLayout title={c.metaTitle} description={c.metaDescription} path={`/services/${c.slug}`} jsonLd={jsonLd}>
-  <PageHero icon={c.icon} eyebrow={c.eyebrow} title={c.title} lead={c.lead} />
+  <PageHero crumbs={[{ name: 'Home', href: '/' }, { name: 'Services', href: '/services' }, { name: c.name }]} icon={c.icon} eyebrow={c.eyebrow} title={c.title} lead={c.lead} />
 
   <section class="section tex-linen on-light" aria-labelledby="ov-h">
     <div class="wrap two">

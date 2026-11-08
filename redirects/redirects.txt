@@ -1,0 +1,10 @@
+# Fleur de Lise Healing — 301 redirect map (source of truth)
+#
+# Format, one rule per line:   /old-path  /new-path  [301|302|307|308]      (default 301; '#' starts a comment)
+#   * source: an absolute path starting with '/', no query string or fragment. A trailing '*' splat is allowed.
+#   * target: an existing page on this site (checked at build) or an absolute https:// URL.
+#
+# THIS FILE IS DELIBERATELY EMPTY OF WIX RULES. Do not add Wix URLs from memory or guesswork — only from the real Wix URL
+# inventory (Wix sitemap.xml / Search Console export). See docs/REDIRECTS.md for the process.
+#
+# Not needed here (already handled by hosting): trailing-slash variants (/about/ -> /about) via html_handling "drop-trailing-slash".

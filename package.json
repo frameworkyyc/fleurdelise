@@ -11,7 +11,9 @@
     "deploy:staging": "npm run build:staging && wrangler deploy",
     "build:staging": "PUBLIC_SITE_ENV=staging PUBLIC_SITE_URL=https://fleurdelise.frameworktools.ca npm run build",
     "build:production": "PUBLIC_SITE_ENV=production npm run build",
-    "check:motion": "node scripts/check-motion.mjs"
+    "check:motion": "node scripts/check-motion.mjs",
+    "check:seo": "node scripts/check-seo.mjs",
+    "check:redirects": "node scripts/build-redirects.mjs --check-only"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

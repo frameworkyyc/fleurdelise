@@ -5,11 +5,15 @@ import InquiryForm from '../components/InquiryForm.astro';
 import Icon from '../components/Icon.astro';
 import Button from '../components/Button.astro';
 import { site } from '../data/site';
+import { breadcrumbSchema } from '../data/schema';
 const social = Object.entries(site.social).filter(([, v]) => v) as [string, string][];
-const jsonLd = [{ '@context': 'https://schema.org', '@type': 'ContactPage', name: `Contact ${site.name}`, url: `${site.url}/contact` }];
+const jsonLd = [
+  { '@context': 'https://schema.org', '@type': 'ContactPage', name: `Contact ${site.name}`, url: `${site.url}/contact`, isPartOf: { '@id': `${site.url}/#website` }, mainEntity: { '@id': `${site.url}/#business` } },
+  breadcrumbSchema([{ name: 'Home', href: '/' }, { name: 'Contact', href: '/contact' }]),
+];
 ---
-<BaseLayout title="Contact | Fleur de Lise Healing, Windsor, Ontario" description="Get in touch with Lise Pinard-Wolf at Fleur de Lise Healing in Windsor, Ontario — questions are welcome. Email, call, or send a message." path="/contact" jsonLd={jsonLd} bookBar={false}>
-  <PageHero eyebrow="Contact" title="Let’s start with hello" lead="Questions are welcome, big or small. Send a note and Lise will reply when she can." />
+<BaseLayout title="Contact Fleur de Lise Healing | Windsor, Ontario" description="Get in touch with Lise Pinard-Wolf at Fleur de Lise Healing in Windsor, Ontario — questions are welcome. Email, call, or send a message." path="/contact" jsonLd={jsonLd} bookBar={false}>
+  <PageHero crumbs={[{ name: 'Home', href: '/' }, { name: 'Contact' }]} eyebrow="Contact" title="Let’s start with hello" lead="Questions are welcome, big or small. Send a note and Lise will reply when she can." />
 
   <section class="section tex-linen on-light">
     <div class="wrap layout">

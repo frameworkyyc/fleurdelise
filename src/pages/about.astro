@@ -5,6 +5,7 @@ import Portrait from '../components/Portrait.astro';
 import Icon from '../components/Icon.astro';
 import Invitation from '../components/Invitation.astro';
 import { site } from '../data/site';
+import { personSchema, breadcrumbSchema } from '../data/schema';
 const { bio, credentials } = site.lise;
 const principles = [
   { icon: 'heart', title: 'Personal connection', text: 'One-to-one, unhurried, and always at your pace.' },
@@ -12,10 +13,10 @@ const principles = [
   { icon: 'sit', title: 'No judgment', text: 'You’re met with understanding. Your story is yours to share.' },
   { icon: 'tarot', title: 'Authenticity', text: 'Plain words and real presence — no performance.' },
 ] as const;
-const jsonLd = [{ '@context': 'https://schema.org', '@type': 'Person', name: site.owner, jobTitle: 'Holistic wellness practitioner', worksFor: { '@id': `${site.url}/#business` }, address: { '@type': 'PostalAddress', addressLocality: 'Windsor', addressRegion: 'ON', addressCountry: 'CA' } }];
+const jsonLd = [personSchema(), breadcrumbSchema([{ name: 'Home', href: '/' }, { name: 'About', href: '/about' }])];
 ---
-<BaseLayout title="About Lise Pinard-Wolf | Fleur de Lise Healing, Windsor, Ontario" description="Meet Lise Pinard-Wolf — a Windsor, Ontario practitioner offering Reiki, EFT and tarot with understanding, compassion and no judgment." path="/about" jsonLd={jsonLd}>
-  <PageHero eyebrow="About Lise" title="A practitioner who understands." lead="Gentle, personal support for people who are carrying something they haven’t been able to put down." />
+<BaseLayout title="About Lise Pinard-Wolf | Fleur de Lise Healing, Windsor" description="Meet Lise Pinard-Wolf — a Windsor, Ontario practitioner offering Reiki, EFT and tarot with understanding, compassion and no judgment." path="/about" jsonLd={jsonLd}>
+  <PageHero crumbs={[{ name: 'Home', href: '/' }, { name: 'About' }]} eyebrow="About Lise" title="A practitioner who understands." lead="Gentle, personal support for people who are carrying something they haven’t been able to put down." />
 
   <section class="section tex-linen on-light" aria-labelledby="who-h">
     <div class="wrap grid">
@@ -24,7 +25,7 @@ const jsonLd = [{ '@context': 'https://schema.org', '@type': 'Person', name: sit
         <p class="eyebrow reveal">Hello, I’m Lise</p>
         <h2 id="who-h" class="reveal" style="--d:1">Come as you are.</h2>
         <div class="prose reveal" style="--d:2">
-          <p class="lead">I’m Lise Pinard-Wolf, and I offer Reiki, EFT and tarot readings in Windsor, Ontario — in person and virtually, depending on the service.</p>
+          <p class="lead">I’m Lise Pinard-Wolf, and I offer <a href="/services/reiki">Reiki</a>, <a href="/services/eft">EFT tapping</a> and <a href="/services/tarot">tarot readings</a> in Windsor, Ontario — in person and virtually, depending on the service.</p>
           <p>My own life experience means I meet everyone with understanding, not judgment. You decide what to share, and we move at the pace that feels right for you.</p>
           {bio?.map((p) => <p>{p}</p>)}
         </div>

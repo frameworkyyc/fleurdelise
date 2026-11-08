@@ -48,7 +48,7 @@ export const serviceContent: Record<ServiceContent['slug'], ServiceContent> = {
     eyebrow: 'EFT · Tapping', title: 'Emotional Freedom Technique',
     lead: 'Gentle tapping, explained in plain words, with space to go at your own pace.',
     metaTitle: 'EFT Tapping in Windsor, Ontario | Fleur de Lise Healing',
-    metaDescription: 'Emotional Freedom Technique (EFT) tapping sessions with Lise Pinard-Wolf in Windsor, Ontario — gentle, plain-spoken complementary support, in person or virtually.',
+    metaDescription: 'Emotional Freedom Technique (EFT) tapping with Lise Pinard-Wolf in Windsor, Ontario — gentle, plain-spoken complementary support, in person or virtually.',
     overviewTitle: 'What is EFT?',
     overview: [
       'Emotional Freedom Technique (EFT) — often called tapping — is a gentle self-care practice. It pairs light fingertip tapping on a series of points on the face and upper body with bringing a thought or feeling to mind.',
@@ -82,7 +82,7 @@ export const serviceContent: Record<ServiceContent['slug'], ServiceContent> = {
     slug: 'sit', name: 'Subconscious Imprinting Technique', icon: 'sit', upcoming: true,
     eyebrow: 'Coming May 1, 2027', title: 'Subconscious Imprinting Technique (SIT)',
     lead: 'SIT joins the services at Fleur de Lise Healing on May 1, 2027.',
-    metaTitle: 'Subconscious Imprinting Technique (SIT) — Coming May 2027 | Fleur de Lise Healing',
+    metaTitle: 'Subconscious Imprinting Technique — Coming May 2027',
     metaDescription: 'Subconscious Imprinting Technique (SIT) launches at Fleur de Lise Healing in Windsor, Ontario on May 1, 2027. Ask to be notified when sessions open.',
     overviewTitle: 'What to know',
     overview: [

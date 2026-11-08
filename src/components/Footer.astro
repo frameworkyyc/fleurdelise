@@ -2,7 +2,7 @@
 import Icon from './Icon.astro';
 import SeamOrnament from './garden/SeamOrnament.astro';
 import FleurDeLis from './garden/FleurDeLis.astro';
-import { site } from '../data/site';
+import { site, services } from '../data/site';
 const social = Object.entries(site.social).filter(([, v]) => v) as [string, string][];
 const year = new Date().getFullYear();
 ---
@@ -20,6 +20,7 @@ const year = new Date().getFullYear();
         <ul>
           <li><a href="/">Home</a></li>
           {site.nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+          {services.map((s) => <li><a href={s.href}>{s.slug === 'eft' ? 'EFT tapping' : s.name}</a></li>)}
           <li><a href={site.book.href}>Book a first conversation</a></li>
         </ul>
       </nav>
