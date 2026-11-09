@@ -5,12 +5,27 @@
   // change domains/routes. fleurdelisehealing.com is NOT connected (go-live needs explicit approval).
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "fleurdelise",
+  "main": "worker/index.ts",
   "compatibility_date": "2026-11-07",
   "workers_dev": false,
   "preview_urls": false,
+  "observability": { "enabled": true },
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
     "not_found_handling": "404-page",
-    "html_handling": "drop-trailing-slash"
+    "html_handling": "drop-trailing-slash",
+    // Only /api/* runs the Worker; every other request is served straight from static assets.
+    "run_worker_first": ["/api/*"]
+  },
+  // ---- Forms (docs/FORMS-DELIVERY.md) — STAGING configuration: test delivery only, no real email is sent ----
+  // Real values are NOT stored here. Secrets (RESEND_API_KEY, the real TURNSTILE_SECRET_KEY) are set with
+  // `wrangler secret put` / the dashboard and are never committed. Production refuses mock mail and Turnstile test keys.
+  "vars": {
+    "ENVIRONMENT": "staging",
+    "EMAIL_PROVIDER": "mock",
+    "INQUIRY_TO": "fleurdelisehealing@gmail.com", // Lise's designated address — to be CONFIRMED before real delivery is switched on
+    // Cloudflare's published always-pass TEST secret (public, harmless). Replace with the real secret for live use.
+    "TURNSTILE_SECRET_KEY": "1x0000000000000000000000000000000AA"
   }
 }

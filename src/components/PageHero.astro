@@ -31,7 +31,7 @@ const { eyebrow, title, lead, icon, crumbs } = Astro.props;
   .crumbs { margin-bottom: 22px; font-size: .75rem; letter-spacing: .08em; }
   .crumbs ol { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 0; margin: 0; padding: 0; list-style: none; }
   .crumbs li + li::before { content: '›'; margin: 0 10px; color: var(--gold); opacity: .7; }
-  .crumbs a { color: var(--ivory-80); text-decoration: none; border-bottom: 1px solid var(--gold-line); } .crumbs a:hover { color: var(--ivory); border-bottom-color: var(--gold); }
+  .crumbs a { display: inline-block; padding-block: 13px; margin-block: -13px; color: var(--ivory-80); text-decoration: underline; text-decoration-color: var(--gold-line); text-underline-offset: 6px; text-decoration-thickness: 1px; } .crumbs a:hover { color: var(--ivory); text-decoration-color: var(--gold); }
   .crumbs [aria-current] { color: var(--ivory-60); }
   .lead { max-width: 52ch; margin-top: 24px; color: var(--ivory-80); }
   .inner :global(.moons) { color: var(--gold); opacity: .7; margin-top: 48px; width: 120px; }

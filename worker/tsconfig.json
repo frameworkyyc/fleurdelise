@@ -1,0 +1,1 @@
+{ "extends": "astro/tsconfigs/strict", "compilerOptions": { "noEmit": true, "allowImportingTsExtensions": true, "types": [], "lib": ["ES2022", "DOM"] }, "include": ["./*.ts", "../src/lib/inquiry-options.ts"] }

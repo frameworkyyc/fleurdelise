@@ -81,3 +81,20 @@ Alternative if Lise prefers to stay hands-on: keep **request-and-confirm** (the 
 **B. Needs your approval (not started):** server-side inquiry endpoint + Turnstile + email provider + visitor acknowledgement (F1/F3/F4/F12); privacy-page update; analytics for form submits/phone/email clicks.
 **C. Needs Lise's decisions (§6):** booking provider and rules, session facts, CTA wording (F5/F6), response promise.
 **D. Manual device tests to run once changes land:** iPad Safari (regular + Private) and iPhone: submit → confirmation → email arrives; Mail-not-configured behaviour today; VoiceOver pass through `/book` and `/contact`; desktop Chrome/Safari/Firefox submit.
+
+## 9. Phase 2A status (Request & Confirm, server-side delivery) — implemented on staging
+See [FORMS-DELIVERY.md](./FORMS-DELIVERY.md). Delivery is in **test (mock) mode** until Lise confirms the receiving address and an email provider is activated.
+| Finding | Status |
+|---|---|
+| F1 inquiries not delivered | **Fixed in code** — Worker endpoint + Turnstile + email to Lise (+ acknowledgement); live only after activation steps |
+| F2 no booking/confirm/cancel/reschedule | By design (Request & Confirm): the acknowledgement says "not confirmed yet"; changes by replying/phone. No scheduler. |
+| F3 mailto length | **Fixed** — field `maxlength`s + 3,000-char server cap; mailto remains only as a trimmed fallback |
+| F4 "ready to send" ambiguity | **Fixed** — real sent/failed states with a reference number |
+| F5 CTA wording / F6 format per service | Not changed — waiting on Lise (free first conversation? which services in person/virtual) |
+| F7 weak focus ring on choice cards | **Fixed** — 3px plum outline + gold halo (tested) |
+| F8 un-focusable copy box | **Fixed** — `tabindex=0` + label; axe 0 violations in all form states |
+| F9 skip link target | **Fixed** — `<main tabindex="-1">` (tested) |
+| F10 breadcrumb tap targets | **Fixed** — ≥44px (tested) |
+| F11 honeypot silent drop | **Fixed** — unusual field name; server answers a fake success only for bots |
+| F12 response promise / analytics | Open — needs Lise (reply time) and an analytics decision |
+| F13 plain-text email | Unchanged (mailto fallback needs it) |

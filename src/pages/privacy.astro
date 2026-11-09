@@ -13,7 +13,8 @@ import { site } from '../data/site';
         <p>This website is for {site.name}, a wellness practice in {site.location}, run by {site.owner}. You can reach me at <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
         <h2>What the website collects</h2>
         <p>Only what you choose to send through the contact or appointment forms: your name, email, an optional phone number, your message and, for appointment inquiries, your service and timing preferences.</p>
-        <p>At the moment, these forms open your own email app with your message ready to send to me. The website itself doesn’t store what you type.</p>
+        <p>When you press send, your details travel securely from this website to me by email, and you receive an automatic acknowledgement at the email address you gave (for an appointment inquiry, it says clearly that nothing is confirmed until I reply). The website doesn’t keep a database of what you send. The messages exist in my email inbox and yours, and pass through an email delivery service that sends them on my behalf.</p>
+        <p>To keep out automated spam, the forms use Cloudflare Turnstile, which runs a short check in your browser and may use technical information such as your IP address. See <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">Cloudflare’s privacy policy</a> for details. If a form can’t send, you can always email or phone me directly instead.</p>
         <h2>Please keep health details out of forms and email</h2>
         <p>There’s no need to share sensitive health information before we meet. You can share what feels right during your session.</p>
         <h2>How I use it</h2>
@@ -25,7 +26,7 @@ import { site } from '../data/site';
         <h2>Cookies and analytics</h2>
         <p>This website doesn’t use advertising cookies or tracking, and fonts are served directly from the site rather than from a third party.</p>
         <h2>Hosting</h2>
-        <p>The site is hosted by Cloudflare, which may process technical information such as IP addresses to deliver and secure the website.</p>
+        <p>The site is hosted by Cloudflare, which may process technical information such as IP addresses to deliver and secure the website and to handle form submissions.</p>
         <h2>Your choices</h2>
         <p>You can ask me what information I hold about you, to correct it, or to delete it, at any time by emailing <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
         <h2>Changes</h2>

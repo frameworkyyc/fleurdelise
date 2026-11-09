@@ -3,9 +3,13 @@ import { site } from '../data/site';
 interface Props { kind: 'book' | 'contact' }
 const { kind } = Astro.props;
 const isBook = kind === 'book';
+// Public Turnstile site key (build-time). Staging/dev default to Cloudflare's always-pass TEST key; production must set PUBLIC_TURNSTILE_SITEKEY.
+const siteKey = (import.meta.env.PUBLIC_TURNSTILE_SITEKEY as string | undefined) || (import.meta.env.PUBLIC_SITE_ENV === 'production' ? '' : '1x00000000000000000000AA');
+import { LIMITS } from '../lib/inquiry-options';
 ---
-<form class="form" data-inquiry={kind} data-to={site.email} novalidate>
-  <div class="hp" aria-hidden="true"><label>Leave this empty<input type="text" name="website" tabindex="-1" autocomplete="off" /></label></div>
+<form class="form" data-inquiry={kind} data-to={site.email} data-phone={site.phone} data-phone-href={site.phoneHref} data-sitekey={siteKey} novalidate>
+  <div class="hp" aria-hidden="true"><label>Leave this empty<input type="text" name="hp_x7k2" tabindex="-1" autocomplete="off" data-lpignore="true" data-1p-ignore="true" /></label></div>
+  <noscript><p class="form-note">This form needs JavaScript. You can email <a href={`mailto:${site.email}`}>{site.email}</a> or call <a href={site.phoneHref}>{site.phone}</a> instead.</p></noscript>
 
   {isBook && (
     <>
@@ -34,7 +38,7 @@ const isBook = kind === 'book';
         <legend class="legend"><span class="n">03</span>When might suit you?</legend>
         <div class="field">
           <label for="times">Days or times that tend to work <span class="opt">(optional)</span></label>
-          <textarea class="textarea" id="times" name="times" rows="3" placeholder="e.g. weekday mornings, or Saturdays"></textarea>
+          <textarea class="textarea" id="times" name="times" rows="3" maxlength={LIMITS.times} placeholder="e.g. weekday mornings, or Saturdays"></textarea>
         </div>
       </fieldset>
     </>
@@ -45,18 +49,19 @@ const isBook = kind === 'book';
     <div class="grid-2">
       <div class="field">
         <label for="name">Your name</label>
-        <input class="input" id="name" name="name" type="text" autocomplete="name" aria-describedby="name-err" required />
+        <input class="input" id="name" name="name" type="text" autocomplete="name" maxlength={LIMITS.name} aria-describedby="name-err" required />
         <p class="error" id="name-err" role="alert"></p>
       </div>
       <div class="field">
         <label for="email">Email</label>
-        <input class="input" id="email" name="email" type="email" autocomplete="email" inputmode="email" aria-describedby="email-err" required />
+        <input class="input" id="email" name="email" type="email" autocomplete="email" inputmode="email" maxlength={LIMITS.email} aria-describedby="email-err" required />
         <p class="error" id="email-err" role="alert"></p>
       </div>
     </div>
     <div class="field">
       <label for="phone">Phone <span class="opt">(optional)</span></label>
-      <input class="input" id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" />
+      <input class="input" id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength={LIMITS.phone} aria-describedby="phone-err" />
+      <p class="error" id="phone-err" role="alert"></p>
     </div>
     {!isBook && (
       <div class="field">
@@ -70,7 +75,7 @@ const isBook = kind === 'book';
     )}
     <div class="field">
       <label for="message">{isBook ? 'Anything you’d like Lise to know' : 'Your message'} {isBook && <span class="opt">(optional)</span>}</label>
-      <textarea class="textarea" id="message" name="message" rows="5" aria-describedby="message-err" required={!isBook}></textarea>
+      <textarea class="textarea" id="message" name="message" rows="5" maxlength={LIMITS.message} aria-describedby="message-err" required={!isBook}></textarea>
       <p class="error" id="message-err" role="alert"></p>
     </div>
   </fieldset>
@@ -85,17 +90,39 @@ const isBook = kind === 'book';
     <p class="error" id="consent-err" role="alert"></p>
   </div>
 
-  <div><button class="btn btn-plum" type="submit">{isBook ? 'Send my inquiry' : 'Send message'}</button></div>
+  <div class="turnstile" data-turnstile></div>
+
+  <div class="notice" data-notice role="alert" tabindex="-1" hidden>
+    <p class="notice-title" data-notice-title></p>
+    <p data-notice-text></p>
+    <div class="notice-actions" data-notice-actions hidden>
+      <a class="btn btn-sm" data-fallback-mail href={`mailto:${site.email}`}>Email Lise instead</a>
+      <button class="btn btn-ghost-dark btn-sm" type="button" data-copy>Copy my message</button>
+      <a class="link-arrow" href={site.phoneHref}>Call {site.phone}</a>
+    </div>
+    <pre class="copy-box" data-copy-text tabindex="0" aria-label="Your message, to copy" hidden></pre>
+  </div>
+
+  <div class="submit-row">
+    <button class="btn btn-plum" type="submit" data-submit>{isBook ? 'Send my inquiry' : 'Send message'}</button>
+    <p class="hint small-print">Trouble sending? Email <a href={`mailto:${site.email}`}>{site.email}</a> or call <a href={site.phoneHref}>{site.phone}</a>. This form is protected by Cloudflare Turnstile (<a href="/privacy">privacy</a>).</p>
+  </div>
 </form>
 
-<div class="result" data-result role="status">
-  <h2 tabindex="-1">Your message is ready to send</h2>
-  <p>Your email app should open with everything filled in — just press send{isBook ? ', and Lise will reply to confirm a time and format. Nothing is booked until you hear from her' : ' and Lise will reply'}.</p>
-  <p>If nothing opened, you can copy your message below and email <a href={`mailto:${site.email}`}>{site.email}</a> directly.</p>
-  <pre class="copy-box" data-copy-text></pre>
+<div class="result" data-result role="status" data-kind={kind}>
+  <h2 tabindex="-1">{isBook ? 'Thank you — your request has been sent' : 'Thank you — your message has been sent'}</h2>
+  {isBook ? (
+    <p><strong>Your appointment is not confirmed yet.</strong> Lise has your request and will reply to confirm a time and format. Nothing is booked until you hear from her.</p>
+  ) : (
+    <p>Lise has your message and will reply when she can.</p>
+  )}
+  <p data-ack-yes hidden>We’ve emailed an acknowledgement to <strong data-ack-email></strong>. If it doesn’t arrive within a few minutes, please check your spam or junk folder.</p>
+  <p data-ack-no hidden>We couldn’t send you an acknowledgement email, but Lise has your {isBook ? 'request' : 'message'}. Please keep your reference number below.</p>
+  <p class="result-ref">Reference: <strong data-ref></strong></p>
+  <p class="result-mock" data-mock hidden><strong>Test mode:</strong> this is a test environment — no email was actually sent.</p>
+  <p class="result-small">Need to change something? Email <a href={`mailto:${site.email}`}>{site.email}</a> or call <a href={site.phoneHref}>{site.phone}</a>.</p>
   <div class="actions">
-    <a class="btn" data-mailto href={`mailto:${site.email}`}>Open email again</a>
-    <button class="btn btn-ghost-light btn-sm" type="button" data-copy>Copy message</button>
-    <button class="link-arrow" type="button" data-edit style="background:none;border:0;cursor:pointer;color:inherit">Edit my message</button>
+    <a class="btn" href="/">Back to home</a>
+    <button class="btn btn-ghost-light btn-sm" type="button" data-again>{isBook ? 'Send another request' : 'Send another message'}</button>
   </div>
 </div>

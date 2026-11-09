@@ -5,6 +5,12 @@ import { execFileSync } from 'node:child_process';
 
 const production = process.env.PUBLIC_SITE_ENV === 'production';
 
+// A production build without a Turnstile site key would ship forms that cannot be submitted — refuse to build it.
+if (production && !process.env.PUBLIC_TURNSTILE_SITEKEY && !process.env.ALLOW_MISSING_TURNSTILE) {
+  console.error('post-build: PUBLIC_TURNSTILE_SITEKEY is not set for this PRODUCTION build — the contact/booking forms would not work. Set it (public site key) or set ALLOW_MISSING_TURNSTILE=1 for a local check only.');
+  process.exit(1);
+}
+
 // Shared response headers. (Cloudflare _headers rules are additive: a path can match several blocks.)
 const common = [
   'Referrer-Policy: strict-origin-when-cross-origin',

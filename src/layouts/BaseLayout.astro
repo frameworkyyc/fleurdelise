@@ -61,7 +61,7 @@ const robots = noindex || !site.isProduction ? 'noindex, nofollow' : 'index, fol
     <a class="skip-link" href="#main">Skip to content</a>
     <GardenVine />
     <Header home={home} />
-    <main id="main"><slot /></main>
+    <main id="main" tabindex="-1"><slot /></main>
     <Footer />
     {bookBar && <StickyBookBar />}
     <script src="../scripts/site.ts"></script>

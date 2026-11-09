@@ -1,0 +1,10 @@
+# Local Worker development (`npx wrangler dev`) — copy to .dev.vars (git-ignored). Never commit real values.
+ENVIRONMENT=staging
+EMAIL_PROVIDER=mock
+INQUIRY_TO=you@example.com
+# Cloudflare's published always-pass Turnstile TEST secret:
+TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
+# Live delivery only (leave unset while mocking):
+# EMAIL_PROVIDER=resend
+# RESEND_API_KEY=
+# MAIL_FROM="Fleur de Lise Healing <hello@your-verified-domain>"

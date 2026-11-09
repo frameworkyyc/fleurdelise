@@ -32,7 +32,7 @@ Nothing here is rendered to visitors. Sections are built so each item below can 
 - Training & certifications (docs/CREDENTIALS.md): confirm EFT may be called "certified"; confirm which additional courses (if any) she wants to offer as services later; dates/providers for the additional courses only if she wants them shown.
 
 ## Decisions pending
-- Inquiry delivery: forms currently open the visitor's email app (mailto) — free, no data stored. Recommended upgrade: Cloudflare Email Routing `send_email` binding from the existing Worker (free; needs Email Routing enabled on a Framework zone and fleurdelisehealing@gmail.com verified as destination) + Turnstile. Not configured; needs approval.
+- Inquiry delivery: **built** (Worker + Turnstile + email adapter, mock mode on staging). To go live: Lise confirms the receiving address; choose/activate the email provider and sending domain; set secrets + Turnstile keys — see docs/FORMS-DELIVERY.md. Privacy page should name the provider once chosen.
 - Booking provider (see `src/data/booking.ts` — one-line switch to embed/redirect).
 
 ## Assets

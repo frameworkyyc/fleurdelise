@@ -32,18 +32,37 @@
 .choice input:hover + span { border-color: var(--plum); }
 .choice input:checked + span { background: var(--plum); color: var(--ivory); border-color: var(--plum); }
 .choice input:checked + span::before { background: var(--gold); border-color: var(--gold); box-shadow: inset 0 0 0 3px var(--plum); }
-.choice input:focus-visible + span { box-shadow: 0 0 0 3px rgb(201 148 76 / .7); }
+/* Keyboard focus on the choice cards: solid plum ring with a gap — well above 3:1 on linen/ivory (audit F7). Checked cards are plum-filled, so the ring sits OUTSIDE the card. */
+.choice input:focus-visible + span { outline: 3px solid var(--plum); outline-offset: 3px; border-color: var(--plum); box-shadow: 0 0 0 6px rgb(201 148 76 / .55); }
+.check input:focus-visible { outline: 3px solid var(--plum); outline-offset: 3px; }
 .check { display: flex; gap: 14px; align-items: flex-start; font-size: .9375rem; color: var(--plum); font-weight: 400; cursor: pointer; }
 .check input { flex: none; width: 22px; height: 22px; margin: 2px 0 0; accent-color: var(--plum); }
 .form-note { font-size: .875rem; color: var(--plum-text-soft); padding: 16px 20px; border-left: 2px solid var(--bronze); background: rgb(255 250 245 / .5); }
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+[hidden] { display: none !important; }
+.turnstile:empty { display: none; }
+.submit-row { display: grid; gap: 14px; justify-items: start; }
+.small-print { font-size: .8125rem; max-width: 52ch; } .small-print a { color: inherit; text-underline-offset: 3px; }
+
+/* Send failure / retry notice (inline, keeps the visitor's details in the form) */
+.notice { padding: 20px 22px; border-left: 3px solid #8a2a2a; background: rgb(255 250 245 / .8); color: var(--plum); display: grid; gap: 10px; }
+.notice:focus { outline: none; } .notice:focus-visible { outline: 3px solid var(--plum); outline-offset: 3px; }
+.notice-title { font-family: var(--font-serif); font-style: italic; font-size: 1.25rem; line-height: 1.3; }
+.notice p { max-width: 56ch; }
+.notice-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 6px; }
+.notice .copy-box { margin: 6px 0 0; padding: 14px; background: rgb(31 9 19 / .06); border: 1px solid rgb(76 31 49 / .3); font-size: .875rem; white-space: pre-wrap; max-height: 200px; overflow: auto; color: var(--plum); }
+.notice .copy-box:focus-visible { outline: 3px solid var(--plum); outline-offset: 2px; }
+.btn.btn-ghost-dark { --btn-bg: transparent; --btn-fg: var(--plum); box-shadow: inset 0 0 0 1px rgb(76 31 49 / .55); }
 
 /* Result panel */
 .result { display: none; padding: clamp(28px, 4vw, 48px); background: var(--plum); color: var(--ivory); border-top: 2px solid var(--gold); }
 .result.is-shown { display: block; animation: result-in .8s var(--ease-slow) both; }
-.result h2 { font-size: 1.75rem; margin-bottom: 12px; }
+.result h2 { font-size: 1.75rem; margin-bottom: 12px; } .result h2:focus { outline: none; }
+.result p + p { margin-top: 12px; } .result strong { color: var(--ivory); font-weight: 500; }
+.result .result-ref { font-size: .9375rem; } .result .result-small { font-size: .875rem; } .result a:not(.btn) { color: var(--ivory); text-underline-offset: 3px; }
+.result .result-mock { padding: 10px 14px; border: 1px dashed rgb(201 148 76 / .6); color: var(--ivory); }
 .result p { color: var(--ivory-80); max-width: 52ch; }
 .result .actions { display: flex; flex-wrap: wrap; gap: 12px 20px; margin-top: 24px; align-items: center; }
 .result .copy-box { margin-top: 20px; padding: 16px; background: rgb(31 9 19 / .5); border: 1px solid rgb(201 148 76 / .3); font-size: .875rem; white-space: pre-wrap; max-height: 200px; overflow: auto; color: var(--ivory-80); }
-.btn-ghost-light { --btn-bg: transparent; --btn-fg: var(--ivory); box-shadow: inset 0 0 0 1px rgb(242 228 217 / .5); }
+.btn.btn-ghost-light { --btn-bg: transparent; --btn-fg: var(--ivory); box-shadow: inset 0 0 0 1px rgb(242 228 217 / .5); }
 @keyframes result-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }

@@ -11,6 +11,7 @@ body {
   font-family: var(--font-sans); font-weight: 300; font-size: var(--fs-body); line-height: 1.7;
   -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
 }
+main:focus { outline: none; }
 img, svg { display: block; max-width: 100%; }
 img { height: auto; }
 a { color: inherit; }
