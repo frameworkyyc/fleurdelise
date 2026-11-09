@@ -68,7 +68,7 @@ for (const f of files) {
 
   // Images
   for (const img of h.match(/<img\b[^>]*>/g) || []) {
-    if (!/\balt=/.test(img)) fail(`${path}: <img> without alt: ${img.slice(0, 80)}`);
+    if (!/\balt(?:=|\s|\/|>)/.test(img)) fail(`${path}: <img> without alt: ${img.slice(0, 80)}`);
     if (!/\bwidth=/.test(img) || !/\bheight=/.test(img)) warn(`${path}: <img> without width/height`);
   }
   // Internal links

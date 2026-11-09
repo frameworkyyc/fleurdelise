@@ -1,4 +1,6 @@
-# Mobile-first redesign — audit & proposal (Phase 1: nothing implemented)
+# Mobile-first redesign — audit & proposal (Phase 1)
+
+> **Status: approved and implemented on staging — see [MOBILE-REDESIGN-REPORT.md](./MOBILE-REDESIGN-REPORT.md).**
 
 Scope: homepage first, with the shared components (arch, dividers, sticky bar, footer) that also affect About, Services and service pages. **Staging only when approved; production, DNS, Cloudflare and the production pipeline are untouched.**
 Method: scripted scroll-through of the live build at iPhone widths (390 ≈ iPhone 14/15), measurements at 320 / 390 / 430 / 768 / 1440, pixel inspection of every divider, an Unsplash API search (read-only) with every candidate viewed.

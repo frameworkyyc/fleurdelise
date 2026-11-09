@@ -31,7 +31,7 @@
 
   /* Spacing — 8px base */
   --s1: 8px; --s2: 16px; --s3: 24px; --s4: 40px; --s5: 64px; --s6: 120px;
-  --section-y: clamp(72px, 9vw, 144px);
+  --section-y: clamp(52px, 9vw, 144px);
 
   /* Layout */
   --maxw: 1200px;

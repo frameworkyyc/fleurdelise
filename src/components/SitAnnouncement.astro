@@ -1,12 +1,16 @@
 ---
+import { Picture } from 'astro:assets';
 import Button from './Button.astro';
-import SeamOrnament from './garden/SeamOrnament.astro';
+import sitPhoto from '../assets/photos/sit.jpg';
 import { sit } from '../data/site';
 ---
 <section class="section tex-midnight on-dark sit" aria-labelledby="sit-title">
-  <SeamOrnament tone="midnight" />
-  <div class="stars" aria-hidden="true"></div>
-  <div class="wrap grid">
+  <!-- the photo + scrim live in their OWN clipped layer, so the section itself never needs overflow:hidden (that is what clipped the old divider) -->
+  <div class="bg" aria-hidden="true">
+    <Picture src={sitPhoto} alt="" formats={['avif', 'webp']} widths={[480, 800, 1200]} sizes="100vw" loading="lazy" decoding="async" class="ph" />
+    <span class="scrim"></span>
+  </div>
+  <div class="wrap">
     <div class="copy">
       <p class="eyebrow reveal">Coming {sit.launch}</p>
       <h2 id="sit-title" class="reveal" style="--d:1">{sit.name}<span class="sr-only"> ({sit.short})</span></h2>
@@ -16,25 +20,25 @@ import { sit } from '../data/site';
         <a class="link-arrow" href={sit.href}>About {sit.short}</a>
       </div>
     </div>
-    <div class="lunar reveal" style="--d:2" aria-hidden="true"><div class="orb"></div><span class="ring"></span><span class="date serif">{sit.launch}</span></div>
   </div>
 </section>
 <style>
-  .sit { overflow: hidden; }
-  /* Celestial pattern — Midnight + pattern is the approved "Events 2027" pairing (Brand Kit §07). */
-  .stars { position: absolute; inset: 0; z-index: -1; opacity: .3;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='96' viewBox='0 0 120 96' fill='none' stroke='%23C9944C' stroke-width='1.2' stroke-linecap='round'%3E%3Cpath d='M30 28a7 7 0 1 0 0 14 5.500 5.500 0 0 1 0-14z'/%3E%3Cpath d='M88 28c.6 4.500 1.600 5.700 6 7-4.400 1.300-5.400 2.500-6 7-.6-4.500-1.600-5.700-6-7 4.400-1.300 5.400-2.500 6-7z' fill='%23C9944C' stroke='none'/%3E%3Ccircle cx='60' cy='76' r='1' fill='%23C9944C' stroke='none'/%3E%3C/svg%3E");
-    -webkit-mask-image: radial-gradient(ellipse at 75% 50%, #000 0%, transparent 70%); mask-image: radial-gradient(ellipse at 75% 50%, #000 0%, transparent 70%); }
-  .grid { display: grid; gap: 56px; align-items: center; }
+  .sit { padding-block: clamp(48px, 8vw, 112px); }
+  .bg { position: absolute; inset: 0; z-index: -1; overflow: hidden; }
+  .bg :global(.ph) { width: 100%; height: 100%; object-fit: cover; object-position: 78% 40%; }
+  /* mobile: even deep wash so the white-on-photo text always clears 4.5:1; wider screens: text side stays dark, flame side shows */
+  .scrim { position: absolute; inset: 0; background: linear-gradient(105deg, rgb(31 9 19 / .92) 0%, rgb(31 9 19 / .86) 52%, rgb(31 9 19 / .5) 100%); }
   .copy { max-width: 560px; }
-  .copy h2 { margin: 12px 0 24px; }
-  .lead { color: var(--ivory-80); }
-  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 20px 32px; margin-top: 36px; }
-  .lunar { position: relative; width: min(60vw, 360px); aspect-ratio: 1; margin-inline: auto; display: grid; place-items: center; }
-  .orb { position: absolute; inset: 9%; border-radius: 50%; background: radial-gradient(circle at 30% 28%, #d99a8c 0%, #a2605f 28%, #55253d 62%, #1f0913 100%); box-shadow: inset -22px -26px 50px rgb(31 9 19 / .75), 0 0 80px -10px rgb(207 128 92 / .35); animation: drift 12s ease-in-out infinite; }
-  .ring { position: absolute; inset: 0; border-radius: 50%; border: 1px solid var(--gold-line); }
-  .date { position: absolute; bottom: -34px; font-style: italic; font-size: 1.0625rem; color: var(--ivory-60); }
-  @keyframes drift { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-  @media (min-width: 900px) { .grid { grid-template-columns: 6fr 5fr; gap: 96px; } .lunar { margin-inline: auto 0; } }
-  @media (prefers-reduced-motion: reduce) { .orb { animation: none; } }
+  .copy h2 { margin: 10px 0 16px; }
+  .lead { color: var(--ivory); }
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px; margin-top: 26px; }
+  /* phones: the candle is a full-bleed strip across the top that melts into Midnight; the copy sits on solid Midnight below it (guaranteed contrast) */
+  @media (max-width: 1099px) {
+    .sit { padding-top: 150px; }
+    .bg { bottom: auto; height: 250px; }
+    .bg :global(.ph) { object-position: 100% 30%; }
+    /* fully opaque Midnight by the time the copy starts (y=150), so no photo ever sits behind text */
+    .scrim { background: linear-gradient(180deg, rgb(31 9 19 / .08) 0%, rgb(31 9 19 / .5) 38%, rgb(31 9 19 / 1) 60%); }
+  }
+  @media (min-width: 1100px) { .sit { padding-top: clamp(48px, 8vw, 112px); } .bg { bottom: 0; height: auto; } .scrim { background: linear-gradient(90deg, rgb(31 9 19 / .94) 0%, rgb(31 9 19 / .82) 46%, rgb(31 9 19 / .18) 100%); } .bg :global(.ph) { object-position: 70% 42%; } }
 </style>

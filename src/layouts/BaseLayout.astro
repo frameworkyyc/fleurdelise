@@ -71,5 +71,5 @@ const robots = noindex || !site.isProduction ? 'noindex, nofollow' : 'index, fol
   </body>
 </html>
 <style is:global>
-  @media (max-width: 899px) { body.has-bookbar .site-footer { padding-bottom: calc(32px + 76px); } }
+  @media (max-width: 899px) { body.has-bookbar .site-footer { padding-bottom: calc(24px + env(safe-area-inset-bottom)); } }
 </style>

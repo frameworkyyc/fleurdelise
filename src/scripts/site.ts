@@ -38,21 +38,39 @@ menu?.addEventListener('click', (e) => { if ((e.target as HTMLElement).closest('
 addEventListener('keydown', (e) => { if (e.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') setMenu(false); });
 matchMedia('(min-width: 900px)').addEventListener('change', (m) => { if (m.matches) setMenu(false); });
 
-/* Sticky booking bar (mobile): after the hero CTA leaves view, hidden near the footer */
+/* Sticky booking pill (phones/tablets): appears once the hero CTA has scrolled away, and steps aside whenever it would sit over another
+   control (links, buttons, form fields, footer links), while the menu is open, or while the on-screen keyboard is up. */
 const bar = document.querySelector<HTMLElement>('[data-book-bar]');
-if (bar && 'IntersectionObserver' in window) {
+if (bar) {
   const heroCta = document.querySelector('[data-hero-cta]');
-  const footer = document.querySelector('.site-footer');
-  let pastHero = !heroCta, atFooter = false;
+  const pill = bar.querySelector('a');
+  let pastHero = !heroCta, kbOpen = false, frame = 0;
+  const controls = () => [...document.querySelectorAll<HTMLElement>('main a[href], main button, main input, main select, main textarea, main h1, main h2, main h3, .site-footer a, .tile .tx')];
+  const blocked = () => {
+    // offsetTop/Height ignore the hide/show transform, so this is where the pill WILL be when shown (fixed → viewport coordinates)
+    const w = bar.offsetWidth, h = bar.offsetHeight, top = bar.offsetTop, bottom = top + h;
+    const left = (document.documentElement.clientWidth - w) / 2, right = left + w, pad = 18; // generous: reveal animations nudge elements ~14px as they settle
+    return controls().some((el) => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.bottom > top - pad && r.top < bottom + pad && r.right > left - pad && r.left < right + pad; });
+  };
   const paint = () => {
-    const show = pastHero && !atFooter;
+    frame = 0;
+    const menuOpen = document.getElementById('mobile-menu')?.hidden === false;
+    const show = pastHero && !kbOpen && !menuOpen && !blocked();
     bar.classList.toggle('is-visible', show);
     bar.setAttribute('aria-hidden', String(!show));
-    bar.querySelector('a')?.setAttribute('tabindex', show ? '0' : '-1');
+    pill?.setAttribute('tabindex', show ? '0' : '-1');
   };
-  if (heroCta) new IntersectionObserver(([e]) => { pastHero = !e.isIntersecting && e.boundingClientRect.top < 0; paint(); }).observe(heroCta);
-  if (footer) new IntersectionObserver(([e]) => { atFooter = e.isIntersecting; paint(); }).observe(footer);
-  paint();
+  const queue = () => { if (!frame) frame = requestAnimationFrame(paint); };
+  if (heroCta && 'IntersectionObserver' in window) new IntersectionObserver(([e]) => { pastHero = !e.isIntersecting && e.boundingClientRect.top < 0; queue(); }).observe(heroCta);
+  addEventListener('scroll', queue, { passive: true });
+  addEventListener('resize', queue);
+  addEventListener('focusin', queue);
+  // layout can move without scrolling (reveal animations, fonts, images): re-check when those settle
+  addEventListener('transitionend', queue, true); addEventListener('animationend', queue, true); addEventListener('load', queue);
+  [400, 1000, 2200].forEach((ms) => setTimeout(queue, ms));
+  visualViewport?.addEventListener('resize', () => { kbOpen = !!visualViewport && visualViewport.height < innerHeight - 120; queue(); });
+  document.querySelector('[data-menu-toggle]')?.addEventListener('click', () => setTimeout(queue, 0));
+  queue();
 }
 
 /* Safety net: hero entrance animations are an enhancement only. If one is still unfinished well after it should

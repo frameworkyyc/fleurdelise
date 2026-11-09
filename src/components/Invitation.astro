@@ -2,11 +2,9 @@
 import Button from './Button.astro';
 import Lotus from './garden/Lotus.astro';
 import Sprout from './garden/Sprout.astro';
-import SeamOrnament from './garden/SeamOrnament.astro';
 import { site } from '../data/site';
 ---
 <section class="section tex-ivory on-light invite" aria-labelledby="invite-title">
-  <SeamOrnament tone="ivory" />
   <!-- the whole composition is one scroll-grown garden: it reaches full bloom as the section centres in view -->
   <div class="wrap" data-grow data-grow-start=".97" data-grow-end=".54">
     <div class="garden" aria-hidden="true">
@@ -23,14 +21,14 @@ import { site } from '../data/site';
   </div>
 </section>
 <style>
-  .invite { text-align: center; padding-top: calc(var(--section-y) + 24px); }
+  .invite { text-align: center; padding-block: clamp(44px, 8vw, 128px); }
   .wrap { display: flex; flex-direction: column; align-items: center; }
-  .garden { display: grid; grid-template-columns: 1fr minmax(220px, 380px) 1fr; align-items: end; gap: clamp(8px, 3vw, 40px); width: min(100%, 760px); margin-bottom: 8px; }
+  .garden { display: grid; grid-template-columns: 1fr minmax(150px, 380px) 1fr; align-items: end; gap: clamp(8px, 3vw, 40px); width: min(100%, 760px); margin-bottom: 8px; }
   .garden :global(.sp-l) { justify-self: end; margin-bottom: 18px; }
   .garden :global(.sp-r) { justify-self: start; margin-bottom: 18px; transform: scaleX(-1); }
   .garden :global(.lotus-main) { width: 100%; }
   h2 { max-width: 16ch; text-wrap: balance; margin-top: 8px; }
   .lead { max-width: 44ch; margin: 28px auto 0; color: var(--plum-text-soft); }
   .actions { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 20px 32px; margin-top: 40px; }
-  @media (max-width: 767px) { .actions :global(.btn) { width: 100%; } .garden { grid-template-columns: 1fr minmax(200px, 300px) 1fr; } .garden :global(.sprout svg) { width: 56px; height: 56px; } }
+  @media (max-width: 767px) { .actions { margin-top: 28px; } .actions :global(.btn) { width: 100%; } .garden { grid-template-columns: 1fr minmax(150px, 190px) 1fr; margin-bottom: 0; } .garden :global(.sprout svg) { width: 40px; height: 40px; } .lead { margin-top: 18px; } }
 </style>

@@ -1,35 +1,32 @@
 ---
-import Sprout from './garden/Sprout.astro';
-import SeamOrnament from './garden/SeamOrnament.astro';
+import Divider from './Divider.astro';
 const values = [
-  { n: '01', name: 'Safe', kind: 'bud', text: 'Your pace, your privacy, your choice — always.' },
-  { n: '02', name: 'Nurturing', kind: 'leaf', text: 'Gentle support for whatever you’re carrying.' },
-  { n: '03', name: 'Authentic', kind: 'flower', text: 'Plain words and real presence. No performance, no judgment.' },
+  { name: 'Safe', text: 'Your pace, your privacy, your choice — always.' },
+  { name: 'Nurturing', text: 'Gentle support for whatever you’re carrying.' },
+  { name: 'Authentic', text: 'Plain words and real presence. No performance, no judgment.' },
 ];
 ---
 <section class="section tex-linen on-light values" aria-labelledby="values-title">
-  <SeamOrnament tone="linen" />
   <div class="wrap">
-    <p class="eyebrow reveal">Core values</p>
-    <h2 id="values-title" class="reveal" style="--d:1">A safe space to bloom.</h2>
-    <ol class="list">
+    <Divider tone="bronze" />
+    <h2 id="values-title" class="reveal">A safe space to bloom.</h2>
+    <ul class="trio">
       {values.map((v, i) => (
         <li class="reveal" style={`--d:${i + 1}`}>
-          <Sprout kind={v.kind as "bud" | "leaf" | "flower"} size={64} />
-          <span class="num" aria-hidden="true">{v.n}</span>
           <h3 class="serif">{v.name}</h3>
           <p>{v.text}</p>
         </li>
       ))}
-    </ol>
+    </ul>
   </div>
 </section>
 <style>
-  h2 { margin: 12px 0 clamp(40px, 6vw, 72px); }
-  .list { display: grid; gap: 0; list-style: none; margin: 0; padding: 0; }
-  .list li { padding: 32px 0; border-top: 1px solid rgb(151 92 43 / .35); display: grid; gap: 8px; }
-  .num { font-size: .75rem; letter-spacing: .2em; font-weight: 500; color: var(--bronze-text); }
-  .list h3 { font-style: italic; font-weight: 400; font-size: clamp(1.875rem, 1.5rem + 1.5vw, 2.5rem); line-height: 1.15; }
-  .list p { color: var(--plum-text-soft); max-width: 30ch; }
-  @media (min-width: 900px) { .list { grid-template-columns: repeat(3, 1fr); gap: 56px; } .list li { padding-top: 36px; } }
+  .values { padding-block: clamp(40px, 7vw, 96px); }
+  h2 { text-align: center; margin: 0 0 clamp(20px, 4vw, 44px); font-size: clamp(1.5rem, 1.25rem + 1.2vw, 2.25rem); }
+  .trio { display: grid; grid-template-columns: repeat(3, 1fr); list-style: none; margin: 0; padding: 0; }
+  .trio li { padding: 4px clamp(8px, 2.5vw, 40px); text-align: center; }
+  .trio li + li { border-left: 1px solid rgb(151 92 43 / .4); }
+  .trio h3 { font-style: italic; font-weight: 400; font-size: clamp(1.25rem, .95rem + 1.4vw, 2rem); line-height: 1.15; color: var(--plum); }
+  .trio p { margin: 8px auto 0; color: var(--plum-text-soft); font-size: clamp(.75rem, .68rem + .35vw, .9375rem); line-height: 1.5; max-width: 26ch; text-wrap: balance; }
+  @media (max-width: 359px) { .trio p { font-size: .75rem; } }
 </style>

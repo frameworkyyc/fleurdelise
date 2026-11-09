@@ -1,0 +1,20 @@
+---
+// Signature divider: hairline rules + a small fleur-de-lis. IN-FLOW (never overhangs a section edge), so no ancestor's overflow or a
+// sibling's stacking can clip or dim it — the old half-overlapping medallions were removed for exactly that reason. Decorative.
+// Animates with opacity/transform only (Safari-safe). Place inside a section, on that section's own background.
+import FleurDeLis from './garden/FleurDeLis.astro';
+interface Props { tone?: 'bronze' | 'gold' }
+const { tone = 'bronze' } = Astro.props;
+---
+<div class={`divider divider-${tone}`} data-grow data-grow-start=".99" data-grow-end=".78" aria-hidden="true">
+  <span class="rule l"></span><span class="mark"><FleurDeLis size={26} /></span><span class="rule r"></span>
+</div>
+<style>
+  .divider { display: flex; align-items: center; justify-content: center; gap: 14px; width: min(320px, 78%); height: 28px; margin: 0 auto clamp(26px, 5vw, 40px); }
+  .rule { flex: 1; height: 1px; opacity: var(--p); transform: scaleX(var(--p)); }
+  .l { transform-origin: right center; background: linear-gradient(90deg, transparent, currentColor); }
+  .r { transform-origin: left center; background: linear-gradient(270deg, transparent, currentColor); }
+  .mark { display: grid; place-items: center; opacity: var(--p); transform: scale(calc(.6 + .4 * var(--p))) rotate(calc((1 - var(--p)) * -40deg)); }
+  .divider-bronze { color: var(--bronze); } .divider-gold { color: var(--gold); }
+  @media (prefers-reduced-motion: reduce) { .rule, .mark { opacity: 1; transform: none; } }
+</style>

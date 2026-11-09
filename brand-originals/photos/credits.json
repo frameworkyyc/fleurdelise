@@ -1,0 +1,57 @@
+{
+ "reiki": {
+  "id": "qP12JMidR9c",
+  "photographer": "Diego Céspedes Cabrera",
+  "user": "diegocespedesc2019",
+  "page": "https://unsplash.com/photos/a-person-holding-a-lit-candle-in-their-hands-qP12JMidR9c",
+  "w": 4592,
+  "h": 2576,
+  "created": "2024-08-12",
+  "license": "Unsplash License",
+  "file": "brand-originals/photos/reiki-qP12JMidR9c.jpg"
+ },
+ "eft": {
+  "id": "MK60jE_6zXU",
+  "photographer": "Charmil Gandhi",
+  "user": "19darkshadow98",
+  "page": "https://unsplash.com/photos/steaming-cup-of-coffee-on-a-wooden-table-MK60jE_6zXU",
+  "w": 3240,
+  "h": 5760,
+  "created": "2026-02-22",
+  "license": "Unsplash License",
+  "file": "brand-originals/photos/eft-MK60jE_6zXU.jpg"
+ },
+ "tarot": {
+  "id": "-Vykfrw_D-A",
+  "photographer": "Airis Noyer",
+  "user": "airis_n",
+  "page": "https://unsplash.com/photos/white-ipad-beside-white-ipad--Vykfrw_D-A",
+  "w": 4408,
+  "h": 4000,
+  "created": "2021-03-15",
+  "license": "Unsplash License",
+  "file": "brand-originals/photos/tarot--Vykfrw_D-A.jpg"
+ },
+ "botanical": {
+  "id": "cc9o5b3CPU4",
+  "photographer": "Annie Spratt",
+  "user": "anniespratt",
+  "page": "https://unsplash.com/photos/white-flowers-on-black-textile-cc9o5b3CPU4",
+  "w": 5568,
+  "h": 7424,
+  "created": "2021-02-06",
+  "license": "Unsplash License",
+  "file": "brand-originals/photos/botanical-cc9o5b3CPU4.jpg"
+ },
+ "sit": {
+  "id": "bMLxl5Orl5s",
+  "photographer": "Huma Kabakci",
+  "user": "humakabakci",
+  "page": "https://unsplash.com/photos/a-lit-candle-in-a-dark-room-bMLxl5Orl5s",
+  "w": 5584,
+  "h": 8368,
+  "created": "2021-11-25",
+  "license": "Unsplash License",
+  "file": "brand-originals/photos/sit-bMLxl5Orl5s.jpg"
+ }
+}
