@@ -2,7 +2,7 @@
   // Static Astro site served by Cloudflare Workers Static Assets.
   // This is the EXISTING `fleurdelise` Worker. Its custom domain (fleurdelise.frameworktools.ca) is
   // already attached in Cloudflare — it is deliberately NOT declared here, so deploys never create or
-  // change domains/routes. fleurdelisehealing.com is NOT connected (go-live needs explicit approval).
+  // change domains/routes. This is the STAGING Worker. Production (fleurdelisehealing.ca) has its own Worker + config: wrangler.production.jsonc (docs/PRODUCTION-CUTOVER.md).
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "fleurdelise",
   "main": "worker/index.ts",

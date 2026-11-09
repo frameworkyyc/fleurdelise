@@ -98,6 +98,16 @@ if (mode === 'staging') {
 }
 if (!/Cache-Control:[^\n]*immutable/.test(headers)) fail('_headers: hashed /_astro/* assets are not cached immutably');
 
+// Host hygiene: every build talks about its own host only.
+{
+  const own = mode === 'production' ? 'fleurdelisehealing.ca' : 'fleurdelise.frameworktools.ca';
+  const foreign = mode === 'production' ? ['frameworktools.ca', 'fleurdelisehealing.com'] : ['fleurdelisehealing.ca', 'fleurdelisehealing.com'];
+  const all = [...files, join(dir, 'robots.txt'), join(dir, 'sitemap-0.xml'), join(dir, 'sitemap-index.xml')];
+  for (const f of all) {
+    const t = await readFile(f, 'utf8').catch(() => '');
+    for (const h of foreign) if (t.includes(h)) fail(`${f.slice(dir.length)}: contains "${h}" (a ${mode} build must only reference ${own})`);
+  }
+}
 console.log(`check-seo (${mode}, ${files.length} pages): ${fails.length} FAIL, ${warns.length} WARN`);
 warns.forEach((w) => console.log('  WARN ' + w)); fails.forEach((f) => console.log('  FAIL ' + f));
 process.exit(fails.length ? 1 : 0);

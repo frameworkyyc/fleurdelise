@@ -3,7 +3,7 @@ import { BUSINESS } from './config.ts';
 import { oneLine, type Inquiry } from './validate.ts';
 import type { Env } from './types.ts';
 
-export interface Mail { to: string; from: string; replyTo?: string; subject: string; text: string; html: string }
+export interface Mail { to: string; from: string; replyTo?: string; subject: string; text: string; html: string; /** de-duplicates provider retries */ idempotencyKey?: string }
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 const when = () => new Intl.DateTimeFormat('en-CA', { dateStyle: 'long', timeStyle: 'short', timeZone: 'America/Toronto' }).format(new Date());
@@ -25,7 +25,7 @@ export function ownerEmail(d: Inquiry, ref: string, env: Env): Mail {
   const book = d.kind === 'book';
   const intro = book ? 'New appointment request from the website. The visitor has been told it is NOT confirmed until you reply.' : 'New message from the website contact form.';
   return {
-    to: env.INQUIRY_TO!, from: env.MAIL_FROM!, replyTo: d.email,
+    to: env.INQUIRY_TO!, from: env.MAIL_FROM!, replyTo: d.email, idempotencyKey: `${ref}-owner`,
     subject: oneLine(`${book ? 'Appointment request' : 'Website message'} — ${subjectService(d)} — ${d.name}`, 200),
     text: `${intro}\nReference: ${ref}\nReceived: ${when()}\n\n${textRows(d)}\n\n—\nReply to this email to answer ${d.name} directly.`,
     html: shell(`<p style="margin:0 0 6px;font-size:18px">${book ? 'New appointment request' : 'New website message'}</p><p style="margin:0 0 18px;color:#4c1f31;font-size:14px">${esc(intro)}<br>Reference <strong>${esc(ref)}</strong> · ${esc(when())}</p>${htmlRows(d)}<p style="margin:22px 0 0;color:#4c1f31;font-size:13px">Reply to this email to answer ${esc(d.name)} directly.</p>`),
@@ -51,7 +51,7 @@ export function ackEmail(d: Inquiry, ref: string, env: Env): Mail {
     'With care,', `${BUSINESS.name}`, BUSINESS.location, '', BUSINESS.disclaimer,
   ].join('\n');
   return {
-    to: d.email, from: env.MAIL_FROM!, replyTo: reply,
+    to: d.email, from: env.MAIL_FROM!, replyTo: reply, idempotencyKey: `${ref}-ack`,
     subject: book ? 'We’ve received your appointment request — not yet confirmed' : 'We’ve received your message',
     text,
     html: shell(`<p style="margin:0 0 14px;font-size:18px">Hello ${esc(d.name)},</p><p style="margin:0 0 14px;line-height:1.6">${esc(lead)} This is an automatic acknowledgement from ${esc(BUSINESS.name)}.</p><p style="margin:0 0 18px;padding:12px 14px;border-left:3px solid #c9944c;background:#f2e4d9;line-height:1.55"><strong>${esc(warn)}</strong></p><p style="margin:0 0 8px;color:#4c1f31;font-size:14px">${book ? 'Your request' : 'Your message'} · reference <strong>${esc(ref)}</strong></p>${htmlRows(d)}<p style="margin:22px 0 0;line-height:1.6;font-size:14px">${esc(change)} at <a href="mailto:${esc(reply)}" style="color:#4c1f31">${esc(reply)}</a> or ${esc(BUSINESS.phone)}.</p><p style="margin:14px 0 0;line-height:1.6;font-size:14px;color:#4c1f31">Please keep health details out of email — there is plenty of time to share what feels right in your session.</p><p style="margin:22px 0 0;font-size:15px">With care,<br>${esc(BUSINESS.name)}<br><span style="color:#975c2b">${esc(BUSINESS.location)}</span></p><p style="margin:18px 0 0;font-size:12px;color:#4c1f31;opacity:.8">${esc(BUSINESS.disclaimer)}</p>`),
@@ -77,9 +77,10 @@ export async function sendMail(env: Env, mail: Mail, fetcher: typeof fetch = fet
     const ctl = new AbortController();
     const timer = setTimeout(() => ctl.abort(), 8000);
     try {
-      const res = await fetcher('https://api.resend.com/emails', {
+      const url = env.ENVIRONMENT !== 'production' && env.RESEND_API_URL ? env.RESEND_API_URL : 'https://api.resend.com/emails'; // override honoured outside production only
+      const res = await fetcher(url, {
         method: 'POST', signal: ctl.signal,
-        headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+        headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json', ...(mail.idempotencyKey ? { 'Idempotency-Key': mail.idempotencyKey } : {}) },
         body: JSON.stringify({ from: mail.from, to: [mail.to], reply_to: mail.replyTo, subject: mail.subject, text: mail.text, html: mail.html }),
       });
       if (!res.ok) throw new DeliveryError(`resend-http-${res.status}`);

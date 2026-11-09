@@ -1,0 +1,32 @@
+{
+  // PRODUCTION Worker for https://fleurdelisehealing.ca  — separate from the staging Worker (`wrangler.jsonc` → `fleurdelise`).
+  // Deployed by its own Workers Builds connection from the `main` branch:
+  //   build:  npm run build:production        deploy:  npx wrangler deploy -c wrangler.production.jsonc
+  // (docs/PRODUCTION-CUTOVER.md has the exact dashboard steps.)
+  //
+  // DELIBERATELY NOT HERE:
+  //   * routes / custom domains — attaching fleurdelisehealing.ca (and the www redirect) is a manual cutover step that needs its own approval;
+  //   * secrets (RESEND_API_KEY, TURNSTILE_SECRET_KEY) — set in the dashboard / `wrangler secret put`, never in git;
+  //   * MAIL_FROM, INQUIRY_TO, INQUIRY_REPLY_TO — set in the dashboard once Lise confirms them (or commit them here later). Until then the
+  //     Worker FAILS CLOSED: /api/inquiry answers 503 and visitors see the "couldn't send" state with the email/phone fallback. Never mock mail.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "fleurdelise-production",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-11-07",
+  "workers_dev": false,
+  "preview_urls": false,
+  "keep_vars": true, // dashboard-managed variables survive each deploy
+  "observability": { "enabled": true },
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "html_handling": "drop-trailing-slash",
+    "run_worker_first": ["/api/*"]
+  },
+  "vars": {
+    "ENVIRONMENT": "production",       // turns on the safeguards: no mock mail, no Turnstile test keys, primary-origin pinning
+    "EMAIL_PROVIDER": "resend",
+    "PRIMARY_ORIGIN": "https://fleurdelisehealing.ca"
+  }
+}

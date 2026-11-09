@@ -2,6 +2,8 @@
 
 Date: 2026-11-09. **Nothing was modified** — no production, staging, DNS, Cloudflare, Resend or Wix changes; no form submissions; no emails sent; no secret values were read or are shown here.
 
+> **Status update (2026-11-09):** the production environment is now *prepared* (C3 fixed in code; C1/C2 fixed by a separate production Worker config) but **not yet activated** — see [PRODUCTION-CUTOVER.md](./PRODUCTION-CUTOVER.md). The live domain still points at the staging Worker until the cutover is approved.
+
 ## 0. How this was verified (and what could not be)
 | Evidence level | Sources |
 |---|---|

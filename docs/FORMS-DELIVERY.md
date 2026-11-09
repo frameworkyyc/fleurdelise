@@ -34,6 +34,8 @@ Cloudflare Worker  worker/index.ts  ── only /api/* runs the Worker; everythi
 | `PUBLIC_TURNSTILE_SITEKEY` | build variable (public) | Workers Builds → Settings → Variables (build), or shell | defaults to Cloudflare's always-pass *test* key (`1x00000000000000000000AA`) | Real Turnstile **site key** — a production build **fails** without it |
 | `ALLOWED_ORIGINS` | var (optional) | `wrangler.jsonc` | — | Only if the form must also work from another origin (same-origin always allowed) |
 
+> **Production specifics (domain `.ca`, separate Worker, `PRIMARY_ORIGIN`, health endpoint, exact manual steps) are in [PRODUCTION-CUTOVER.md](./PRODUCTION-CUTOVER.md); it supersedes the `.com` references below.**
+
 ## Activating real email delivery — checklist
 1. **Lise confirms** the receiving address (→ `INQUIRY_TO`) and any Reply-To for acknowledgements.
 2. **Choose the provider.** Built and tested: **Resend** (check current free-tier limits and pricing). Create the account, add a sending domain, create an API key restricted to sending.

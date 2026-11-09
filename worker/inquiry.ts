@@ -31,8 +31,10 @@ export function configProblem(env: Env): string | null {
   if (!env.TURNSTILE_SECRET_KEY) return 'TURNSTILE_SECRET_KEY missing';
   if (provider === 'resend' && !env.RESEND_API_KEY) return 'RESEND_API_KEY missing';
   if (provider !== 'mock' && !env.MAIL_FROM) return 'MAIL_FROM missing';
+  if (env.MAIL_FROM && !/^(?:[^<>@\r\n]+<[^<>\s@]+@[^<>\s@]+\.[^<>\s@]+>|[^<>\s@]+@[^<>\s@]+\.[^<>\s@]+)$/.test(env.MAIL_FROM)) return 'MAIL_FROM is malformed';
   if (production && provider === 'mock') return 'mock email provider is not allowed in production';
   if (production && TEST_SECRETS.includes(env.TURNSTILE_SECRET_KEY)) return 'Turnstile test secret is not allowed in production';
+  if (production && !/^https:\/\/[a-z0-9.-]+(:\d+)?$/i.test(env.PRIMARY_ORIGIN ?? '')) return 'PRIMARY_ORIGIN missing/invalid (must be https://host, no path)';
   return null;
 }
 
@@ -53,7 +55,8 @@ export async function handleInquiry(request: Request, env: Env, fetcher: typeof 
 
   // Same-origin only (plus any explicitly allowed origins).
   const origin = request.headers.get('Origin');
-  const allowed = new Set([new URL(request.url).origin, ...(env.ALLOWED_ORIGINS ?? '').split(',').map((s) => s.trim()).filter(Boolean)]);
+  // Production accepts ONLY the primary origin (+ explicitly listed extras); elsewhere same-origin is enough.
+  const allowed = new Set([env.ENVIRONMENT === 'production' ? env.PRIMARY_ORIGIN! : new URL(request.url).origin, ...(env.ALLOWED_ORIGINS ?? '').split(',').map((s) => s.trim()).filter(Boolean)]);
   if (!origin || !allowed.has(origin)) return json(403, { ok: false, code: 'bad_origin', message: 'This request was not accepted.' });
   if (!(request.headers.get('Content-Type') ?? '').toLowerCase().startsWith('application/json')) return json(415, { ok: false, code: 'bad_request', message: 'This request was not accepted.' });
   if (Number(request.headers.get('Content-Length') ?? 0) > MAX_BODY) return json(413, { ok: false, code: 'too_large', message: 'That message is too long.' });
@@ -82,8 +85,12 @@ export async function handleInquiry(request: Request, env: Env, fetcher: typeof 
   }
 
   const human = await verifyTurnstile(env, typeof raw.token === 'string' ? raw.token : '', ip, fetcher);
-  if (!human.ok) {
-    log({ ok: false, code: 'verification', reason: human.reason });
+  // In production the token must also have been issued for the primary hostname (blocks tokens minted on another site).
+  // (a temporary pre-cutover test host can be allowed via ALLOWED_ORIGINS and is removed afterwards — docs/PRODUCTION-CUTOVER.md)
+  const hosts = [env.PRIMARY_ORIGIN, ...(env.ALLOWED_ORIGINS ?? '').split(',')].map((o) => { try { return new URL((o ?? '').trim()).hostname; } catch { return ''; } }).filter(Boolean);
+  const hostOk = !(env.ENVIRONMENT === 'production' && env.PRIMARY_ORIGIN) || (human.ok && hosts.includes(human.hostname ?? ''));
+  if (!human.ok || !hostOk) {
+    log({ ok: false, code: 'verification', reason: human.ok ? 'hostname-mismatch' : human.reason });
     return json(403, { ok: false, code: 'verification', message: 'We couldn’t confirm you’re a person. Please try again.' });
   }
 
@@ -109,4 +116,13 @@ export async function handleInquiry(request: Request, env: Env, fetcher: typeof 
   }
   log({ ok: true, ref: id, kind: d.kind, ack, provider: providerOf(env) });
   return json(200, { ok: true, ref: id, ack, mode: mock ? 'mock' : 'live' });
+}
+
+/** GET /api/health — readiness without secrets: reports only whether configuration is usable (and which setting NAMES are missing). */
+export function handleHealth(env: Env): Response {
+  const problem = configProblem(env);
+  const body = problem
+    ? { ready: false, environment: env.ENVIRONMENT ?? 'unset', problem: problem.replace(/\s*\(.*$/, '') }
+    : { ready: true, environment: env.ENVIRONMENT ?? 'unset', provider: providerOf(env) };
+  return json(problem ? 503 : 200, body);
 }

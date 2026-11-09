@@ -5,7 +5,7 @@ Two environments only.
 | Environment | Where | Branch | Status |
 |---|---|---|---|
 | **Staging** | existing Worker `fleurdelise` → https://fleurdelise.frameworktools.ca | `staging` | Connect via Cloudflare dashboard (below) |
-| **Production** | fleurdelisehealing.com | `main` (reserved) | **Not configured.** Needs explicit approval; DNS untouched |
+| **Production** | Worker `fleurdelise-production` → https://fleurdelisehealing.ca | `main` | **Prepared in code** (`wrangler.production.jsonc`); Worker/pipeline creation, Resend, Turnstile and the domain move are manual steps in [PRODUCTION-CUTOVER.md](./PRODUCTION-CUTOVER.md). Until the cutover the `.ca` hostname is still attached to the staging Worker. |
 
 ## Connect GitHub to the existing Worker (one-time, dashboard)
 1. Cloudflare dashboard → **Workers & Pages** → **fleurdelise** → **Settings** → **Builds** → **Connect**.
@@ -26,7 +26,7 @@ Work on a feature branch → merge to `staging` → Cloudflare builds and deploy
 `<meta robots noindex,nofollow>` + `robots.txt` Disallow-all + `X-Robots-Tag` header (`dist/_headers`) + no sitemap. Only `npm run build:production` (`PUBLIC_SITE_ENV=production`) turns indexing on — never used on staging.
 
 ## Production (later, after approval)
-Separate decision: create the production deployment for fleurdelisehealing.com from `main` with `npm run build:production`. Not part of this setup.
+Production is a **separate Worker** (`fleurdelise-production`) built from `main` with `npm run build:production` and deployed with `npx wrangler deploy -c wrangler.production.jsonc`. It is never built from `staging`, and staging never uses the `.ca` host. Full runbook, manual Cloudflare/Resend steps, verification and rollback: [PRODUCTION-CUTOVER.md](./PRODUCTION-CUTOVER.md). Offline pre-flight: `bash scripts/qa/production-build-check.sh`.
 
 ## Verification checklist (staging)
 After a build: `https://fleurdelise.frameworktools.ca/` serves the site (not "Hello world"); response has `X-Robots-Tag: noindex, nofollow, noarchive`; `/robots.txt` is `Disallow: /`; `/sitemap-index.xml` is a 404.

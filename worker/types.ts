@@ -17,6 +17,10 @@ export interface Env {
   TURNSTILE_SECRET_KEY?: string;
   /** Override for tests only. */
   TURNSTILE_VERIFY_URL?: string;
-  /** Comma-separated extra allowed Origins (same-origin is always allowed). */
+  /** Comma-separated extra allowed Origins (same-origin is always allowed outside production). */
   ALLOWED_ORIGINS?: string;
+  /** REQUIRED in production: the one origin forms may be submitted from, e.g. https://fleurdelisehealing.ca. Also pins the Turnstile hostname. */
+  PRIMARY_ORIGIN?: string;
+  /** Test only (ignored in production): points the Resend adapter at a local stub. */
+  RESEND_API_URL?: string;
 }

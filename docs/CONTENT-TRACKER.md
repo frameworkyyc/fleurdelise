@@ -31,6 +31,9 @@ Nothing here is rendered to visitors. Sections are built so each item below can 
 ## Received — to confirm with Lise
 - Training & certifications (docs/CREDENTIALS.md): confirm EFT may be called "certified"; confirm which additional courses (if any) she wants to offer as services later; dates/providers for the additional courses only if she wants them shown.
 
+## Production launch inputs needed
+- Lise's confirmed receiving address (`INQUIRY_TO`), reply-to and preferred sender (`MAIL_FROM`); Resend account owner; Turnstile widget — see docs/PRODUCTION-CUTOVER.md.
+
 ## Decisions pending
 - Inquiry delivery: **built** (Worker + Turnstile + email adapter, mock mode on staging). To go live: Lise confirms the receiving address; choose/activate the email provider and sending domain; set secrets + Turnstile keys — see docs/FORMS-DELIVERY.md. Privacy page should name the provider once chosen.
 - Booking provider (see `src/data/booking.ts` — one-line switch to embed/redirect).

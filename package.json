@@ -10,7 +10,7 @@
     "check": "astro check",
     "deploy:staging": "npm run build:staging && wrangler deploy",
     "build:staging": "PUBLIC_SITE_ENV=staging PUBLIC_SITE_URL=https://fleurdelise.frameworktools.ca PUBLIC_TURNSTILE_SITEKEY=${PUBLIC_TURNSTILE_SITEKEY:-1x00000000000000000000AA} npm run build",
-    "build:production": "PUBLIC_SITE_ENV=production npm run build",
+    "build:production": "PUBLIC_SITE_ENV=production PUBLIC_SITE_URL=https://fleurdelisehealing.ca npm run build",
     "check:motion": "node scripts/check-motion.mjs",
     "check:seo": "node scripts/check-seo.mjs",
     "check:redirects": "node scripts/build-redirects.mjs --check-only",

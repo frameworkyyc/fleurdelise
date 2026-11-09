@@ -1,9 +1,26 @@
 // Runs after `astro build`. Non-production builds are hard-blocked from search engines at the HTTP layer too
 // (X-Robots-Tag), in addition to the <meta robots> tag and Disallow-all robots.txt.
-import { writeFile, readdir, rm } from 'node:fs/promises';
+import { writeFile, readFile, readdir, rm } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 
 const production = process.env.PUBLIC_SITE_ENV === 'production';
+
+const PROD_HOST = 'fleurdelisehealing.ca';
+const hostOf = (u) => { try { return new URL(u).hostname; } catch { return ''; } };
+const TEST_SITEKEYS = ['1x00000000000000000000AA', '2x00000000000000000000AB', '3x00000000000000000000FF'];
+const fail = (m) => { console.error('post-build: ' + m); process.exit(1); };
+{
+  // The production site URL is fixed; a build must never be mis-labelled (wrong canonicals/sitemap) — and staging must never claim it.
+  const html = await readFile('dist/index.html', 'utf8');
+  const canonical = hostOf((html.match(/<link rel="canonical" href="([^"]+)"/) || [])[1] || '');
+  if (production && canonical !== PROD_HOST) fail(`PRODUCTION build has canonical host "${canonical}", expected "${PROD_HOST}". Use \`npm run build:production\` (sets PUBLIC_SITE_URL=https://${PROD_HOST}).`);
+  if (!production && canonical === PROD_HOST) fail(`a non-production build must not use the production host (${PROD_HOST}) in canonicals.`);
+  if (production) {
+    const key = process.env.PUBLIC_TURNSTILE_SITEKEY || '';
+    if (TEST_SITEKEYS.includes(key)) fail('PUBLIC_TURNSTILE_SITEKEY is a Cloudflare TEST key — a production build needs the real widget site key.');
+    if (key && !/^0x[A-Za-z0-9_-]{10,}$/.test(key)) fail('PUBLIC_TURNSTILE_SITEKEY does not look like a real Turnstile site key (expected 0x…).');
+  }
+}
 
 // A production build without a Turnstile site key would ship forms that cannot be submitted — refuse to build it.
 if (production && !process.env.PUBLIC_TURNSTILE_SITEKEY && !process.env.ALLOW_MISSING_TURNSTILE) {

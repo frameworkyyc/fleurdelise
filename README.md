@@ -15,7 +15,7 @@ Astro (static) → Cloudflare Workers Static Assets. Built to **Framework Brand 
 
 ## Environments
 - **Staging:** the existing `fleurdelise` Worker, bound to `https://fleurdelise.frameworktools.ca` (already attached in Cloudflare). `npm run deploy:staging` builds with staging env vars and runs `wrangler deploy`. Needs `CLOUDFLARE_API_TOKEN` (Workers Scripts: Edit) + `CLOUDFLARE_ACCOUNT_ID`.
-- `wrangler.jsonc` declares no routes/domains and keeps `workers_dev` / `preview_urls` off, so deploys can't create or alter domains. `fleurdelisehealing.com` is **not** connected.
+- `wrangler.jsonc` declares no routes/domains and keeps `workers_dev` / `preview_urls` off, so deploys can't create or alter domains. Production uses its own Worker/config (`wrangler.production.jsonc`, branch `main`) — see `docs/PRODUCTION-CUTOVER.md`. The old `fleurdelisehealing.com` (Wix) is not touched by this repo.
 - Staging is excluded from search engines three ways: `<meta robots noindex>`, `Disallow: /` robots.txt, and an `X-Robots-Tag` response header (`dist/_headers`); the sitemap is omitted.
 - **Production** — branch `main`, `PUBLIC_SITE_ENV=production` (enables indexing + sitemap in robots.txt). **Deploy only with explicit approval. DNS is not managed here.**
 - **Staging / previews** — any other branch. `PUBLIC_SITE_ENV` unset ⇒ `noindex, nofollow` meta and `Disallow: /` robots (safe default).

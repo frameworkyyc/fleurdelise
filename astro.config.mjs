@@ -4,7 +4,7 @@ import { execFileSync } from 'node:child_process';
 
 const isProduction = process.env.PUBLIC_SITE_ENV === 'production';
 // Staging builds point canonical/OG URLs at the staging host; production at the real domain.
-const site = process.env.PUBLIC_SITE_URL || 'https://fleurdelisehealing.com';
+const site = process.env.PUBLIC_SITE_URL || 'https://fleurdelisehealing.ca';
 
 // <lastmod> = date of the last commit that touched the files that make up each page. It is only emitted when git history is
 // complete: in a shallow clone every file would report the build commit and every deploy would wrongly mark all pages "changed".

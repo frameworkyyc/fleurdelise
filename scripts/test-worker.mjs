@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { validate } from '../worker/validate.ts';
-import { handleInquiry, configProblem, __resetRateLimit } from '../worker/inquiry.ts';
+import { handleInquiry, handleHealth, configProblem, __resetRateLimit } from '../worker/inquiry.ts';
 import { ownerEmail, ackEmail } from '../worker/email.ts';
 import { BUSINESS } from '../worker/config.ts';
 import worker from '../worker/index.ts';
@@ -14,13 +14,13 @@ const book = (o = {}) => ({ kind: 'book', name: 'Jane Doe', email: 'jane@example
 const contact = (o = {}) => ({ kind: 'contact', name: 'Sam', email: 'sam@example.com', topic: 'general', message: 'A question', consent: true, token: 'good', hp: '', ...o });
 const req = (body, { origin = ORIGIN, method = 'POST', headers = {}, raw } = {}) => new Request(`${ORIGIN}/api/inquiry`, { method, headers: { 'Content-Type': 'application/json', ...(origin ? { Origin: origin } : {}), 'CF-Connecting-IP': '203.0.113.7', ...headers }, body: method === 'GET' ? undefined : raw ?? JSON.stringify(body) });
 /** fake network: Turnstile + Resend */
-function net({ turnstile = (t) => t === 'good', resend = () => 200, throwOn } = {}) {
+function net({ turnstile = (t) => t === 'good', resend = () => 200, throwOn, hostname = 'example.com' } = {}) {
   const calls = [];
   const f = async (url, init) => {
     const u = String(url);
     calls.push({ url: u, init });
     if (throwOn && u.includes(throwOn)) throw new TypeError('network down');
-    if (u.includes('siteverify')) { const t = new URLSearchParams(init.body).get('response'); return new Response(JSON.stringify({ success: turnstile(t), 'error-codes': turnstile(t) ? [] : ['invalid-input-response'] }), { status: 200 }); }
+    if (u.includes('siteverify')) { const t = new URLSearchParams(init.body).get('response'); return new Response(JSON.stringify({ success: turnstile(t), hostname, 'error-codes': turnstile(t) ? [] : ['invalid-input-response'] }), { status: 200 }); }
     if (u.includes('api.resend.com')) { const s = resend(JSON.parse(init.body)); return new Response('{}', { status: s }); }
     throw new Error('unexpected fetch ' + u);
   };
@@ -161,4 +161,57 @@ test('worker routing: /api/inquiry -> handler, unknown /api -> 404, everything e
 test('email facts match the site data', async () => {
   const site = await readFile(new URL('../src/data/site.ts', import.meta.url), 'utf8');
   for (const v of [BUSINESS.name, BUSINESS.owner, BUSINESS.phone, BUSINESS.location, BUSINESS.disclaimer]) assert.ok(site.includes(v), `site.ts is missing "${v}"`);
+});
+
+/* ---------- production hardening ---------- */
+const PROD = (o = {}) => baseEnv({ ENVIRONMENT: 'production', PRIMARY_ORIGIN: 'https://fleurdelisehealing.ca', ...o });
+const prodReq = (body, o = {}) => new Request('https://fleurdelisehealing.ca/api/inquiry', { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: 'https://fleurdelisehealing.ca', 'CF-Connecting-IP': '203.0.113.50', ...(o.headers ?? {}) }, body: JSON.stringify(body) });
+test('production: refuses to run without a valid PRIMARY_ORIGIN, with a malformed sender, or with mock/test settings', () => {
+  assert.equal(configProblem(PROD()), null);
+  assert.match(configProblem(PROD({ PRIMARY_ORIGIN: '' })), /PRIMARY_ORIGIN/);
+  assert.match(configProblem(PROD({ PRIMARY_ORIGIN: 'http://fleurdelisehealing.ca' })), /PRIMARY_ORIGIN/);
+  assert.match(configProblem(PROD({ PRIMARY_ORIGIN: 'https://fleurdelisehealing.ca/path' })), /PRIMARY_ORIGIN/);
+  assert.match(configProblem(PROD({ MAIL_FROM: 'not an address' })), /MAIL_FROM is malformed/);
+  assert.equal(configProblem(PROD({ MAIL_FROM: 'hello@fleurdelisehealing.ca' })), null);
+  assert.match(configProblem(PROD({ EMAIL_PROVIDER: 'mock' })), /mock/);
+});
+test('production: only the primary origin may submit (www, staging and workers.dev are refused)', async () => {
+  for (const origin of ['https://www.fleurdelisehealing.ca', 'https://fleurdelise.frameworktools.ca', 'https://fleurdelise-production.acct.workers.dev', 'http://fleurdelisehealing.ca']) {
+    const r = await handleInquiry(new Request('https://fleurdelisehealing.ca/api/inquiry', { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: origin }, body: JSON.stringify(book()) }), PROD(), net());
+    assert.equal(r.status, 403, origin);
+  }
+  assert.equal((await handleInquiry(prodReq(book()), PROD(), net({ hostname: 'fleurdelisehealing.ca' }))).status, 200);
+});
+test('production: Turnstile token must be issued for the primary hostname', async () => {
+  assert.equal((await handleInquiry(prodReq(book()), PROD(), net({ hostname: 'evil.example' }))).status, 403);
+  __resetRateLimit();
+  assert.equal((await handleInquiry(prodReq(book()), PROD(), net({ hostname: 'fleurdelisehealing.ca' }))).status, 200);
+  __resetRateLimit();
+  assert.equal((await handleInquiry(prodReq(book()), PROD(), net({ hostname: undefined }))).status, 403);
+});
+test('production: a temporary test host listed in ALLOWED_ORIGINS is accepted (origin + Turnstile hostname); nothing else is', async () => {
+  const env = PROD({ ALLOWED_ORIGINS: 'https://preview.fleurdelisehealing.ca' });
+  const r = await handleInquiry(new Request('https://preview.fleurdelisehealing.ca/api/inquiry', { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: 'https://preview.fleurdelisehealing.ca' }, body: JSON.stringify(book()) }), env, net({ hostname: 'preview.fleurdelisehealing.ca' }));
+  assert.equal(r.status, 200);
+  __resetRateLimit();
+  const r2 = await handleInquiry(new Request('https://preview.fleurdelisehealing.ca/api/inquiry', { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: 'https://preview.fleurdelisehealing.ca' }, body: JSON.stringify(book()) }), env, net({ hostname: 'other.example' }));
+  assert.equal(r2.status, 403);
+});
+test('resend: sends two requests with distinct idempotency keys; test URL override is honoured outside production only', async () => {
+  const f = net({ hostname: 'fleurdelisehealing.ca' }); await handleInquiry(prodReq(book()), PROD(), f);
+  const calls = f.calls.filter((c) => c.url.includes('api.resend.com'));
+  assert.equal(calls.length, 2);
+  const keys = calls.map((c) => c.init.headers['Idempotency-Key']); assert.match(keys[0], /^FDL-[A-Z2-9]{6}-owner$/); assert.match(keys[1], /^FDL-[A-Z2-9]{6}-ack$/);
+  const f2 = net(); await handleInquiry(req(book()), baseEnv({ RESEND_API_URL: 'http://127.0.0.1:9/stub' }), f2);
+  assert.ok(f2.calls.some((c) => c.url === 'http://127.0.0.1:9/stub'));
+  __resetRateLimit();
+  const f3 = net({ hostname: 'fleurdelisehealing.ca' }); await handleInquiry(prodReq(book()), PROD({ RESEND_API_URL: 'http://127.0.0.1:9/stub' }), f3);
+  assert.ok(!f3.calls.some((c) => c.url.includes('127.0.0.1')) && f3.calls.some((c) => c.url === 'https://api.resend.com/emails'));
+});
+test('health endpoint: reports readiness without leaking secrets', async () => {
+  const ready = handleHealth(PROD()); assert.equal(ready.status, 200); const j = await ready.json(); assert.deepEqual(j, { ready: true, environment: 'production', provider: 'resend' });
+  const bad = handleHealth(PROD({ MAIL_FROM: '', RESEND_API_KEY: '' })); assert.equal(bad.status, 503); const t = await bad.text();
+  assert.match(t, /"ready":false/); assert.ok(!/re_SECRET|real-secret|lise@example/.test(t));
+  const r = await worker.fetch(new Request(`${ORIGIN}/api/health`), PROD()); assert.equal(r.status, 200);
+  assert.equal((await worker.fetch(new Request(`${ORIGIN}/api/health`, { method: 'POST' }), PROD())).status, 404);
 });
